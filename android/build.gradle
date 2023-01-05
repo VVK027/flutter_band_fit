@@ -16,6 +16,12 @@ rootProject.allprojects {
     repositories {
         google()
         mavenCentral()
+        flatDir {
+            dirs 'libs'
+            //dirs project(':<plugin_name>').file('libs')
+            // e.g. dirs project(':url_launcher').file('libs')  - don't miss the ':'
+            //  dirs "<path to flutter SDK>/.pub-cache/hosted/pub.dartlang.org/<name and version of plugin>/android/libs"
+        }
     }
 }
 
@@ -23,13 +29,77 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 31
-
+    useLibrary 'org.apache.http.legacy'
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 18
+
+        ndk {
+            abiFilters 'armeabi-v7a', 'x86', 'x86_64', 'arm64-v8a'
+        }
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
+
+    /* lintOptions {
+        disable 'InvalidPackage'
+        //abortOnError false
+    }*/
+    buildTypes {
+        release {
+            debuggable true
+            minifyEnabled true
+            // proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        /*release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }*/
+    }
+    /* dependencies {
+         //  implementation (name: 'ute_sdk', ext: 'aar')
+         testImplementation 'junit:junit:4.13.2'
+         androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+         androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+     }*/
+}
+
+allprojects {
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'org.jetbrains:annotations:15.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    implementation(name: 'ute_sdk', ext: 'aar')
+    // implementation 'com.tbruyelle.rxpermissions:rxpermissions:0.9.4@aar'
+    //implementation 'com.github.tbruyelle:rxpermissions:0.12'
+    //implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
+    // implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
+    //or individual
+//    implementation fileTree(include: ['*.jar'], dir: 'libs')
+//    implementation fileTree(include: ['*.aar'], dir: 'libs')
+    //implementation files("libs/ute_sdk.aar")
+    // implementation 'androidx.appcompat:appcompat:1.4.1'
+    //  implementation 'androidx.appcompat:appcompat:1.2.0'
+    // api 'androidx.core:core:1.3.0'
+    //implementation 'no.nordicsemi.android:dfu:1.11.1'
+    implementation 'no.nordicsemi.android:dfu:1.6.1'
+    //implementation 'com.google.code.gson:gson:2.8.6'
+    // implementation 'androidx.annotation:annotation:1.3.0'
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
 }
