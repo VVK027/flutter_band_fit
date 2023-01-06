@@ -8,8 +8,7 @@
 import Foundation
 
 struct GlobalConstants {
-    //static let baseURL = "https://api.com"
-
+ 
     // result constants
     static let SC_SUCCESS = "success"
     static let SC_FAILURE = "failure"

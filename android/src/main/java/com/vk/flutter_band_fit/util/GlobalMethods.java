@@ -1,4 +1,4 @@
-package android.src.main.java.com.vk.flutter_band_fit.util;
+package com.vk.flutter_band_fit.util;
 
 import android.util.Log;
 

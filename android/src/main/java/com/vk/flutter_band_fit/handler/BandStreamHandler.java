@@ -1,27 +1,28 @@
-package android.src.main.java.com.vk.flutter_band_fit.handler;
+package com.vk.flutter_band_fit.handler;
 
 import android.content.Context;
 import android.content.IntentFilter;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import ai.docty.mobile_smart_watch.receiver.SmartBroadcastReceiver;
-import ai.docty.mobile_smart_watch.util.WatchConstants;
+
+import com.vk.flutter_band_fit.receiver.BandBroadcastReceiver;
+import com.vk.flutter_band_fit.util.WatchConstants;
 import io.flutter.plugin.common.EventChannel;
 
-public class SmartStreamHandler implements EventChannel.StreamHandler {
+public class BandStreamHandler implements EventChannel.StreamHandler {
 
     private final Context mContext;
-    private SmartBroadcastReceiver broadcastReceiver;
+    private BandBroadcastReceiver broadcastReceiver;
 
 
-    public SmartStreamHandler(Context context){
+    public BandStreamHandler(Context context){
         this.mContext = context;
     }
 
     @Override
     public void onListen(Object o, EventChannel.EventSink eventSink) {
-        broadcastReceiver = new SmartBroadcastReceiver(eventSink);
+        broadcastReceiver = new BandBroadcastReceiver(eventSink);
         LocalBroadcastManager.getInstance(mContext).registerReceiver(broadcastReceiver, new IntentFilter(WatchConstants.BROADCAST_ACTION_NAME));
     }
 

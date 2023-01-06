@@ -1,4 +1,4 @@
-package android.src.main.java.com.vk.flutter_band_fit;
+package com.vk.flutter_band_fit;
 
 
 import android.Manifest;
@@ -21,8 +21,8 @@ import com.yc.pedometer.utils.SPUtil;
 
 import java.util.ArrayList;
 
-import ai.docty.mobile_smart_watch.model.BleDevices;
-import ai.docty.mobile_smart_watch.util.WatchConstants;
+import com.vk.flutter_band_fit.model.BleDevices;
+import com.vk.flutter_band_fit.util.WatchConstants;
 import no.nordicsemi.android.dfu.DfuServiceInitiator;
 
 

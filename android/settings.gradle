@@ -1,1 +1,2 @@
 rootProject.name = 'flutter_band_fit'
+include 'ute_sdk'

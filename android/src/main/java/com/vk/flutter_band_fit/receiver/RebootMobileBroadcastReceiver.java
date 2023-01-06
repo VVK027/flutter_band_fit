@@ -1,4 +1,4 @@
-package android.src.main.java.com.vk.flutter_band_fit.receiver;
+package com.vk.flutter_band_fit.receiver;
 
 
 import android.content.Context;

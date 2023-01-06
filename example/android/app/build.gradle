@@ -26,8 +26,12 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 31
     ndkVersion flutter.ndkVersion
+    useLibrary 'org.apache.http.legacy'
+    lintOptions {
+        disable 'InvalidPackage'
+    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -39,7 +43,7 @@ android {
         applicationId "com.vk.flutter_band_fit_example"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
-        minSdkVersion flutter.minSdkVersion
+        minSdkVersion 18
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -47,9 +51,11 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            debuggable true
+            minifyEnabled true
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            //signingConfig signingConfigs.debug
         }
     }
 }
