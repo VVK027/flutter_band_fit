@@ -191,6 +191,6 @@ struct GlobalConstants {
     
     
     // for streaming broadcast action event name
-    static let BROADCAST_ACTION_NAME = "ai.docty.smart_watch"
+    static let BROADCAST_ACTION_NAME = "com.vk.band_fit"
     
 }

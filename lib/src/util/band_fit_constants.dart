@@ -184,13 +184,9 @@ class BandFitConstants {
   static const String HR_TEST_FINISHED = "hrTestFinished";
 
   //method channel
-  static const String SMART_METHOD_CHANNEL = "smartMethodChannel";
-  static const String SMART_EVENT_CHANNEL = "smartEventChannel";
-  static const String SMART_BP_TEST_CHANNEL = "smartBPTestChannel";
-  //static const String SMART_OXYGEN_TEST_CHANNEL = "smartOxygenTestChannel";
-  //static const String SMART_TEMP_TEST_CHANNEL = "smartTempTestChannel";
-  //static const String SMART_CONNECTION_CHANNEL = "smartConnectionChannel";
-
+  static const String BAND_METHOD_CHANNEL = "smartMethodChannel";
+  static const String BAND_EVENT_CHANNEL = "smartEventChannel";
+  static const String BAND_BP_TEST_CHANNEL = "smartBPTestChannel";
 
   //for continuous call backs from the hardware device search
   // static const String SMART_CALLBACK = "smartCallbacks";
@@ -222,7 +218,7 @@ class BandFitConstants {
 
  // static const String SMART_EVENTS = "smartEvents";
 
-  static const  String BROADCAST_ACTION_NAME = "ai.docty.smart_watch";
+  static const  String BROADCAST_ACTION_NAME = "com.vk.band_fit";
 
   //requires only for IOS
 //  static const String DC_APP_Id = "dcAppId";

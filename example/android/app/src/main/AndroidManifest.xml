@@ -43,7 +43,7 @@
 
 
     <application
-        android:label="flutter_band_fit_example"
+        android:label="flutter band fit"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         tools:replace="android:label"

@@ -1,63 +1,62 @@
-import 'package:flutter/material.dart';
-import 'dart:async';
+import 'package:flutter_band_fit_app/app_theme.dart';
+import 'package:flutter_band_fit_app/common/common_imports.dart';
+import 'package:flutter_band_fit_app/controllers/theme_controller.dart';
+import 'package:flutter_band_fit_app/splash_screen.dart';
+import 'package:get/get.dart';
 
-import 'package:flutter/services.dart';
-import 'package:flutter_band_fit/flutter_band_fit.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await GetStorage.init();
+  runApp(const MainApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+class MainApp extends StatefulWidget {
+  const MainApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<MainApp> createState() => _MainAppState();
 }
 
-class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
-  final _flutterBandFitPlugin = FlutterBandFit();
+class _MainAppState extends State<MainApp> {
+  //final _flutterBandFitPlugin = FlutterBandFit();
+
+  final themeController = Get.put(ThemeController());
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion =
-          await _flutterBandFitPlugin.getPlatformVersion() ?? 'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter Band Fit',
+      //initialBinding: ActivityServiceProvider(),
+      theme: Themes.lightTheme,
+      darkTheme: Themes.darkTheme,
+      themeMode: themeController.theme,
+      initialRoute: '/',
+      //localizationsDelegates: [
+      // GlobalMaterialLocalizations.delegate,
+      // GlobalCupertinoLocalizations.delegate,
+      // GlobalWidgetsLocalizations.delegate,
+      // DefaultCupertinoLocalizations.delegate,
+      //  ],
+      getPages: [
+        GetPage(
+          name: '/',
+          page: () => const Splash(),
         ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
-        ),
-      ),
+        // GetPage(name: '/edit_name', page: () => UpdateStoreName()),
+        // GetPage(name: '/add_followers', page: () => AddFollowers()),
+        // GetPage(name: '/toggle_status', page: () => StoreStatus()),
+        // GetPage(name: '/edit_follower_count', page: () => AddFollowerCount()),
+        // GetPage(name: '/add_reviews', page: () => AddReviews()),
+        // GetPage(name: '/update_menu', page: () => const UpdateMenu()),
+      ],
+      home: const Splash(),
     );
   }
 }

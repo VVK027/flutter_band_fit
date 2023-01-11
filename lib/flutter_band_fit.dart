@@ -23,6 +23,7 @@ part 'src/models/band_temperature_model.dart';
 part 'src/models/band_oxygen_model.dart';
 part 'src/models/band_steps_model.dart';
 part 'src/models/band_steps_data_model.dart';
+part 'src/models/band_dial_model.dart';
 
 /*
 class FlutterBandFit {

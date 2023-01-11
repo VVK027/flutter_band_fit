@@ -20,11 +20,11 @@ class FlutterBandFit {
 
   factory FlutterBandFit([options]) {
     if (_instance == null) {
-      MethodChannel methodChannel = const MethodChannel(BandFitConstants.SMART_METHOD_CHANNEL);
+      MethodChannel methodChannel = const MethodChannel(BandFitConstants.BAND_METHOD_CHANNEL);
 
-      EventChannel eventChannel = const EventChannel(BandFitConstants.SMART_EVENT_CHANNEL); // temporary for stream events
+      EventChannel eventChannel = const EventChannel(BandFitConstants.BAND_EVENT_CHANNEL); // temporary for stream events
 
-      EventChannel bpTestChannel = const EventChannel(BandFitConstants.SMART_BP_TEST_CHANNEL);
+      EventChannel bpTestChannel = const EventChannel(BandFitConstants.BAND_BP_TEST_CHANNEL);
 
       //EventChannel oxygenTestChannel = const EventChannel(BandFitConstants.SMART_OXYGEN_TEST_CHANNEL);
 
@@ -658,7 +658,7 @@ class FlutterBandFit {
   }*/
 
   void receiveEventListeners({Function(dynamic)? onData, Function(dynamic)? onError, Function()? onDone}) {
-    eventChannelListener = _eventChannel.receiveBroadcastStream(BandFitConstants.SMART_EVENT_CHANNEL).listen(onData,onError:onError, onDone: onDone, cancelOnError: false);
+    eventChannelListener = _eventChannel.receiveBroadcastStream(BandFitConstants.BAND_EVENT_CHANNEL).listen(onData,onError:onError, onDone: onDone, cancelOnError: false);
   }
 
   void pauseEventListeners(){
@@ -679,7 +679,7 @@ class FlutterBandFit {
   }
 
   void receiveBPListeners({Function(dynamic)? onData, Function(dynamic)? onError, Function()? onDone}) {
-    bpChannelListener = _bpTestChannel.receiveBroadcastStream(BandFitConstants.SMART_BP_TEST_CHANNEL).listen(onData,onError:onError, onDone: onDone, cancelOnError: false);
+    bpChannelListener = _bpTestChannel.receiveBroadcastStream(BandFitConstants.BAND_BP_TEST_CHANNEL).listen(onData,onError:onError, onDone: onDone, cancelOnError: false);
   }
 
   void pauseBPListeners(){

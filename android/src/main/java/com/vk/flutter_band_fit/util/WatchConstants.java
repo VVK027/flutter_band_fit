@@ -190,6 +190,6 @@ public class WatchConstants {
 
 
     // for streaming broadcast action event name
-    public static final String BROADCAST_ACTION_NAME = "ai.docty.smart_watch";
+    public static final String BROADCAST_ACTION_NAME = "com.vk.band_fit";
 
 }
