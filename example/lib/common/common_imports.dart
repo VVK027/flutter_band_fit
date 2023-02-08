@@ -5,21 +5,16 @@ export 'dart:math';
 
 export 'package:flutter/material.dart';
 export 'package:flutter/services.dart';
-
-
 export 'package:flutter_band_fit/flutter_band_fit.dart';
-
+export 'package:flutter_band_fit_app/app_theme.dart';
 export 'package:flutter_band_fit_app/common/all_widgets.dart';
+export 'package:flutter_band_fit_app/controllers/theme_controller.dart';
 export 'package:flutter_band_fit_app/global/global_constants.dart';
 export 'package:flutter_band_fit_app/global/global_methods.dart';
 export 'package:flutter_band_fit_app/model/band_data_model.dart';
-export 'package:flutter_band_fit_app/utils/keys.dart';
 export 'package:flutter_band_fit_app/provider/activity_service_provider.dart';
+export 'package:flutter_band_fit_app/utils/keys.dart';
 export 'package:flutter_band_fit_app/utils/shared_service.dart';
-
-export 'package:flutter_band_fit_app/controllers/theme_controller.dart';
-export 'package:flutter_band_fit_app/app_theme.dart';
-
 export 'package:get_storage/get_storage.dart';
 export 'package:permission_handler/permission_handler.dart';
 export 'package:syncfusion_flutter_charts/charts.dart';

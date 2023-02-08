@@ -1,11 +1,19 @@
-import 'package:flutter_band_fit_app/common/common_imports.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_band_fit_app/common/common_imports.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 // import 'package:geocoding/geocoding.dart';
 // import 'package:path_provider/path_provider.dart';
 
 class GlobalMethods {
+
+  static navigateTo(dynamic page){
+    Get.to(page);
+  }
+
+  static navigatePopBack(){
+    Get.back();
+  }
 
   static showSnackBar(){
     Get.snackbar('GetX Snackbar', 'Yay! Awesome GetX Snackbar',
@@ -19,32 +27,32 @@ class GlobalMethods {
   }
   static showMaterialBanner(BuildContext context){
     ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
-            content: const Text('Hello, I am a Material Banner'),
-            leading: const Icon(Icons.error),
-            padding: const EdgeInsets.all(15),
-            backgroundColor: Colors.lightGreenAccent,
-            contentTextStyle: const TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.indigo),
-            actions: [
-              TextButton(
-                onPressed: () {},
-                child: const Text(
-                  'Agree',
-                  style: TextStyle(color: Colors.purple),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                 // ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
-                  ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
-                },
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(color: Colors.purple),
-                ),
-              ),
-            ]
-        ));
+        content: const Text('Hello, I am a Material Banner'),
+        leading: const Icon(Icons.error),
+        padding: const EdgeInsets.all(15),
+        backgroundColor: Colors.lightGreenAccent,
+        contentTextStyle: const TextStyle(
+            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.indigo),
+        actions: [
+          TextButton(
+            onPressed: () {},
+            child: const Text(
+              'Agree',
+              style: TextStyle(color: Colors.purple),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              // ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+              ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
+            },
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: Colors.purple),
+            ),
+          ),
+        ]
+    ));
   }
 
   //Related to GFit
@@ -218,7 +226,8 @@ class GlobalMethods {
                     CupertinoButtonWidget(
                       title: cancelText,
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        // Navigator.of(context).pop();
+                        GlobalMethods.navigatePopBack();
                       },
                     ),
                     CupertinoButtonWidget(
@@ -493,7 +502,7 @@ class GlobalMethods {
         return await Geolocator.getCurrentPosition();
       } catch (e) {
         Toast.show(e.toString(), context, duration: 3);
-        Navigator.pop(context);
+        GlobalMethods.navigatePopBack();
       }
     }
     return null;
@@ -524,12 +533,13 @@ class GlobalMethods {
               TextButton(
                 style: TextButton.styleFrom(
                   // primary: Color(0xFF6200EE),
-                 // primary: Colors.teal,
+                  // primary: Colors.teal,
                   foregroundColor: Colors.teal,
                 ),
                 // textColor: Color(0xFF6200EE),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  //Navigator.of(context).pop();
+                  GlobalMethods.navigatePopBack();
                 },
                 child: const Text(okText),
               )
@@ -578,7 +588,8 @@ class GlobalMethods {
                     CupertinoButtonWidget(
                       title: cancelText,
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        //Navigator.of(context).pop();
+                        GlobalMethods.navigatePopBack();
                       },
                     ),
                     CupertinoButtonWidget(
@@ -651,13 +662,13 @@ class GlobalMethods {
     return weekTitleLabel;
   }
 
- /* static String getTimeByIntegerMin(int minutes) {
+/* static String getTimeByIntegerMin(int minutes) {
     double hour = minutes / 60;
     int min = minutes % 60;
     return String.format(Locale.getDefault(), "%02d:%02d", hour, min);
   }*/
 
- /* "2012-02-27 13:27:00"
+/* "2012-02-27 13:27:00"
   "2012-02-27 13:27:00.123456789z"
   "2012-02-27 13:27:00,123456789z"
   "20120227 13:27:00"
@@ -669,7 +680,7 @@ class GlobalMethods {
   "-123450101 00:00:00 Z": in the year -12345.
   "2002-02-27T14:00:00-0500": Same as "2002-02-27T19:00:00Z"*/
 
- /*static Future<String> prepareDirectory(String folderName) async {
+/*static Future<String> prepareDirectory(String folderName) async {
     String localPath = (await findLocalPath()) + Platform.pathSeparator + folderName;
     final savedDir = Directory(localPath);
     bool hasExisted = await savedDir.exists();

@@ -10,7 +10,7 @@ class DoNotDisturb extends StatefulWidget{
     // TODO: implement createState
     return DoNotDisturbState();
   }
-  
+
 }
 class DoNotDisturbState extends State<DoNotDisturb>{
 
@@ -18,7 +18,7 @@ class DoNotDisturbState extends State<DoNotDisturb>{
   bool enableMotorOn = false;
   //bool enableDoNotDisturb = false;
 
-   final  _activityServiceProvider = Get.put(ActivityServiceProvider());
+  final  _activityServiceProvider = Get.put(ActivityServiceProvider());
 
   TimeOfDay _startTime = const TimeOfDay(hour: 22, minute: 00);
   TimeOfDay _endTime = const TimeOfDay(hour: 08, minute: 00);
@@ -26,8 +26,8 @@ class DoNotDisturbState extends State<DoNotDisturb>{
 
   @override
   void initState() {
-  // _activityServiceProvider = Provider.of<ActivityServiceProvider>(context, listen: false);
-     //_activityServiceProvider.fetchAllJudgement();
+    // _activityServiceProvider = Provider.of<ActivityServiceProvider>(context, listen: false);
+    //_activityServiceProvider.fetchAllJudgement();
     super.initState();
 
     assignValues();
@@ -35,11 +35,11 @@ class DoNotDisturbState extends State<DoNotDisturb>{
 
   Future<void> assignValues() async{
     await _activityServiceProvider.callQuickSwitchSettingStatus();
-   // await Future.delayed(const Duration(seconds: 1));
+    // await Future.delayed(const Duration(seconds: 1));
     setState(() {
-       enableMessageOn = _activityServiceProvider.getMessagesOnEnabled;
-       enableMotorOn = _activityServiceProvider.getMotorVibrateEnabled;
-       //enableDoNotDisturb = _activityServiceProvider.getDndEnabled;
+      enableMessageOn = _activityServiceProvider.getMessagesOnEnabled;
+      enableMotorOn = _activityServiceProvider.getMotorVibrateEnabled;
+      //enableDoNotDisturb = _activityServiceProvider.getDndEnabled;
     });
 
     if (_activityServiceProvider.getDndEnabled && _activityServiceProvider.getDNDEnabledTime.isNotEmpty) {
@@ -48,7 +48,7 @@ class DoNotDisturbState extends State<DoNotDisturb>{
       debugPrint('times>> $times');
       if(times.isNotEmpty){
         _startTime = TimeOfDay(hour: int.parse(times[0]),minute: int.parse(times[1]));
-         _endTime = TimeOfDay(hour: int.parse(times[2]),minute: int.parse(times[3]));
+        _endTime = TimeOfDay(hour: int.parse(times[2]),minute: int.parse(times[3]));
       }
     }
     setState(() { });
@@ -80,7 +80,8 @@ class DoNotDisturbState extends State<DoNotDisturb>{
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_outlined, color: Colors.black),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  //Navigator.of(context).pop();
+                  GlobalMethods.navigatePopBack();
                 },
               ),
               actions: const [],
@@ -123,7 +124,7 @@ class DoNotDisturbState extends State<DoNotDisturb>{
                             Transform.scale(
                               scale: 0.8,
                               child: CupertinoSwitch(
-                               // value: provider.getDndEnabled ?true: enableDoNotDisturb,
+                                // value: provider.getDndEnabled ?true: enableDoNotDisturb,
                                 value: provider.getDndEnabled,
                                 onChanged: (bool value) {
                                   provider.updateOnlyDoNotDisturbEnable(value);
@@ -327,8 +328,9 @@ class DoNotDisturbState extends State<DoNotDisturb>{
 
   void updateStatusResult(){
     GlobalMethods.showAlertDialogWithFunction(context,textDNDStatus,textDNDStatusMsg, okText, () async {
-      Navigator.of(context).pop();
-      Navigator.pop(context);
+      //Navigator.of(context).pop();
+      //Navigator.pop(context);
+      GlobalMethods.navigatePopBack();
     });
   }
 
@@ -336,22 +338,24 @@ class DoNotDisturbState extends State<DoNotDisturb>{
     GlobalMethods.showAlertDialogWithFunction(context, deviceDisconnected,
         deviceDisconnectedMsg, reconnectText, () async {
           //debugPrint("pressed_ok");
-          Navigator.of(context).pop();
+          //Navigator.of(context).pop();
+          GlobalMethods.navigatePopBack();
           //Utils.showWaiting(context, false);
           bool statusReconnect = await _activityServiceProvider.connectDeviceWithMacAddress(context);
           debugPrint('statusReconnect>>$statusReconnect');
           if (statusReconnect) {
-            Navigator.of(context).pop();
+            // Navigator.of(context).pop();
+            GlobalMethods.navigatePopBack();
           }
         });
   }
 
   Future<void> _selectStartTime({String? helpText, String? confirmText, String? cancelText}) async {
     final TimeOfDay? newTime = await showTimePicker(
-        context: context,
-        initialTime: _startTime,
-        initialEntryMode: TimePickerEntryMode.dial,
-        helpText: helpText,
+      context: context,
+      initialTime: _startTime,
+      initialEntryMode: TimePickerEntryMode.dial,
+      helpText: helpText,
       confirmText: confirmText,
       cancelText: cancelText,
     );

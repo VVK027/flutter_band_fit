@@ -8,7 +8,7 @@ class BandReminders extends StatefulWidget{
   State<StatefulWidget> createState() {
     return BandRemindersState();
   }
-  
+
 }
 class BandRemindersState extends State<BandReminders>{
 
@@ -33,9 +33,10 @@ class BandRemindersState extends State<BandReminders>{
         automaticallyImplyLeading: false,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_outlined, color: Colors.black),
-         onPressed: () {
-           Navigator.of(context).pop();
-         },
+          onPressed: () {
+            //Navigator.of(context).pop();
+            GlobalMethods.navigatePopBack();
+          },
         ),
         actions: const [],
       ),
@@ -73,7 +74,7 @@ class BandRemindersState extends State<BandReminders>{
                         padding: EdgeInsets.only(left: 0, top: 0,right: 4.0, bottom: 0.0),
                         child: Icon(
                           Icons.people_rounded,
-                         // Icons.personal_injury_outlined,
+                          // Icons.personal_injury_outlined,
                           color: Colors.black54,
                         ),
                       ),
@@ -157,7 +158,7 @@ class BandRemindersState extends State<BandReminders>{
             ),
 
             const Divider(
-               thickness: 1.0,
+              thickness: 1.0,
             ),
 
             GestureDetector(
@@ -203,7 +204,7 @@ class BandRemindersState extends State<BandReminders>{
                   ),
                   const Flexible(
                     fit: FlexFit.loose ,
-                      child: Text('The phone has an incoming call and the device will vibrate', style: TextStyle(fontSize: 14)),
+                    child: Text('The phone has an incoming call and the device will vibrate', style: TextStyle(fontSize: 14)),
                   ),
                 ],
               ),
@@ -307,5 +308,5 @@ class BandRemindersState extends State<BandReminders>{
       ),
     );
   }
-  
+
 }

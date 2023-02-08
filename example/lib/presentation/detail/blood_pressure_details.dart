@@ -26,15 +26,15 @@ class BloodPressureDetailsState extends State<BloodPressureDetails> {
   List<BPData> bpDataList =[];
   String highBPValue ='--', lowBPValue ='--';
 
-   final  _activityServiceProvider = Get.put(ActivityServiceProvider());
+  final  _activityServiceProvider = Get.put(ActivityServiceProvider());
   // TooltipBehavior _tooltipBehavior;
   List overAllBPData =[];
- // String lang;
+  // String lang;
   bool statusReconnected = false;
 
   @override
   void initState() {
-  // _activityServiceProvider = Provider.of<ActivityServiceProvider>(context, listen: false);
+    // _activityServiceProvider = Provider.of<ActivityServiceProvider>(context, listen: false);
 
     // _tooltipBehavior = TooltipBehavior(enable: true, canShowMarker: false);
     super.initState();
@@ -55,30 +55,30 @@ class BloodPressureDetailsState extends State<BloodPressureDetails> {
           String status = eventData['status'].toString();
           var jsonData = eventData['data'];
           debugPrint('jsonData>> $jsonData');
-           if (result == BandFitConstants.DEVICE_CONNECTED){
-             if (status == BandFitConstants.SC_SUCCESS) {
-               if (statusReconnected) {
-                 Navigator.pop(context);
-                 await startBPTest();
-               }
-             }
+          if (result == BandFitConstants.DEVICE_CONNECTED){
+            if (status == BandFitConstants.SC_SUCCESS) {
+              if (statusReconnected) {
+                GlobalMethods.navigatePopBack();
+                await startBPTest();
+              }
+            }
           }else if (result == BandFitConstants.BP_TEST_STARTED) {
             if (status == BandFitConstants.SC_SUCCESS) {
-             // Utils.showToastMessage(context,'Test Started');
-            // Utils.showToastMessage(context,Utils.tr(context, 'string_text_test_started'));
+              // Utils.showToastMessage(context,'Test Started');
+              // Utils.showToastMessage(context,Utils.tr(context, 'string_text_test_started'));
             }
           }else if (result == BandFitConstants.BP_TEST_FINISHED){
             if (status == BandFitConstants.SC_SUCCESS) {
-              Navigator.pop(context);
+              GlobalMethods.navigatePopBack();
             }
           }else if(result == BandFitConstants.BP_TEST_TIME_OUT){
-            Navigator.pop(context);
+            GlobalMethods.navigatePopBack();
             //Utils.showToastMessage(context,'BP Test TimeOut !');
-          // Utils.showToastMessage(context,Utils.tr(context, 'string_bp_test_time_out'));
+            // Utils.showToastMessage(context,Utils.tr(context, 'string_bp_test_time_out'));
           }else if(result == BandFitConstants.BP_TEST_ERROR){
-            Navigator.pop(context);
+            GlobalMethods.navigatePopBack();
             //Utils.showToastMessage(context,'Something went wrong, retry again..!');
-          // Utils.showToastMessage(context,Utils.tr(context, 'string_something_went_wrong'));
+            // Utils.showToastMessage(context,Utils.tr(context, 'string_something_went_wrong'));
           }else if (result == BandFitConstants.BP_RESULT){
             if (status == BandFitConstants.SC_SUCCESS) {
               String high = jsonData['high'].toString();
@@ -87,7 +87,7 @@ class BloodPressureDetailsState extends State<BloodPressureDetails> {
               if(high!=null ){
                 updateBPData(high, low, time);
               }else{
-                Navigator.pop(context);
+                GlobalMethods.navigatePopBack();
               }
             }
           }else{
@@ -208,7 +208,7 @@ class BloodPressureDetailsState extends State<BloodPressureDetails> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_outlined, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
-        //  onPressed: () => goDashboardPage(),
+          //  onPressed: () => goDashboardPage(),
         ),
         //iconTheme: IconThemeData(color: Colors.white),
         title: Text(widget.displayTitle,
@@ -231,30 +231,30 @@ class BloodPressureDetailsState extends State<BloodPressureDetails> {
         ],
       ),
       bottomNavigationBar: Container(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height*0.06, left: 10,right: 10),
-          width: double.infinity,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              primary: const Color(0xff2786fb),// // background
-              onPrimary: Colors.white, // foreground
-              onSurface: const Color(0xFFCCCCCC),
-              textStyle: const TextStyle(fontSize: 18.0),
-            ),
-            onPressed: () async {
-              bool isConnected = await _activityServiceProvider.checkIsDeviceConnected();
-              if (isConnected) {
-                await startBPTest();
-              }else{
-                retryConnection(context);
-              }
-            },
-            child: const Text(textStart,
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-            // color: Colors.blue,
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).size.height*0.06, left: 10,right: 10),
+        width: double.infinity,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: const Color(0xff2786fb),// // background
+            onPrimary: Colors.white, // foreground
+            onSurface: const Color(0xFFCCCCCC),
+            textStyle: const TextStyle(fontSize: 18.0),
           ),
+          onPressed: () async {
+            bool isConnected = await _activityServiceProvider.checkIsDeviceConnected();
+            if (isConnected) {
+              await startBPTest();
+            }else{
+              retryConnection(context);
+            }
+          },
+          child: const Text(textStart,
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          // color: Colors.blue,
+        ),
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
@@ -387,8 +387,8 @@ class BloodPressureDetailsState extends State<BloodPressureDetails> {
               padding: const EdgeInsets.all(4.0),
               width: double.infinity,
               child: Card(
-               // margin:const EdgeInsets.all(2.0),
-               // elevation: 0.5,
+                // margin:const EdgeInsets.all(2.0),
+                // elevation: 0.5,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -587,7 +587,7 @@ class BloodPressureDetailsState extends State<BloodPressureDetails> {
               ),
             ),
 
-           /* Visibility(
+            /* Visibility(
               visible:  bpDataList.isNotEmpty ? true : false,
               child: Container(
                 child: Column(
@@ -724,14 +724,15 @@ class BloodPressureDetailsState extends State<BloodPressureDetails> {
     String status = await _activityServiceProvider.startBloodPressure();
     if (status == BandFitConstants.SC_INIT) {
       //Utils.showWaiting(context, false);
-    // Utils.showToastMessage(context, Utils.tr(context, 'string_text_test_started'));
+      // Utils.showToastMessage(context, Utils.tr(context, 'string_text_test_started'));
     }
   }
 
   void retryConnection(BuildContext context) {
     GlobalMethods.showAlertDialogWithFunction(context, deviceDisconnected, deviceDisconnectedMsg, reconnectText, () async {
       debugPrint("pressed_ok");
-      Navigator.of(context).pop();
+      //Navigator.of(context).pop();
+      GlobalMethods.navigatePopBack();
       //Utils.showLoading(context, false, title: reconnectingText);
       bool statusReconnect = await _activityServiceProvider.connectDeviceWithMacAddress(context);
       print("statusReconnect>> $statusReconnect");
@@ -751,11 +752,11 @@ class BloodPressureDetailsState extends State<BloodPressureDetails> {
         //color: inCompletedColor,
         color: bpColor,
         markerSettings: const MarkerSettings(
-          color: Colors.black,
-          width: 1
+            color: Colors.black,
+            width: 1
         ),
         // enableTooltip: true,
-         width: 0.1,
+        width: 0.1,
 
       )
     ];
@@ -793,8 +794,8 @@ class BloodPressureDetailsState extends State<BloodPressureDetails> {
       debugPrint('addData>> $addData');
       overAllBPData.add(addData);
       await setDateTitle(dateTime);
-      Navigator.pop(context);
-    // Utils.showToastMessage(context,Utils.tr(context, 'string_test_completed'));
+      GlobalMethods.navigatePopBack();
+      // Utils.showToastMessage(context,Utils.tr(context, 'string_test_completed'));
       await _activityServiceProvider.updateBPressureData(high, low,calender, timeMin, overAllBPData);
       //update bp in the backend.
     }

@@ -6,17 +6,17 @@ class ProfileUpdate extends StatefulWidget {
   final String userFullName, gender, height, weight, dob;
   final String waist, bloodGroup;
   final bool fromSettings;
-  
+
   const ProfileUpdate(
       {Key? key,
-      required this.userFullName,
-      required this.gender,
-      required this.height,
-      required this.weight,
-      required this.dob,
-      required this.waist,
-      required this.bloodGroup,
-      required this.fromSettings}) : super(key: key);
+        required this.userFullName,
+        required this.gender,
+        required this.height,
+        required this.weight,
+        required this.dob,
+        required this.waist,
+        required this.bloodGroup,
+        required this.fromSettings}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -44,7 +44,7 @@ class ProfileUpdateState extends State<ProfileUpdate> {
   List<String> defaultHeightList = [];
   List<String> defaultWeightList = [];
 
- final  _activityServiceProvider = Get.put(ActivityServiceProvider());
+  final  _activityServiceProvider = Get.put(ActivityServiceProvider());
 
   @override
   void initState() {
@@ -189,7 +189,7 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                 ),
               ),
               const Divider(// thickness: 1.0,
-                  ),
+              ),
               GestureDetector(
                 onTap: () async {
                   // DateTime tempPickedDate =  DateTime.now();
@@ -223,7 +223,7 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                 ),
               ),
               const Divider(// thickness: 1.0,
-                  ),
+              ),
               GestureDetector(
                 onTap: () async {
                   String? data = await selectHeight(_selectedHeight);
@@ -255,7 +255,7 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                 ),
               ),
               const Divider(// thickness: 1.0,
-                  ),
+              ),
               GestureDetector(
                 onTap: () async {
                   String? data = await selectWeight(_selectedWeight);
@@ -286,7 +286,7 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                 ),
               ),
               const Divider(// thickness: 1.0,
-                  ),
+              ),
               GestureDetector(
                 onTap: () async {},
                 child: Container(
@@ -329,7 +329,7 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                 ),
               ),
               const Divider(// thickness: 1.0,
-                  ),
+              ),
               GestureDetector(
                 onTap: () async {
                   //String selectedGoal ='';
@@ -372,8 +372,8 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                 ),
               ),
               const Divider(
-                  // thickness: 1.0,
-                  ),
+                // thickness: 1.0,
+              ),
               GestureDetector(
                 onTap: () async {
                   //String selectedGoal ='';
@@ -405,8 +405,8 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                 ),
               ),
               const Divider(
-                  // thickness: 1.0,
-                  ),
+                // thickness: 1.0,
+              ),
               GestureDetector(
                 onTap: () async {
                   //String selectedGoal ='';
@@ -437,8 +437,8 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                 ),
               ),
               const Divider(
-                  // thickness: 1.0,
-                  ),
+                // thickness: 1.0,
+              ),
               GestureDetector(
                 onTap: () {
                   /*showRoundedModalBottomSheet(
@@ -480,8 +480,8 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                 ),
               ),
               const Divider(
-                  // thickness: 1.0,
-                  ),
+                // thickness: 1.0,
+              ),
               const SizedBox(
                 height: 21.0,
               ),
@@ -529,8 +529,8 @@ class ProfileUpdateState extends State<ProfileUpdate> {
             String dob = submitDateOfBirth.isEmpty? _selectedDate.toString(): submitDateOfBirth;
             await _activityServiceProvider.updateWatchProfile(_selectedHeight, _selectedWeight, _gender.toLowerCase(), dob);
 
-           // bool zeroValue = int.parse(widget.height.toString()) == 0 && int.parse(widget.weight.toString()) == 0;
-           // bool changedValue = (int.parse(widget.height.toString()) != int.parse(_selectedHeight)) && (int.parse(widget.weight.toString()) != int.parse(_selectedWeight));
+            // bool zeroValue = int.parse(widget.height.toString()) == 0 && int.parse(widget.weight.toString()) == 0;
+            // bool changedValue = (int.parse(widget.height.toString()) != int.parse(_selectedHeight)) && (int.parse(widget.weight.toString()) != int.parse(_selectedWeight));
 
             bool changedHeight = int.parse(widget.height.toString()) != int.parse(_selectedHeight);
             bool changedWeight = int.parse(widget.weight.toString()) != int.parse(_selectedWeight);
@@ -551,12 +551,12 @@ class ProfileUpdateState extends State<ProfileUpdate> {
               await updateUserDOBGender(submitDateOfBirth, _gender);
             }else if(widget.gender != _gender ){
               // update only gender
-             // print('update gender');
+              // print('update gender');
               await updateUserDOBGender('', _gender);
             }else if (submitDateOfBirth.isNotEmpty){
               await updateUserDOBGender(submitDateOfBirth, '');
             }//else if (submitDateOfBirth.isEmpty){
-             // print('do nothing with api');
+            // print('do nothing with api');
             //}
 
             if (isConnected) {
@@ -576,7 +576,8 @@ class ProfileUpdateState extends State<ProfileUpdate> {
               //     (_) => false);
             } else {
               if (widget.fromSettings) {
-                Navigator.of(context).pop();
+                // Navigator.of(context).pop();
+                GlobalMethods.navigatePopBack();
               } else {
                 // Navigator.push(context,
                 //   MaterialPageRoute(
@@ -626,7 +627,8 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                     CupertinoButtonWidget(
                       title:cancelText,
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        // Navigator.of(context).pop();
+                        GlobalMethods.navigatePopBack();
                       },
                     ),
                     CupertinoButtonWidget(
@@ -683,7 +685,8 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                     CupertinoButtonWidget(
                       title:cancelText,
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        // Navigator.of(context).pop();
+                        GlobalMethods.navigatePopBack();
                       },
                     ),
                     CupertinoButtonWidget(
@@ -718,7 +721,7 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                       }
                     },
                     selectionOverlay:
-                        const CupertinoPickerDefaultSelectionOverlay(),
+                    const CupertinoPickerDefaultSelectionOverlay(),
                     backgroundColor: Colors.white,
                     itemExtent: 28,
                     scrollController: FixedExtentScrollController(
@@ -759,7 +762,8 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                     CupertinoButtonWidget(
                       title:cancelText,
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        // Navigator.of(context).pop();
+                        GlobalMethods.navigatePopBack();
                       },
                     ),
                     CupertinoButtonWidget(
@@ -789,7 +793,7 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                       tempSelectedHeight = (value + heightMin).toString();
                     },
                     selectionOverlay:
-                        const CupertinoPickerDefaultSelectionOverlay(),
+                    const CupertinoPickerDefaultSelectionOverlay(),
                     backgroundColor: Colors.white,
                     itemExtent: 28,
                     scrollController: FixedExtentScrollController(
@@ -827,7 +831,8 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                     CupertinoButtonWidget(
                       title:cancelText,
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        //Navigator.of(context).pop();
+                        GlobalMethods.navigatePopBack();
                       },
                     ),
                     CupertinoButtonWidget(
@@ -857,7 +862,7 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                       tempSelectedWeight = (value + weightMin).toString();
                     },
                     selectionOverlay:
-                        const CupertinoPickerDefaultSelectionOverlay(),
+                    const CupertinoPickerDefaultSelectionOverlay(),
                     backgroundColor: Colors.white,
                     itemExtent: 28,
                     scrollController: FixedExtentScrollController(
@@ -895,7 +900,8 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                     CupertinoButtonWidget(
                       title:cancelText,
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        //Navigator.of(context).pop();
+                        GlobalMethods.navigatePopBack();
                       },
                     ),
                     CupertinoButtonWidget(
@@ -928,12 +934,12 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                           screenOffSecondsList[value].toString();
                     },
                     selectionOverlay:
-                        const CupertinoPickerDefaultSelectionOverlay(),
+                    const CupertinoPickerDefaultSelectionOverlay(),
                     backgroundColor: Colors.white,
                     itemExtent: 28,
                     scrollController: FixedExtentScrollController(
                         initialItem:
-                            screenOffSecondsList.indexOf(tempScreenOffSecs)),
+                        screenOffSecondsList.indexOf(tempScreenOffSecs)),
                     //scrollController: FixedExtentScrollController(
                     //initialItem: int.parse(tempScreenOffSecs),
                     //  initialItem: int.parse(tempScreenOffSecs) - screenOffTimeMin
@@ -972,7 +978,8 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                     CupertinoButtonWidget(
                       title:cancelText,
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        //Navigator.of(context).pop();
+                        GlobalMethods.navigatePopBack();
                       },
                     ),
                     CupertinoButtonWidget(
@@ -1004,7 +1011,7 @@ class ProfileUpdateState extends State<ProfileUpdate> {
                       tempUnits = temperatureUnitsList[value].toString();
                     },
                     selectionOverlay:
-                        const CupertinoPickerDefaultSelectionOverlay(),
+                    const CupertinoPickerDefaultSelectionOverlay(),
                     backgroundColor: Colors.white,
                     itemExtent: 28,
                     scrollController: FixedExtentScrollController(

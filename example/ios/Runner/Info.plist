@@ -68,12 +68,16 @@
     <string>NSCameraUsageDescription</string>
     <key>NSContactsUsageDescription</key>
     <string>NSContactsUsageDescription</string>
+    <key>NSHealthShareUsageDescription</key>
+    <string>Need your apple health app data for better health track and information updates.</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>Need your apple health app data for better health track and information updates.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Need Location permission</string>
+    <string>Turns on your location services which allow us to show you nearby places</string>
     <key>NSLocationAlwaysUsageDescription</key>
-    <string>Need Location permission</string>
+    <string>Turns on your location services which allow us to show you nearby places</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Need Location permission</string>
+    <string>Your location is used to provide turn-by-turn directions to your destination.</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>NSMicrophoneUsageDescription</string>
     <key>NSMotionUsageDescription</key>

@@ -3,7 +3,6 @@ import 'package:flutter_band_fit_app/custom/battery_indicator.dart';
 import 'package:flutter_band_fit_app/presentation/add_device.dart';
 import 'package:flutter_band_fit_app/presentation/detail/activity_monitor.dart';
 import 'package:flutter_band_fit_app/presentation/detail/band_reminders.dart';
-import 'package:flutter_band_fit_app/presentation/detail/dial_face_details.dart';
 import 'package:flutter_band_fit_app/presentation/detail/do_not_disturb.dart';
 import 'package:flutter_band_fit_app/presentation/firmware_upgrade.dart';
 import 'package:flutter_band_fit_app/presentation/vital_main.dart';
@@ -11,9 +10,7 @@ import 'package:get/get.dart';
 
 
 class DeviceSettings extends StatefulWidget {
-  final bool fromLogin;
-
-  const DeviceSettings({Key? key, required this.fromLogin}) : super(key: key);
+  const DeviceSettings({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -42,7 +39,7 @@ class DeviceSettingsState extends State<DeviceSettings> {
 
     } else {
       //addDeviceConnectionListener();
-       fetchDeviceData();
+      fetchDeviceData();
     }
   }
 
@@ -56,7 +53,7 @@ class DeviceSettingsState extends State<DeviceSettings> {
       // bool statusVersion = await _activityServiceProvider.fetchDeviceVersion();
     } else {
       // load from the sp and show a reconnect popup.
-     /* if (_activityServiceProvider.getDeviceConnected && _activityServiceProvider.getDeviceMacAddress.isNotEmpty) {
+      /* if (_activityServiceProvider.getDeviceConnected && _activityServiceProvider.getDeviceMacAddress.isNotEmpty) {
         retryConnection(context);
       }*/
       /*
@@ -74,45 +71,47 @@ class DeviceSettingsState extends State<DeviceSettings> {
   void retryConnection(BuildContext context) {
     GlobalMethods.showAlertDialogWithFunction(context, deviceDisconnected,
         deviceDisconnectedMsg, reconnectText, () async {
-      //debugPrint("pressed_ok");
-      Navigator.of(context).pop();
-      //Utils.showWaiting(context, false);
-      bool statusReconnect = await _activityServiceProvider.connectDeviceWithMacAddress(context);
-      debugPrint('statusReconnect>>$statusReconnect');
-      if (statusReconnect) {
-        Navigator.of(context).pop();
-      }
-    });
+          //debugPrint("pressed_ok");
+          //Navigator.of(context).pop();
+          GlobalMethods.navigatePopBack();
+          //Utils.showWaiting(context, false);
+          bool statusReconnect = await _activityServiceProvider.connectDeviceWithMacAddress(context);
+          debugPrint('statusReconnect>>$statusReconnect');
+          if (statusReconnect) {
+            //Navigator.of(context).pop();
+            GlobalMethods.navigatePopBack();
+          }
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     debugPrint('_activityServiceProvider.getDeviceConnected>> ${_activityServiceProvider.getDeviceConnected}');
     debugPrint('_activityServiceProvider.getHealthConnected>> ${_activityServiceProvider.getHealthConnected}');
-    
+
     return GetBuilder<ActivityServiceProvider>(
         builder: (provider) {
-      return WillPopScope(
-        onWillPop: () => goDashboardPage(),
-        child: Scaffold(
-          //backgroundColor: Colors.white,
-          appBar: AppBar(
-            //title: Text('Devices and Accounts'),
-            backgroundColor: Colors.white,
-            // elevation: 0,
-            title: const Text(textSetOptions,
-              style: TextStyle(
-                color: Colors.black,
+          return WillPopScope(
+            onWillPop: () => goDashboardPage(),
+            child: Scaffold(
+              //backgroundColor: Colors.white,
+              appBar: AppBar(
+                //title: Text('Devices and Accounts'),
+                backgroundColor: Colors.white,
+                // elevation: 0,
+                title: const Text(textSetOptions,
+                  style: TextStyle(
+                    color: Colors.black,
+                  ),
+                ),
+                automaticallyImplyLeading: false,
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_outlined, color: Colors.black),
+                  onPressed: () => goDashboardPage(),
+                ),
+                actions: const [],
               ),
-            ),
-            automaticallyImplyLeading: false,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_outlined, color: Colors.black),
-              onPressed: () => goDashboardPage(),
-            ),
-            actions: const [],
-          ),
-          /*bottomNavigationBar: Visibility(
+              /*bottomNavigationBar: Visibility(
           visible: _activityServiceProvider.isDeviceConnected,
           child: Container(
             margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -135,95 +134,95 @@ class DeviceSettingsState extends State<DeviceSettings> {
             ),
           ),
         ),*/
-          body: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                (provider.getDeviceConnected)
-                    ? Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            const SizedBox(
-                              height: 4.0,
-                            ),
-                            Container(
-                              margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-                              child: Card(
-                                elevation: 2.0,
-                                margin: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      //margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                         /* Icon(
+              body: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    (provider.getDeviceConnected)
+                        ? Container(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          const SizedBox(
+                            height: 4.0,
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                            child: Card(
+                              elevation: 2.0,
+                              margin: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    //margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        /* Icon(
                                             Icons.watch_outlined,
                                             color: Colors.black,
                                             size: 30.0,
                                           ),*/
-                                          Image.asset(
-                                            'assets/fit/watch_selected.png',
-                                            width: 44.0,
-                                            height: 44.0,
-                                            fit: BoxFit.fill,
-                                          ),
-                                          Expanded(
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.max,
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: [
-                                                Padding(
-                                                  padding: const EdgeInsets.all(8.0),
-                                                  child: Column(
-                                                    //mainAxisAlignment: MainAxisAlignment.start,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Padding(
-                                                        padding: const EdgeInsets.all(2.0),
-                                                        child: Text(provider.getDeviceSWName,
-                                                            style: const TextStyle(fontWeight: FontWeight.w500,
-                                                                fontSize: 16.0)),
-                                                      ),
-                                                      Padding(
-                                                        padding: const EdgeInsets.all(2.0),
-                                                        child: Text(provider.getDeviceMacAddress ?? '',
-                                                            style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300)),
-                                                      ),
-                                                    ],
-                                                  ),
+                                        Image.asset(
+                                          'assets/fit/watch_selected.png',
+                                          width: 44.0,
+                                          height: 44.0,
+                                          fit: BoxFit.fill,
+                                        ),
+                                        Expanded(
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Column(
+                                                  //mainAxisAlignment: MainAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Padding(
+                                                      padding: const EdgeInsets.all(2.0),
+                                                      child: Text(provider.getDeviceSWName,
+                                                          style: const TextStyle(fontWeight: FontWeight.w500,
+                                                              fontSize: 16.0)),
+                                                    ),
+                                                    Padding(
+                                                      padding: const EdgeInsets.all(2.0),
+                                                      child: Text(provider.getDeviceMacAddress ?? '',
+                                                          style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300)),
+                                                    ),
+                                                  ],
                                                 ),
-                                                const Spacer(),
-                                                TextButton(
-                                                  style: TextButton.styleFrom(
-                                                    //fixedSize: Size(86.0, 16.0),
-                                                    primary: Colors.blue,
-                                                    //onSurface: Colors.red,
-                                                  ),
-                                                  onPressed: () async {
-                                                    // Utils.showWaiting(context, false);
-                                                    //Utils.showToastMessage(context, '${_activityServiceProvider.getDeviceSWName} is disconnecting..!');
-                                                    bool isDeviceDisconnected = await _activityServiceProvider.disconnectDevice();
-                                                    debugPrint("isDeviceDisconnected>>> $isDeviceDisconnected");
-                                                    refreshPage(isDeviceDisconnected);
+                                              ),
+                                              const Spacer(),
+                                              TextButton(
+                                                style: TextButton.styleFrom(
+                                                  //fixedSize: Size(86.0, 16.0),
+                                                  foregroundColor: Colors.blue,
+                                                  //onSurface: Colors.red,
+                                                ),
+                                                onPressed: () async {
+                                                  // Utils.showWaiting(context, false);
+                                                  //Utils.showToastMessage(context, '${_activityServiceProvider.getDeviceSWName} is disconnecting..!');
+                                                  bool isDeviceDisconnected = await _activityServiceProvider.disconnectDevice();
+                                                  debugPrint("isDeviceDisconnected>>> $isDeviceDisconnected");
+                                                  refreshPage(isDeviceDisconnected);
 
-                                                    /*if (isReconnect) {
+                                                  /*if (isReconnect) {
                                                     Utils.showWaiting(context, false);
                                                     bool statusReconnect =  await _activityServiceProvider.connectDeviceWithMacAddress(context);
                                                     if (!statusReconnect) {
-                                                      Navigator.pop(context);
+                                                      GlobalMethods.navigatePopBack();
                                                     }else{
-                                                      Navigator.pop(context);
+                                                      GlobalMethods.navigatePopBack();
                                                       await updateDeviceConnection(true);
                                                     }
                                                   }else{
@@ -232,74 +231,208 @@ class DeviceSettingsState extends State<DeviceSettings> {
                                                     debugPrint("isDeviceDisconnected>>> $isDeviceDisconnected");
                                                     refreshPage();
                                                   }*/
-                                                  },
-                                                  child: const Text(
-                                                    textDisconnect,
-                                                    //isReconnect ? Utils.tr(context, 'string_text_reconnect'): Utils.tr(context, 'string_text_disconnect'),
-                                                    //'Disconnect',
-                                                    style: TextStyle(
-                                                        color: Colors.blue,
-                                                        //decoration: TextDecoration.underline,
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 14.0),
-                                                  ),
+                                                },
+                                                child: const Text(
+                                                  textDisconnect,
+                                                  //isReconnect ? Utils.tr(context, 'string_text_reconnect'): Utils.tr(context, 'string_text_disconnect'),
+                                                  //'Disconnect',
+                                                  style: TextStyle(
+                                                      color: Colors.blue,
+                                                      //decoration: TextDecoration.underline,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 14.0),
                                                 ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        const Padding(
+                                          padding: EdgeInsets.all(2.0),
+                                          child: Text('$textVersion: ',
+                                              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500)),
+                                        ),
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(2.0),
+                                            child: Text(_activityServiceProvider.getDeviceVersion,
+                                                style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w400)),
+                                          ),
+                                        ),
+                                        // Spacer(),
+                                        // Spacer(),
+                                        const Padding(
+                                          padding: EdgeInsets.all(2.0),
+                                          child: Text('$textBattery: ',
+                                              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500)),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(2.0),
+                                          child: BatteryIndicator(
+                                            style: BatteryIndicatorStyle.values[1], // 0 or 1 for style selection
+                                            size: 20.0,
+                                            ratio: 2.7,
+                                            batteryLevel: _activityServiceProvider.batteryPercentage,
+                                            showPercentNum: true,
+                                            percentNumSize: 12,
+                                            colorful: true,
+                                            mainColor: Colors.grey.withOpacity(0.7),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                        : (provider.getHealthConnected)
+                        ? Container(
+                      margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                      child: Card(
+                        elevation: 2.0,
+                        margin: const EdgeInsets.all(4.0),
+                        child: Container(
+                          //margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                          padding: const EdgeInsets.all(4.0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Image.asset(Platform.isIOS ? 'assets/fit/apple_health.png': 'assets/fit/gfit.png',
+                                  width: 30.0,
+                                  height: 30.0,
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                              Expanded(
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Column(
+                                        //mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(2.0),
+                                            child: Text(Platform.isIOS ? textAppleHealth : textGoogleFit, //'Google Fit',
+                                                style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(2.0),
+                                            child: Text(
+                                                (_activityServiceProvider.getDeviceMacAddress.contains('com'))
+                                                    ? _activityServiceProvider.getDeviceSWName
+                                                    : _activityServiceProvider.getDeviceMacAddress,
+                                                style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300)),
                                           ),
                                         ],
                                       ),
                                     ),
-                                    Container(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: [
-                                          const Padding(
-                                            padding: EdgeInsets.all(2.0),
-                                            child: Text('$textVersion: ',
-                                                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500)),
-                                          ),
-                                          Expanded(
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(2.0),
-                                              child: Text(_activityServiceProvider.getDeviceVersion,
-                                                  style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w400)),
-                                            ),
-                                          ),
-                                          // Spacer(),
-                                          // Spacer(),
-                                          const Padding(
-                                            padding: EdgeInsets.all(2.0),
-                                            child: Text('$textBattery: ',
-                                                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500)),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(2.0),
-                                            child: BatteryIndicator(
-                                              style: BatteryIndicatorStyle.values[1], // 0 or 1 for style selection
-                                              size: 20.0,
-                                              ratio: 2.7,
-                                              batteryLevel: _activityServiceProvider.batteryPercentage,
-                                              showPercentNum: true,
-                                              percentNumSize: 12,
-                                              colorful: true,
-                                              mainColor: Colors.grey.withOpacity(0.7),
-                                            ),
-                                          ),
-                                        ],
+                                    const Spacer(),
+                                    TextButton(
+                                      style: TextButton.styleFrom(
+                                        //fixedSize: Size(86.0, 16.0),
+                                        foregroundColor: Colors.blue,
+                                        //onSurface: Colors.red,
                                       ),
-                                    )
+                                      onPressed: () {
+                                        _activityServiceProvider.updateUserDeviceConnection(false, false, '', '');
+                                        refreshPage(false);
+                                      },
+                                      child: const Text(textUnlink,
+                                        style: TextStyle(color: Colors.blue, //decoration: TextDecoration.underline,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14.0),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                        : Container(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                            padding: const EdgeInsets.only(left: 8.0, top: 8.0),
+                            child: const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Text(
+                                  textNoDevicesConnected,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              // Get.to(() => const AddDevice());
+                              GlobalMethods.navigateTo(const AddDevice());
+
+                            },
+                            child: Card(
+                              elevation: 2.0,
+                              margin: const EdgeInsets.all(4.0),
+                              child: Container(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    /* Icon(
+                                            Icons.watch_sharp,
+                                            color: Colors.black,
+                                            size: 30.0,
+                                          ),*/
+                                    Image.asset(
+                                      'assets/fit/watch.png',
+                                      width: 35.0,
+                                      height: 35.0,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    const Expanded(
+                                      child: Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(addSmartWatchText),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
                             ),
-                          ],
-                        ),
-                      )
-                    : (provider.getHealthConnected)
-                        ? Container(
+                          ),
+                          Container(
                             margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
                             child: Card(
                               elevation: 2.0,
@@ -314,7 +447,8 @@ class DeviceSettingsState extends State<DeviceSettings> {
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.all(4.0),
-                                      child: Image.asset(Platform.isIOS ? 'assets/fit/apple_health.png': 'assets/fit/gfit.png',
+                                      child: Image.asset(
+                                        Platform.isIOS ? 'assets/fit/apple_health.png':'assets/fit/gfit.png',
                                         width: 30.0,
                                         height: 30.0,
                                         fit: BoxFit.fill,
@@ -334,16 +468,17 @@ class DeviceSettingsState extends State<DeviceSettings> {
                                               children: [
                                                 Padding(
                                                   padding: const EdgeInsets.all(2.0),
-                                                  child: Text(Platform.isIOS ? textAppleHealth : textGoogleFit, //'Google Fit',
-                                                      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
+                                                  child: Text(Platform.isIOS ? textAppleHealth:textGoogleFit,
+                                                      //'Google Fit',
+                                                      style: const TextStyle(
+                                                          fontWeight: FontWeight.w500,
+                                                          fontSize: 16.0)),
                                                 ),
                                                 Padding(
                                                   padding: const EdgeInsets.all(2.0),
-                                                  child: Text(
-                                                      (_activityServiceProvider.getDeviceMacAddress.contains('com'))
-                                                          ? _activityServiceProvider.getDeviceSWName
-                                                          : _activityServiceProvider.getDeviceMacAddress,
-                                                      style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300)),
+                                                  child: Text(provider.getDeviceSWName,
+                                                      style: const TextStyle(fontSize: 12.0,
+                                                          fontWeight: FontWeight.w300)),
                                                 ),
                                               ],
                                             ),
@@ -352,17 +487,17 @@ class DeviceSettingsState extends State<DeviceSettings> {
                                           TextButton(
                                             style: TextButton.styleFrom(
                                               //fixedSize: Size(86.0, 16.0),
-                                              primary: Colors.blue,
+                                              foregroundColor: Colors.blue,
                                               //onSurface: Colors.red,
                                             ),
                                             onPressed: () {
-                                              _activityServiceProvider.updateUserDeviceConnection(false, false, '', '');
-                                              refreshPage(false);
+                                              // Get.to(() =>  AppleGoogleBind(deviceTypeName: provider.getDeviceSWName));
+                                              // refreshPage();
                                             },
-                                            child: const Text(textUnlink,
-                                              style: TextStyle(color: Colors.blue, //decoration: TextDecoration.underline,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 14.0),
+                                            child: const Text(textLink, //'Link',
+                                              style: TextStyle(color: Colors.blue,
+                                                  //decoration: TextDecoration.underline,
+                                                  fontWeight: FontWeight.bold, fontSize: 14.0),
                                             ),
                                           ),
                                         ],
@@ -373,919 +508,789 @@ class DeviceSettingsState extends State<DeviceSettings> {
                               ),
                             ),
                           )
-                        : Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                      padding: const EdgeInsets.only(
+                        left: 8.0,
+                        top: 8.0,
+                      ),
+                      child: const Text(
+                        textSettings,
+                        style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.0),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        String data = await GlobalMethods.selectGoalSteps(context, _activityServiceProvider.getTargetedSteps);
+                        if (data.isNotEmpty) {
+                          debugPrint('selectedGoal>> $data');
+                          _activityServiceProvider.updateTargetedSteps(data);
+                          refreshPage(false);
+                        }
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                        child: Card(
+                          elevation: 2.0,
+                          margin: const EdgeInsets.all(4.0),
+                          child: Container(
+                            // margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                            padding: const EdgeInsets.all(4.0),
+                            child: Row(
                               mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Container(
-                                  margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-                                  padding: const EdgeInsets.only(left: 8.0, top: 8.0),
-                                  child: const Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        textNoDevicesConnected,
-                                        style: TextStyle(
-                                          color: Colors.black,
+                                Padding(
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: Image.asset('assets/fit/goal_right.png',
+                                    width: 40.0,
+                                    height: 40.0,
+                                    fit: BoxFit.fill,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Column(
+                                          //mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                          children: [
+                                            const Padding(
+                                              padding: EdgeInsets.all(2.0),
+                                              child: Text(textGoal,
+                                                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(2.0),
+                                              child: Text(
+                                                  '${GlobalMethods.formatNumber(int.parse(_activityServiceProvider.getTargetedSteps))} $textSteps',
+                                                  style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300)),
+                                            ),
+                                          ],
                                         ),
-                                        textAlign: TextAlign.center,
                                       ),
-                                    ),
+                                    ],
                                   ),
                                 ),
-                                GestureDetector(
-                                  onTap: () {
-                                    Get.to(() => const AddDevice());
-                                  },
-                                  child: Card(
-                                    elevation: 2.0,
-                                    margin: const EdgeInsets.all(4.0),
-                                    child: Container(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                         /* Icon(
-                                            Icons.watch_sharp,
-                                            color: Colors.black,
-                                            size: 30.0,
-                                          ),*/
-                                          Image.asset(
-                                            'assets/fit/watch.png',
-                                            width: 35.0,
-                                            height: 35.0,
-                                            fit: BoxFit.fill,
-                                          ),
-                                          const Expanded(
-                                            child: Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text(addSmartWatchText),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                const Padding(
+                                  padding: EdgeInsets.all(4.0),
+                                  child: Icon(
+                                    Icons.arrow_forward_ios_outlined,
+                                    color: Colors.black38,
+                                    size: 18.0,
                                   ),
                                 ),
-                                Container(
-                                  margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-                                  child: Card(
-                                    elevation: 2.0,
-                                    margin: const EdgeInsets.all(4.0),
-                                    child: Container(
-                                      //margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(4.0),
-                                            child: Image.asset(
-                                              Platform.isIOS ? 'assets/fit/apple_health.png':'assets/fit/gfit.png',
-                                              width: 30.0,
-                                              height: 30.0,
-                                              fit: BoxFit.fill,
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.max,
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: [
-                                                Padding(
-                                                  padding: const EdgeInsets.all(4.0),
-                                                  child: Column(
-                                                    //mainAxisAlignment: MainAxisAlignment.start,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Padding(
-                                                        padding: const EdgeInsets.all(2.0),
-                                                        child: Text(Platform.isIOS ? textAppleHealth:textGoogleFit,
-                                                            //'Google Fit',
-                                                            style: const TextStyle(
-                                                                fontWeight: FontWeight.w500,
-                                                                fontSize: 16.0)),
-                                                      ),
-                                                      Padding(
-                                                        padding: const EdgeInsets.all(2.0),
-                                                        child: Text(provider.getDeviceSWName,
-                                                            style: const TextStyle(fontSize: 12.0,
-                                                                fontWeight: FontWeight.w300)),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                const Spacer(),
-                                                TextButton(
-                                                  style: TextButton.styleFrom(
-                                                    //fixedSize: Size(86.0, 16.0),
-                                                    primary: Colors.blue,
-                                                    //onSurface: Colors.red,
-                                                  ),
-                                                  onPressed: () {
-                                                   // Get.to(() =>  AppleGoogleBind(deviceTypeName: provider.getDeviceSWName));
-                                                    // refreshPage();
-                                                  },
-                                                  child: const Text(textLink, //'Link',
-                                                    style: TextStyle(color: Colors.blue,
-                                                        //decoration: TextDecoration.underline,
-                                                        fontWeight: FontWeight.bold, fontSize: 14.0),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                )
                               ],
                             ),
                           ),
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-                  padding: const EdgeInsets.only(
-                    left: 8.0,
-                    top: 8.0,
-                  ),
-                  child: const Text(
-                    textSettings,
-                    style: TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16.0),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () async {
-                    String data = await GlobalMethods.selectGoalSteps(context, _activityServiceProvider.getTargetedSteps);
-                    if (data.isNotEmpty) {
-                      debugPrint('selectedGoal>> $data');
-                      _activityServiceProvider.updateTargetedSteps(data);
-                      refreshPage(false);
-                    }
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-                    child: Card(
-                      elevation: 2.0,
-                      margin: const EdgeInsets.all(4.0),
-                      child: Container(
-                        // margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-                        padding: const EdgeInsets.all(4.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(2.0),
-                              child: Image.asset('assets/fit/goal_right.png',
-                                width: 40.0,
-                                height: 40.0,
-                                fit: BoxFit.fill,
-                              ),
-                            ),
-                            Expanded(
+                        ),
+                      ),
+                    ),
+                    Visibility(
+                      visible: true,
+                      //visible: provider.getDeviceConnected,
+                      child: GestureDetector(
+                        onTap: () {
+                          //debugPrint('_selectedSteps>>> $_selectedSteps');
+                          // Get.to(() =>  ProfileUpdate(
+                          //   userFullName: currentUserDetails.firstName + ' ' + currentUserDetails.lastName,
+                          //   gender: _activityServiceProvider.getUserGender,
+                          //   height: _activityServiceProvider.getUserHeight,
+                          //   weight: _activityServiceProvider.getUserWeight,
+                          //   dob: _activityServiceProvider.getUserDOB,
+                          //   waist: currentUserDetails.waist,
+                          //   bloodGroup: currentUserDetails.bloodGroup,
+                          //   fromSettings: true,
+                          // ));
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 2.0),
+                          child: Card(
+                            elevation: 2.0,
+                            margin: const EdgeInsets.all(4.0),
+                            child: Container(
+                              padding: const EdgeInsets.all(4.0),
                               child: Row(
                                 mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Column(
-                                      //mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: Image.asset(
+                                      'assets/fit/smart_profile.png',
+                                      width: 40.0,
+                                      height: 40.0,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    /*child: Icon(
+                                  Icons.person_pin_outlined,
+                                  color: Colors.black,
+                                  size: 32.0,
+                                ),*/
+                                  ),
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
-                                        const Padding(
-                                          padding: EdgeInsets.all(2.0),
-                                          child: Text(textGoal,
-                                              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
-                                        ),
                                         Padding(
-                                          padding: const EdgeInsets.all(2.0),
-                                          child: Text(
-                                              '${GlobalMethods.formatNumber(int.parse(_activityServiceProvider.getTargetedSteps))} $textSteps',
-                                              style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300)),
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: Column(
+                                            //mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              const Padding(
+                                                padding: EdgeInsets.all(2.0),
+                                                child: Text(textSmartProfile,
+                                                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.all(2.0),
+                                                child: Row(
+                                                  // mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                  children: [
+                                                    const Text('$textBMI : ',
+                                                      style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 4.0,
+                                                    ),
+                                                    Text(_activityServiceProvider.getUserBMI,
+                                                      style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 6.0,
+                                                    ),
+                                                    Container(
+                                                      padding: const EdgeInsets.all(2.0),
+                                                      decoration: BoxDecoration(
+                                                          color: GlobalMethods.getColor(_activityServiceProvider.getUserBMIStatus),
+                                                          shape: BoxShape.circle),
+                                                      height: 12,
+                                                      width: 12,
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            ],
+                                          ),
                                         ),
                                       ],
+                                    ),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(4.0),
+                                    child: Icon(
+                                      Icons.arrow_forward_ios_outlined,
+                                      color: Colors.black38,
+                                      size: 18.0,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            const Padding(
-                              padding: EdgeInsets.all(4.0),
-                              child: Icon(
-                                Icons.arrow_forward_ios_outlined,
-                                color: Colors.black38,
-                                size: 18.0,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-                Visibility(
-                  visible: true,
-                  //visible: provider.getDeviceConnected,
-                  child: GestureDetector(
-                    onTap: () {
-                      //debugPrint('_selectedSteps>>> $_selectedSteps');
-                      // Get.to(() =>  ProfileUpdate(
-                      //   userFullName: currentUserDetails.firstName + ' ' + currentUserDetails.lastName,
-                      //   gender: _activityServiceProvider.getUserGender,
-                      //   height: _activityServiceProvider.getUserHeight,
-                      //   weight: _activityServiceProvider.getUserWeight,
-                      //   dob: _activityServiceProvider.getUserDOB,
-                      //   waist: currentUserDetails.waist,
-                      //   bloodGroup: currentUserDetails.bloodGroup,
-                      //   fromSettings: true,
-                      // ));
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 2.0),
-                      child: Card(
-                        elevation: 2.0,
-                        margin: const EdgeInsets.all(4.0),
+                    Visibility(
+                      visible: provider.getDeviceConnected,
+                      //visible: true,
+                      child: GestureDetector(
+                        onTap: () async {
+                          bool isConnected = await _activityServiceProvider.checkIsDeviceConnected();
+                          if (isConnected) {
+                            // Get.to(() =>  const DialFaceDetails());
+                          }else {
+                            retryConnection(context);
+                          }
+                        },
                         child: Container(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(2.0),
-                                child: Image.asset(
-                                  'assets/fit/smart_profile.png',
-                                  width: 40.0,
-                                  height: 40.0,
-                                  fit: BoxFit.fill,
-                                ),
-                                /*child: Icon(
-                                  Icons.person_pin_outlined,
+                          margin: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 2.0),
+                          child: Card(
+                            elevation: 2.0,
+                            margin: const EdgeInsets.all(4.0),
+                            child: Container(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+
+                                  Padding(
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: Image.asset('assets/fit/watch.png',
+                                      width: 40.0,
+                                      height: 40.0,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    /* child: Icon(
+                                  Icons.watch_later_outlined,
                                   color: Colors.black,
                                   size: 32.0,
                                 ),*/
-                              ),
-                              Expanded(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: Column(
-                                        //mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          const Padding(
-                                            padding: EdgeInsets.all(2.0),
-                                            child: Text(textSmartProfile,
-                                                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.all(2.0),
-                                            child: Row(
-                                              // mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                              children: [
-                                                const Text('$textBMI : ',
-                                                  style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300),
+                                  ),
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: const [
+                                                Padding(
+                                                  padding:
+                                                  EdgeInsets.all(2.0),
+                                                  child: Text(textDialFaces,
+                                                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
                                                 ),
-                                                const SizedBox(
-                                                  width: 4.0,
-                                                ),
-                                                Text(_activityServiceProvider.getUserBMI,
-                                                  style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300),
-                                                ),
-                                                const SizedBox(
-                                                  width: 6.0,
-                                                ),
-                                                Container(
-                                                  padding: const EdgeInsets.all(2.0),
-                                                  decoration: BoxDecoration(
-                                                      color: GlobalMethods.getColor(_activityServiceProvider.getUserBMIStatus),
-                                                      shape: BoxShape.circle),
-                                                  height: 12,
-                                                  width: 12,
+                                                Padding(
+                                                  padding: EdgeInsets.all(2.0),
+                                                  child: Text(textDialFacesMsg,
+                                                    style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300),
+                                                  ),
                                                 ),
                                               ],
                                             ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.all(4.0),
-                                child: Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: Colors.black38,
-                                  size: 18.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible: provider.getDeviceConnected,
-                  //visible: true,
-                  child: GestureDetector(
-                    onTap: () async {
-                      bool isConnected = await _activityServiceProvider.checkIsDeviceConnected();
-                      if (isConnected) {
-                         // Get.to(() =>  const DialFaceDetails());
-                      }else {
-                        retryConnection(context);
-                      }
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 2.0),
-                      child: Card(
-                        elevation: 2.0,
-                        margin: const EdgeInsets.all(4.0),
-                        child: Container(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-
-                              Padding(
-                                padding: const EdgeInsets.all(2.0),
-                                child: Image.asset('assets/fit/watch.png',
-                                  width: 40.0,
-                                  height: 40.0,
-                                  fit: BoxFit.fill,
-                                ),
-                                /* child: Icon(
-                                  Icons.watch_later_outlined,
-                                  color: Colors.black,
-                                  size: 32.0,
-                                ),*/
-                              ),
-                              Expanded(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: const [
-                                            Padding(
-                                              padding:
-                                              EdgeInsets.all(2.0),
-                                              child: Text(textDialFaces,
-                                                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(2.0),
-                                              child: Text(textDialFacesMsg,
-                                                style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300),
-                                              ),
-                                            ),
-                                          ],
+                                          ),
                                         ),
-                                      ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(4.0),
+                                    child: Icon(
+                                      Icons.arrow_forward_ios_outlined,
+                                      color: Colors.black38,
+                                      size: 18.0,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const Padding(
-                                padding: EdgeInsets.all(4.0),
-                                child: Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: Colors.black38,
-                                  size: 18.0,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-                Visibility(
-                  visible: provider.getDeviceConnected,
-                  //visible: false,
-                  child: GestureDetector(
-                    onTap: () async {
-                      bool isConnected = await _activityServiceProvider.checkIsDeviceConnected();
-                      if (isConnected) {
-                        Get.to(() =>  const ActivityMonitor());
-                      }else {
-                        retryConnection(context);
-                      }
+                    Visibility(
+                      visible: provider.getDeviceConnected,
+                      //visible: false,
+                      child: GestureDetector(
+                        onTap: () async {
+                          bool isConnected = await _activityServiceProvider.checkIsDeviceConnected();
+                          if (isConnected) {
+                            // Get.to(() =>  const ActivityMonitor());
+                            GlobalMethods.navigateTo(const ActivityMonitor());
+                          }else {
+                            retryConnection(context);
+                          }
 
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 2.0),
-                      child: Card(
-                        elevation: 2.0,
-                        margin: const EdgeInsets.all(4.0),
+                        },
                         child: Container(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
+                          margin: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 2.0),
+                          child: Card(
+                            elevation: 2.0,
+                            margin: const EdgeInsets.all(4.0),
+                            child: Container(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
 
-                              Padding(
-                                padding: const EdgeInsets.all(2.0),
-                                child: Image.asset('assets/fit/24hrs_blue.png',
-                                  width: 40.0,
-                                  height: 40.0,
-                                  fit: BoxFit.fill,
-                                ),
-                               /* child: Icon(
+                                  Padding(
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: Image.asset('assets/fit/24hrs_blue.png',
+                                      width: 40.0,
+                                      height: 40.0,
+                                      fit: BoxFit.fill,
+                                    ),
+                                    /* child: Icon(
                                   Icons.watch_later_outlined,
                                   color: Colors.black,
                                   size: 32.0,
                                 ),*/
-                              ),
-                              Expanded(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.all(2.0),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                children: [
-                                                  const Text( textMonitoringOptions,
-                                                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
-                                                  const SizedBox(
-                                                    width: 4.0,
-                                                  ),
-                                                  Text( '(${provider.getTemperature24Enabled || provider.getHR24Enabled ? textOn: textOff})',
-                                                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.0,
+                                  ),
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.all(2.0),
+                                                  child: Row(
+                                                    mainAxisSize: MainAxisSize.max,
+                                                    children: [
+                                                      const Text( textMonitoringOptions,
+                                                          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
+                                                      const SizedBox(
+                                                        width: 4.0,
+                                                      ),
+                                                      Text( '(${provider.getTemperature24Enabled || provider.getHR24Enabled ? textOn: textOff})',
+                                                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.0,
                                                           color: provider.getTemperature24Enabled || provider.getHR24Enabled ? Colors.green[400]: Colors.grey[350],),
+                                                      ),
+                                                    ],
                                                   ),
-                                                ],
-                                              ),
+                                                ),
+                                                const Padding(
+                                                  padding: EdgeInsets.all(2.0),
+                                                  child: Text(textMonitoringOptionsMsg,
+                                                    style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                            const Padding(
-                                              padding: EdgeInsets.all(2.0),
-                                              child: Text(textMonitoringOptionsMsg,
-                                                style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300),
-                                              ),
-                                            ),
-                                          ],
+                                          ),
                                         ),
-                                      ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(4.0),
+                                    child: Icon(
+                                      Icons.arrow_forward_ios_outlined,
+                                      color: Colors.black38,
+                                      size: 18.0,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const Padding(
-                                padding: EdgeInsets.all(4.0),
-                                child: Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: Colors.black38,
-                                  size: 18.0,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-                Visibility(
-                  visible: provider.getDeviceConnected,
-                  //visible: false,
-                  child: GestureDetector(
-                    onTap: () async {
-                      bool isConnected = await provider.checkIsDeviceConnected();
-                      //await Future.delayed(const Duration(milliseconds: 500));
-                      if (isConnected) {
-                        Get.to(() =>  const DoNotDisturb());
-                      }else {
-                        retryConnection(context);
-                      }
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 2.0),
-                      child: Card(
-                        elevation: 2.0,
-                        margin: const EdgeInsets.all(4.0),
+                    Visibility(
+                      visible: provider.getDeviceConnected,
+                      //visible: false,
+                      child: GestureDetector(
+                        onTap: () async {
+                          bool isConnected = await provider.checkIsDeviceConnected();
+                          //await Future.delayed(const Duration(milliseconds: 500));
+                          if (isConnected) {
+                            //Get.to(() =>  const DoNotDisturb());
+                            GlobalMethods.navigateTo(const DoNotDisturb());
+                          }else {
+                            retryConnection(context);
+                          }
+                        },
                         child: Container(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(2.0),
-                                child: Image.asset(
-                                  'assets/fit/do_not_disturb.png',
-                                  width: 40.0,
-                                  height: 40.0,
-                                  fit: BoxFit.fill,
-                                ),
+                          margin: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 2.0),
+                          child: Card(
+                            elevation: 2.0,
+                            margin: const EdgeInsets.all(4.0),
+                            child: Container(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: Image.asset(
+                                      'assets/fit/do_not_disturb.png',
+                                      width: 40.0,
+                                      height: 40.0,
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.all(2.0),
+                                                  child: Row(
+                                                    mainAxisSize: MainAxisSize.max,
+                                                    children: [
+                                                      const Text(textDoNotDisturb,
+                                                          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
+                                                      const SizedBox(
+                                                        width: 4.0,
+                                                      ),
+                                                      Text( '(${provider.getDndEnabled || provider.getMotorVibrateEnabled || provider.getMessagesOnEnabled ? textOn: textOff})',
+                                                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.0,
+                                                          color: provider.getDndEnabled || provider.getMotorVibrateEnabled || provider.getMessagesOnEnabled ? Colors.green[400]: Colors.grey[350],),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                const Padding(
+                                                  padding: EdgeInsets.all(2.0),
+                                                  child: Text(textDoNotDisturbMsg,
+                                                    style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(4.0),
+                                    child: Icon(
+                                      Icons.arrow_forward_ios_outlined,
+                                      color: Colors.black38,
+                                      size: 18.0,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Expanded(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.all(2.0),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.max,
-                                                children: [
-                                                  const Text(textDoNotDisturb,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Visibility(
+                      visible: provider.getDeviceConnected,
+                      // visible: false,
+                      child: GestureDetector(
+                        onTap: () async {
+                          bool isConnected = await _activityServiceProvider.checkIsDeviceConnected();
+                          if (isConnected) {
+                            String bandStatus = await provider.findDeviceBand();
+                            debugPrint('bandStatus>> $bandStatus');
+                            GlobalMethods.showAlertDialog(context, textListenVibrate,textListenVibrateMsg);
+                          }else {
+                            retryConnection(context);
+                          }
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 2.0),
+                          child: Card(
+                            elevation: 2.0,
+                            margin: const EdgeInsets.all(4.0),
+                            child: Container(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: Image.asset(
+                                      'assets/fit/find_band.png',
+                                      width: 40.0,
+                                      height: 40.0,
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: const [
+                                                Padding(
+                                                  padding: EdgeInsets.all(2.0),
+                                                  child: Text(textFindBand,
                                                       style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
-                                                  const SizedBox(
-                                                    width: 4.0,
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.all(2.0),
+                                                  child: Text(textFindBandMsg,
+                                                    style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300),
                                                   ),
-                                                  Text( '(${provider.getDndEnabled || provider.getMotorVibrateEnabled || provider.getMessagesOnEnabled ? textOn: textOff})',
-                                                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.0,
-                                                      color: provider.getDndEnabled || provider.getMotorVibrateEnabled || provider.getMessagesOnEnabled ? Colors.green[400]: Colors.grey[350],),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(4.0),
+                                    child: Icon(
+                                      Icons.arrow_forward_ios_outlined,
+                                      color: Colors.black38,
+                                      size: 18.0,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Visibility(
+                      visible: false,
+                      child: GestureDetector(
+                        onTap: () {
+                          // Get.to(() => const BandReminders());
+                          GlobalMethods.navigateTo(const BandReminders());
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 2.0),
+                          child: Card(
+                            elevation: 2.0,
+                            margin: const EdgeInsets.all(4.0),
+                            child: Container(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: Image.asset(
+                                      'assets/fit/reminders.png',
+                                      width: 40.0,
+                                      height: 40.0,
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: const [
+                                                Padding(
+                                                  padding: EdgeInsets.all(2.0),
+                                                  child: Text('Smart Reminders',
+                                                      //Utils.tr(context, 'string_text_smart_profile'),//'Smart Profile',
+                                                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.all(2.0),
+                                                  child: Text('Reminders will notifies you to stay updated with Docty-m',
+                                                    style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300),
                                                   ),
-                                                ],
-                                              ),
+                                                ),
+                                              ],
                                             ),
-                                            const Padding(
-                                              padding: EdgeInsets.all(2.0),
-                                              child: Text(textDoNotDisturbMsg,
-                                                style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.all(4.0),
-                                child: Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: Colors.black38,
-                                  size: 18.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible: provider.getDeviceConnected,
-                 // visible: false,
-                  child: GestureDetector(
-                    onTap: () async {
-                      bool isConnected = await _activityServiceProvider.checkIsDeviceConnected();
-                      if (isConnected) {
-                        String bandStatus = await provider.findDeviceBand();
-                        debugPrint('bandStatus>> $bandStatus');
-                        GlobalMethods.showAlertDialog(context, textListenVibrate,textListenVibrateMsg);
-                      }else {
-                        retryConnection(context);
-                      }
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 2.0),
-                      child: Card(
-                        elevation: 2.0,
-                        margin: const EdgeInsets.all(4.0),
-                        child: Container(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(2.0),
-                                child: Image.asset(
-                                  'assets/fit/find_band.png',
-                                  width: 40.0,
-                                  height: 40.0,
-                                  fit: BoxFit.fill,
-                                ),
-                              ),
-                              Expanded(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: const [
-                                            Padding(
-                                              padding: EdgeInsets.all(2.0),
-                                              child: Text(textFindBand,
-                                                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(2.0),
-                                              child: Text(textFindBandMsg,
-                                                style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.all(4.0),
-                                child: Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: Colors.black38,
-                                  size: 18.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible: false,
-                  child: GestureDetector(
-                    onTap: () {
-                      Get.to(() => const BandReminders());
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 2.0),
-                      child: Card(
-                        elevation: 2.0,
-                        margin: const EdgeInsets.all(4.0),
-                        child: Container(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(2.0),
-                                child: Image.asset(
-                                  'assets/fit/reminders.png',
-                                  width: 40.0,
-                                  height: 40.0,
-                                  fit: BoxFit.fill,
-                                ),
-                              ),
-                              Expanded(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.max,
-                                          children: const [
-                                            Padding(
-                                              padding: EdgeInsets.all(2.0),
-                                              child: Text('Smart Reminders',
-                                                  //Utils.tr(context, 'string_text_smart_profile'),//'Smart Profile',
-                                                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(2.0),
-                                              child: Text('Reminders will notifies you to stay updated with Docty-m',
-                                                style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w300),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.all(4.0),
-                                child: Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: Colors.black38,
-                                  size: 18.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-
-                Visibility(
-                  visible: false,
-                  child: GestureDetector(
-                    onTap: () async {
-                      Get.to(() => const FirmwareUpgrade());
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-                      child: Card(
-                        elevation: 2.0,
-                        margin: const EdgeInsets.all(4.0),
-                        child: Container(
-                          // margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-                          padding: const EdgeInsets.all(4.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(2.0),
-                                child: Image.asset('assets/fit/goal_right.png',
-                                  width: 40.0,
-                                  height: 40.0,
-                                  fit: BoxFit.fill,
-                                ),
-                              ),
-                              Expanded(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: Column(
-                                        //mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                        children: const [
-                                          Padding(
-                                            padding: EdgeInsets.all(2.0),
-                                            child: Text('Firmware upgrade', //'Goal',
-                                                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
                                           ),
-
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(4.0),
+                                    child: Icon(
+                                      Icons.arrow_forward_ios_outlined,
+                                      color: Colors.black38,
+                                      size: 18.0,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const Padding(
-                                padding: EdgeInsets.all(4.0),
-                                child: Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: Colors.black38,
-                                  size: 18.0,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-                Visibility(
-                  visible: false,
-                  child: GestureDetector(
-                    onTap: () async {
-                      String isResetDevice = await _activityServiceProvider.resetDevicesAllData();
-                      debugPrint('isResetDevice>> $isResetDevice');
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-                      child: Card(
-                        elevation: 2.0,
-                        margin: const EdgeInsets.all(4.0),
+
+                    Visibility(
+                      visible: false,
+                      child: GestureDetector(
+                        onTap: () async {
+                          //  Get.to(() => const FirmwareUpgrade());
+                          GlobalMethods.navigateTo(const FirmwareUpgrade());
+                        },
                         child: Container(
-                          // margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-                          padding: const EdgeInsets.all(4.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(2.0),
-                                child: Image.asset('assets/fit/goal_right.png',
-                                  width: 40.0,
-                                  height: 40.0,
-                                  fit: BoxFit.fill,
-                                ),
-                              ),
-                              Expanded(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: Column(
-                                        //mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                        children: const [
-                                          Padding(
-                                            padding: EdgeInsets.all(2.0),
-                                            child: Text('Reset Device',
-                                                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
-                                          ),
-
-                                        ],
-                                      ),
+                          margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                          child: Card(
+                            elevation: 2.0,
+                            margin: const EdgeInsets.all(4.0),
+                            child: Container(
+                              // margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                              padding: const EdgeInsets.all(4.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: Image.asset('assets/fit/goal_right.png',
+                                      width: 40.0,
+                                      height: 40.0,
+                                      fit: BoxFit.fill,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: Column(
+                                            //mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                            children: const [
+                                              Padding(
+                                                padding: EdgeInsets.all(2.0),
+                                                child: Text('Firmware upgrade', //'Goal',
+                                                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
+                                              ),
+
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(4.0),
+                                    child: Icon(
+                                      Icons.arrow_forward_ios_outlined,
+                                      color: Colors.black38,
+                                      size: 18.0,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const Padding(
-                                padding: EdgeInsets.all(4.0),
-                                child: Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                  color: Colors.black38,
-                                  size: 18.0,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
+                    Visibility(
+                      visible: false,
+                      child: GestureDetector(
+                        onTap: () async {
+                          String isResetDevice = await _activityServiceProvider.resetDevicesAllData();
+                          debugPrint('isResetDevice>> $isResetDevice');
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                          child: Card(
+                            elevation: 2.0,
+                            margin: const EdgeInsets.all(4.0),
+                            child: Container(
+                              // margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+                              padding: const EdgeInsets.all(4.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: Image.asset('assets/fit/goal_right.png',
+                                      width: 40.0,
+                                      height: 40.0,
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: Column(
+                                            //mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                            children: const [
+                                              Padding(
+                                                padding: EdgeInsets.all(2.0),
+                                                child: Text('Reset Device',
+                                                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.0)),
+                                              ),
+
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(4.0),
+                                    child: Icon(
+                                      Icons.arrow_forward_ios_outlined,
+                                      color: Colors.black38,
+                                      size: 18.0,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 8.0,
+                    )
+                  ],
                 ),
-                const SizedBox(
-                  height: 8.0,
-                )
-              ],
+              ),
             ),
-          ),
-        ),
-      );
-    });
+          );
+        });
   }
 
   goDashboardPage() {
@@ -1294,7 +1299,8 @@ class DeviceSettingsState extends State<DeviceSettings> {
       Get.offAll(const VitalMain());
 
     } else {
-      Navigator.of(context).pop();
+      // Navigator.of(context).pop();
+      GlobalMethods.navigatePopBack();
     }
   }
 
@@ -1302,7 +1308,7 @@ class DeviceSettingsState extends State<DeviceSettings> {
     debugPrint("refreshPage ${_activityServiceProvider.getDeviceConnected}");
     setState(() {});
     if (isDisconnected) {
-      Navigator.pop(context);
+      GlobalMethods.navigatePopBack();
     }
   }
 
@@ -1342,7 +1348,7 @@ class DeviceSettingsState extends State<DeviceSettings> {
 /*Future<void> updateDeviceConnection(bool isConnected) async {
     _activityServiceProvider.updateUserDeviceConnection(false, isConnected, 'SP', 'SP');
     if (mounted) {
-      Navigator.pop(context);
+      GlobalMethods.navigatePopBack();
       Utils.showToastMessage(context, '${Utils.tr(context, 'string_smart_connect_msg')}..!');
     }
     await fetchDeviceData();
@@ -1465,7 +1471,7 @@ class DeviceSettingsState extends State<DeviceSettings> {
                                 //  if (isDeviceDisconnected) {
                                 //     await GlobalMethods.setDeviceName("");
                                 //     await GlobalMethods.setDeviceAddress("");
-                                Navigator.pop(context);
+                                GlobalMethods.navigatePopBack();
                                 Utils.showToastMessage(context,
                                     deviceConnectedName + ' is disconnected');
                                 getLocalData();

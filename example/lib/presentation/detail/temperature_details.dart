@@ -26,7 +26,7 @@ class TemperatureDetailsState extends State<TemperatureDetails> {
   bool statusReconnected = false;
   List temperatureData = [];
 
-   final  _activityServiceProvider = Get.put(ActivityServiceProvider());
+  final  _activityServiceProvider = Get.put(ActivityServiceProvider());
   late TooltipBehavior _tooltipBehavior;
 
   List<CommonDataResult> _dataRepresentList = [];
@@ -44,7 +44,7 @@ class TemperatureDetailsState extends State<TemperatureDetails> {
 
   @override
   void initState() {
-  // _activityServiceProvider = Provider.of<ActivityServiceProvider>(context, listen: false);
+    // _activityServiceProvider = Provider.of<ActivityServiceProvider>(context, listen: false);
     isTempCelsius = _activityServiceProvider.getIsCelsius;
     tempUnits = isTempCelsius ? tempInCelsius : tempInFahrenheit;
     _tooltipBehavior = TooltipBehavior(enable: true, canShowMarker: false);
@@ -73,7 +73,7 @@ class TemperatureDetailsState extends State<TemperatureDetails> {
       if (result == BandFitConstants.DEVICE_CONNECTED){
         if (status == BandFitConstants.SC_SUCCESS) {
           if (statusReconnected) {
-            Navigator.pop(context);
+            GlobalMethods.navigatePopBack();
             await startTemperatureTest();
           }
         }
@@ -88,8 +88,8 @@ class TemperatureDetailsState extends State<TemperatureDetails> {
         }
       } else if (result == BandFitConstants.TEMP_TEST_TIME_OUT) {
         if (status == BandFitConstants.SC_SUCCESS) {
-          Navigator.pop(context);
-        // Utils.showToastMessage(context, 'Temperature Test TimeOut !');
+          GlobalMethods.navigatePopBack();
+          // Utils.showToastMessage(context, 'Temperature Test TimeOut !');
         }
       } else {
         debugPrint("receiveTemperatureListeners::>> no result found");
@@ -130,7 +130,7 @@ class TemperatureDetailsState extends State<TemperatureDetails> {
         }
       } else if (result == BandFitConstants.TEMP_TEST_TIME_OUT) {
         if (status == BandFitConstants.SC_SUCCESS) {
-          Navigator.pop(context);
+          GlobalMethods.navigatePopBack();
         // Utils.showToastMessage(context,'Temperature Test TimeOut !');
         }
       } else {
@@ -157,15 +157,15 @@ class TemperatureDetailsState extends State<TemperatureDetails> {
     await setDateTitle(todayTime);
   }
 
-  Future<void> setDateTitle(DateTime dateTime) async {
-    String firstDay = dateTime.day.toString();
-    String month = calMonths[dateTime.month - 1];
-    String week = calWeeks[dateTime.weekday - 1];
+  Future<void> setDateTitle(DateTime inputDateTime) async {
+    String firstDay = inputDateTime.day.toString();
+    String month = calMonths[inputDateTime.month - 1];
+    String week = calWeeks[inputDateTime.weekday - 1];
     setState(() {
       dateTitle = '$firstDay, $month ($week)';
     });
     try {
-      String calender = GlobalMethods.convertBandReadableCalender(dateTime);
+      String calender = GlobalMethods.convertBandReadableCalender(inputDateTime);
       if (temperatureData != null) {
         List<BandTempModel> smartTempList = await _activityServiceProvider.getCurrentDayTemperatureData(temperatureData, calender);
         debugPrint('smartTempList>> ${smartTempList.length}');
@@ -179,7 +179,7 @@ class TemperatureDetailsState extends State<TemperatureDetails> {
 
           for (var element in smartTempList) {
             List<String> times = element.time.split(':');
-            DateTime _dateTime = DateTime(dateTime.year, dateTime.month, dateTime.day, int.tryParse(times[0])!, int.tryParse(times[1])!);
+            DateTime dateTime = DateTime(inputDateTime.year, inputDateTime.month, inputDateTime.day, int.tryParse(times[0])!, int.tryParse(times[1])!);
             //final dateTime = DateTime.parse(element.time);
             double dataPoint = isTempCelsius ? double.tryParse(element.inCelsius)! : double.tryParse(element.inFahrenheit)!;
             if (dataPoint > largestValue) {
@@ -191,7 +191,7 @@ class TemperatureDetailsState extends State<TemperatureDetails> {
             // dataPointsList.add(dataPoint);
             sumOfDataPoints = sumOfDataPoints + dataPoint;
             dataRepList.add(CommonDataResult(
-                time: _dateTime,
+                time: dateTime,
                 dataPoint: dataPoint,
                 color: temperatureColor));
           }
@@ -335,7 +335,7 @@ class TemperatureDetailsState extends State<TemperatureDetails> {
             ),*/
             Container(
               margin:
-                  const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
+              const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
               padding: const EdgeInsets.all(8.0),
               child: Center(child: Text(widget.activityLabel,
                 textAlign: TextAlign.center,
@@ -353,7 +353,7 @@ class TemperatureDetailsState extends State<TemperatureDetails> {
                     onPressed: () async {
                       // debugPrint('date time>> ${currentDayDateTime[0]}');
                       DateTime time =
-                          GlobalMethods.getOneDayBackward(currentDateTime);
+                      GlobalMethods.getOneDayBackward(currentDateTime);
                       setState(() {
                         isNextDisable = false;
                         currentDateTime = time;
@@ -375,16 +375,16 @@ class TemperatureDetailsState extends State<TemperatureDetails> {
                     onPressed: isNextDisable
                         ? null
                         : () async {
-                            DateTime nextDate =
-                                GlobalMethods.getOneDayForward(currentDateTime);
-                            setState(() {
-                              if (checkIsTodayAvail(todayTime, nextDate)) {
-                                isNextDisable = true;
-                              }
-                              currentDateTime = nextDate;
-                            });
-                            setDateTitle(currentDateTime);
-                          },
+                      DateTime nextDate =
+                      GlobalMethods.getOneDayForward(currentDateTime);
+                      setState(() {
+                        if (checkIsTodayAvail(todayTime, nextDate)) {
+                          isNextDisable = true;
+                        }
+                        currentDateTime = nextDate;
+                      });
+                      setDateTitle(currentDateTime);
+                    },
                     icon: Icon(Icons.arrow_forward_ios_outlined,
                         color: isNextDisable
                             ? Colors.grey.withOpacity(0.5)
@@ -395,7 +395,7 @@ class TemperatureDetailsState extends State<TemperatureDetails> {
             ),
             Container(
               margin:
-                  const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+              const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
               padding: const EdgeInsets.all(4.0),
               width: double.infinity,
               height: 200,
@@ -546,14 +546,14 @@ class TemperatureDetailsState extends State<TemperatureDetails> {
             ),
             const Text(textRecentTemperature,
                 style:
-                    TextStyle(fontWeight: FontWeight.w600, fontSize: 18)),
+                TextStyle(fontWeight: FontWeight.w600, fontSize: 18)),
             const SizedBox(
               height: 8.0,
             ),
             Text('$recentTemperature $tempUnits',
                 textAlign: TextAlign.center,
                 style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
+                const TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
             const SizedBox(
               height: 16.0,
             ),
@@ -589,7 +589,7 @@ class TemperatureDetailsState extends State<TemperatureDetails> {
     if (status != null) {
       if (status == BandFitConstants.SC_INIT) {
         //Utils.showWaiting(context, false);
-      // Utils.showToastMessage(context, Utils.tr(context, 'string_text_test_started'));
+        // Utils.showToastMessage(context, Utils.tr(context, 'string_text_test_started'));
       } else if (status == BandFitConstants.SC_NOT_SUPPORTED) {
         temperatureNotSupported(context);
       } else {
@@ -600,7 +600,8 @@ class TemperatureDetailsState extends State<TemperatureDetails> {
   void retryConnection(BuildContext context) {
     GlobalMethods.showAlertDialogWithFunction(context, deviceDisconnected, deviceDisconnectedMsg, reconnectText, () async {
       debugPrint("pressed_ok");
-      Navigator.of(context).pop();
+      //Navigator.of(context).pop();
+      GlobalMethods.navigatePopBack();
       //Utils.showLoading(context, false, title: reconnectingText);
       bool statusReconnect = await _activityServiceProvider.connectDeviceWithMacAddress(context);
       setState(() {
@@ -612,7 +613,8 @@ class TemperatureDetailsState extends State<TemperatureDetails> {
   void temperatureNotSupported(BuildContext context) {
     GlobalMethods.showAlertDialogWithFunction(context, textTempNotSupported, textTempNotSupportedMsg, okText, () async {
       debugPrint("pressed_ok");
-      Navigator.of(context).pop();
+      //Navigator.of(context).pop();
+      GlobalMethods.navigatePopBack();
     });
   }
 
@@ -626,9 +628,9 @@ class TemperatureDetailsState extends State<TemperatureDetails> {
           yValueMapper: (CommonDataResult sales, _) => sales.dataPoint,
           color: temperatureColor,
           width: 0.03
-          //pointColorMapper: (datum, index) =>  datum.color,
-          // markerSettings: const MarkerSettings(isVisible: true),
-          )
+        //pointColorMapper: (datum, index) =>  datum.color,
+        // markerSettings: const MarkerSettings(isVisible: true),
+      )
     ];
     /*return [
       new LineSeries<DayDataRep, DateTime>(
@@ -649,8 +651,8 @@ class TemperatureDetailsState extends State<TemperatureDetails> {
     if (temperatureData != null) {
       temperatureData.add(jsonData);
       await setDateTitle(dateTime);
-      Navigator.pop(context);
-    // Utils.showToastMessage(context, '${Utils.tr(context, 'string_test_completed')} !!!');
+      GlobalMethods.navigatePopBack();
+      // Utils.showToastMessage(context, '${Utils.tr(context, 'string_test_completed')} !!!');
       await _activityServiceProvider.updateTemperatureWithData(jsonData, temperatureData, dateTime);
     }
   }

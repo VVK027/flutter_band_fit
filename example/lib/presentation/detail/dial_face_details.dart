@@ -27,7 +27,7 @@ class DialFaceDetails extends StatefulWidget{
     // TODO: implement createState
     return DialFaceDetailsState();
   }
-  
+
 }
 class DialFaceDetailsState extends State<DialFaceDetails>{
   final ReceivePort _port = ReceivePort();
@@ -219,7 +219,7 @@ class DialFaceDetailsState extends State<DialFaceDetails>{
         else if (result == BandFitConstants.DEVICE_CONNECTED){
           if (status == BandFitConstants.SC_SUCCESS) {
             if (statusReconnected) {
-              Navigator.pop(context);
+              GlobalMethods.navigatePopBack();
             }
           }
         }
@@ -228,7 +228,7 @@ class DialFaceDetailsState extends State<DialFaceDetails>{
             bool alreadyConnected = await _activityServiceProvider.checkIsDeviceConnected();
             debugPrint('alreadyConnected>> $alreadyConnected');
             if (!alreadyConnected) {
-              Navigator.pop(context);
+              GlobalMethods.navigatePopBack();
               if (mounted) {
                 retryConnection(context);
               }

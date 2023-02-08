@@ -9,7 +9,7 @@ class ActivityMonitor extends StatefulWidget{
   State<StatefulWidget> createState() {
     return ActivityMonitorState();
   }
-  
+
 }
 class ActivityMonitorState extends State<ActivityMonitor>{
 
@@ -50,9 +50,10 @@ class ActivityMonitorState extends State<ActivityMonitor>{
         automaticallyImplyLeading: false,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_outlined, color: Colors.black),
-         onPressed: () {
-           Navigator.of(context).pop();
-         },
+          onPressed: () {
+            // Navigator.of(context).pop();
+            GlobalMethods.navigatePopBack();
+          },
         ),
         actions: const [],
       ),
@@ -173,7 +174,7 @@ class ActivityMonitorState extends State<ActivityMonitor>{
             ),
 
             const Divider(
-               thickness: 1.0,
+              thickness: 1.0,
             ),
             GestureDetector(
               onTap: () {
@@ -252,13 +253,15 @@ class ActivityMonitorState extends State<ActivityMonitor>{
             await _activityServiceProvider.set24HrOxygen(selectOxygenMonitor);
           }
 
-          Navigator.of(context).pop();
-
+          if (mounted) {
+            // Navigator.of(context).pop();
+            GlobalMethods.navigatePopBack();
+          }
         },
         tooltip: textSaveContinue,
         child: const Icon(Icons.done),
       ),
     );
   }
-  
+
 }

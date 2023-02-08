@@ -7,7 +7,7 @@ import Foundation
 
 import device_info_plus
 import flutter_band_fit
-import path_provider_macos
+import path_provider_foundation
 import sqflite
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {

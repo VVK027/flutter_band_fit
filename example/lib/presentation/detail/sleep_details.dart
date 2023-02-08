@@ -16,8 +16,8 @@ class SleepDetails extends StatefulWidget {
 
 class SleepDetailsState extends State<SleepDetails> {
   int selectedPage = 0;
-  
-   final  _activityServiceProvider = Get.put(ActivityServiceProvider());
+
+  final  _activityServiceProvider = Get.put(ActivityServiceProvider());
   List overAllSleepData = [];
 
   //current day
@@ -57,33 +57,33 @@ class SleepDetailsState extends State<SleepDetails> {
   String monthTotalLightHours = '0', monthTotalLightMin = '0';
   String monthTotalAwakeHours = '0', monthTotalAwakeMin = '0';
 
- /* String monthTotalSteps = '0';
+  /* String monthTotalSteps = '0';
   String monthTotalDistance = '0.0';
   String monthTotalCalories = '0.0';*/
 
- // TooltipBehavior _tooltipDayBehavior;
+  // TooltipBehavior _tooltipDayBehavior;
   late TooltipBehavior _tooltipWeekBehavior;
 
   late StateSetter actionState;
 
   @override
   void initState() {
-  // _activityServiceProvider = Provider.of<ActivityServiceProvider>(context, listen: false);
+    // _activityServiceProvider = Provider.of<ActivityServiceProvider>(context, listen: false);
     //_tooltipDayBehavior = TooltipBehavior(enable: true, canShowMarker: false);
     _tooltipWeekBehavior = TooltipBehavior(
-        enable: true,
-        canShowMarker: false,
-        header: '',
-        activationMode: ActivationMode.singleTap,
+      enable: true,
+      canShowMarker: false,
+      header: '',
+      activationMode: ActivationMode.singleTap,
       //textStyle: TextStyle( color: Colors.white, fontSize: 8.0),
       builder: (data, point, series, pointIndex, seriesIndex) {
-       // WeeklySleepData dataRep = data;
+        // WeeklySleepData dataRep = data;
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-           /* Container(
+            /* Container(
               padding: EdgeInsets.all(2.0),
               child: Text(new DateFormat('yyyy-MM-dd').format(dataRep.startTime) ,style: TextStyle( color: Colors.white, fontSize: 8.0),),
             ),
@@ -101,7 +101,7 @@ class SleepDetailsState extends State<SleepDetails> {
     );
     super.initState();
     Future.delayed(Duration.zero, () {
-       initializeData();
+      initializeData();
     });
     //initializeData();
   }
@@ -161,24 +161,24 @@ class SleepDetailsState extends State<SleepDetails> {
 
           //if (sleepDataList.isNotEmpty) {
 
-            setState(() {
-              //sleepDayDataList = sleepList;
-              dayTotalHours = total[0];
-              dayTotalMin = total[1];
-              dayDeepHours = deep[0];
-              dayDeepMin = deep[1];
-              dayLightHours = light[0];
-              dayLightMin = light[1];
-              dayAwakeHours = awake[0];
-              dayAwakeMin = awake[1];
-              dayBeginHours = beginTime[0];
-              dayBeginMin = beginTime[1];
-              dayEndHours = endTime[0];
-              dayEndMin = endTime[1];
-              deepPercentage = getCalculatePercentage(deepNumber, totalNumber);
-              lightPercentage = getCalculatePercentage(lightNumber, totalNumber);
-              awakePercentage = getCalculatePercentage(awakeNumber, totalNumber);
-            });
+          setState(() {
+            //sleepDayDataList = sleepList;
+            dayTotalHours = total[0];
+            dayTotalMin = total[1];
+            dayDeepHours = deep[0];
+            dayDeepMin = deep[1];
+            dayLightHours = light[0];
+            dayLightMin = light[1];
+            dayAwakeHours = awake[0];
+            dayAwakeMin = awake[1];
+            dayBeginHours = beginTime[0];
+            dayBeginMin = beginTime[1];
+            dayEndHours = endTime[0];
+            dayEndMin = endTime[1];
+            deepPercentage = getCalculatePercentage(deepNumber, totalNumber);
+            lightPercentage = getCalculatePercentage(lightNumber, totalNumber);
+            awakePercentage = getCalculatePercentage(awakeNumber, totalNumber);
+          });
           // } else {
           //   setState(() {
           //     //sleepDayDataList = [];
@@ -221,7 +221,7 @@ class SleepDetailsState extends State<SleepDetails> {
         }
       } else {
         setState(() {
-         // sleepDayDataList = [];
+          // sleepDayDataList = [];
           dayTotalHours = '0';
           dayTotalMin = '0';
           dayDeepHours = '0';
@@ -584,9 +584,9 @@ class SleepDetailsState extends State<SleepDetails> {
             Center(
               child: Text(textSleepQualityAnalysis,//'Sleep Quality Analysis',
                 style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18
-              ),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18
+                ),
               ),
             ),
             SizedBox(
@@ -595,8 +595,8 @@ class SleepDetailsState extends State<SleepDetails> {
             Padding(
               padding: EdgeInsets.only(left: 8.0),
               child: Text(textSleepNotLate,
-               // 'Sleep too late',
-               // 'Don’t sleep too late',
+                // 'Sleep too late',
+                // 'Don’t sleep too late',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16
@@ -620,15 +620,15 @@ class SleepDetailsState extends State<SleepDetails> {
               padding: EdgeInsets.only(left: 8.0),
               child: Text(textSleepLake,//'lack of sleep',
                 style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16
-              ),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16
+                ),
               ),
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-               sleepLackString,
+                sleepLackString,
                 textAlign: TextAlign.justify,
                 style: TextStyle(
                     fontSize: 14
@@ -642,9 +642,9 @@ class SleepDetailsState extends State<SleepDetails> {
               padding: EdgeInsets.only(left: 8.0),
               child: Text(textSleepWakeEarly,//'Wake up early',
                 style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16
-              ),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16
+                ),
               ),
             ),
             Padding(
@@ -778,20 +778,20 @@ class SleepDetailsState extends State<SleepDetails> {
                 onPressed: monthNextDisable
                     ? null
                     : () async {
-                        //Utils.showWaiting(context, false);
-                        DateTime time = GlobalMethods.getOneDayForward(currentMonthDateTime[currentMonthDateTime.length - 1]);
-                        List<DateTime> nextMonth = await GlobalMethods.getMonthyDatesListByTime(time);
+                  //Utils.showWaiting(context, false);
+                  DateTime time = GlobalMethods.getOneDayForward(currentMonthDateTime[currentMonthDateTime.length - 1]);
+                  List<DateTime> nextMonth = await GlobalMethods.getMonthyDatesListByTime(time);
 
-                        setState(() {
-                          currentMonthDateTime = nextMonth;
-                          // if the today time is in the list then disable.
-                          if (checkNextMonthAvailable(todayTime, currentMonthDateTime)) {
-                            monthNextDisable = true;
-                          }
-                        });
-                        await setMonthDateTitle(currentMonthDateTime);
-                       // Navigator.pop(context);
-                      },
+                  setState(() {
+                    currentMonthDateTime = nextMonth;
+                    // if the today time is in the list then disable.
+                    if (checkNextMonthAvailable(todayTime, currentMonthDateTime)) {
+                      monthNextDisable = true;
+                    }
+                  });
+                  await setMonthDateTitle(currentMonthDateTime);
+                  // GlobalMethods.navigatePopBack();
+                },
                 icon: Icon(Icons.arrow_forward_ios_outlined,
                     color: monthNextDisable
                         ? Colors.grey.withOpacity(0.5)
@@ -1147,19 +1147,19 @@ class SleepDetailsState extends State<SleepDetails> {
                 onPressed: weekNextDisable
                     ? null
                     : () async {
-                        ///Utils.showWaiting(context, false);
-                        DateTime time = GlobalMethods.getOneDayForward(currentWeekDateTime[currentWeekDateTime.length - 1]);
-                        List<DateTime> nextWeek = await GlobalMethods.getWeekDatesListByTime(time);
-                        setState(() {
-                          currentWeekDateTime = nextWeek;
-                          // if the today time is in the list then disable.
-                          if (checkNextWeekAvailable(todayTime, currentWeekDateTime)) {
-                            weekNextDisable = true;
-                          }
-                        });
-                        await setWeekDateTitle(currentWeekDateTime);
-                        //Navigator.pop(context);
-                      },
+                  ///Utils.showWaiting(context, false);
+                  DateTime time = GlobalMethods.getOneDayForward(currentWeekDateTime[currentWeekDateTime.length - 1]);
+                  List<DateTime> nextWeek = await GlobalMethods.getWeekDatesListByTime(time);
+                  setState(() {
+                    currentWeekDateTime = nextWeek;
+                    // if the today time is in the list then disable.
+                    if (checkNextWeekAvailable(todayTime, currentWeekDateTime)) {
+                      weekNextDisable = true;
+                    }
+                  });
+                  await setWeekDateTitle(currentWeekDateTime);
+                  //Navigator.pop(context);
+                },
                 icon: Icon(Icons.arrow_forward_ios_outlined, color: weekNextDisable ? Colors.grey.withOpacity(0.5) : Colors.black),
               )
             ],
@@ -1232,7 +1232,7 @@ class SleepDetailsState extends State<SleepDetails> {
             children: [
               Card(
                 child: Container(
-                 // height: 150,
+                  // height: 150,
                   // padding: EdgeInsets.all(2.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -1532,7 +1532,7 @@ class SleepDetailsState extends State<SleepDetails> {
                   });
 
                   await setCurrentDateTitle(currentDateTime);
-                 // Navigator.pop(context);
+                  // GlobalMethods.navigatePopBack();
                 },
                 icon: const Icon(Icons.arrow_back_ios_outlined, color: Colors.black),
               ),
@@ -1555,7 +1555,7 @@ class SleepDetailsState extends State<SleepDetails> {
                     currentDateTime = nextDate;
                   });
                   await setCurrentDateTitle(currentDateTime);
-                 // Navigator.pop(context);
+                  // GlobalMethods.navigatePopBack();
                 },
                 icon: Icon(Icons.arrow_forward_ios_outlined,
                     color: dayNextDisable
@@ -1622,7 +1622,7 @@ class SleepDetailsState extends State<SleepDetails> {
                   BarAsset(size: lightPercentage.toDouble(), color: const Color(0xFFC7A9FE)),
                   BarAsset(size: awakePercentage.toDouble(), color: const Color(0xFFFF9A42)),
                 ], radius: 4, order: OrderType.none,
-                
+
               ),
               const SizedBox(
                 height: 12.0,
@@ -2130,11 +2130,11 @@ class SleepDetailsState extends State<SleepDetails> {
         //isTrackVisible: true,
         //trackColor: inCompletedColor,
         borderRadius: BorderRadius.circular(8.0),
-       // color: inCompletedColor,
+        // color: inCompletedColor,
         color: sleepLightColor,
         width: weekSleepDataList.length <= 4 ? 0.2 : 0.5,
         //dataLabelMapper: (datum, index) => datum.dateTime.toString().substring(0,10),
-       // trackBorderColor: Colors.grey[500],
+        // trackBorderColor: Colors.grey[500],
         /*dataLabelSettings: DataLabelSettings(
           isVisible: true,
           labelAlignment: ChartDataLabelAlignment.top,
@@ -2167,8 +2167,8 @@ class SleepDetailsState extends State<SleepDetails> {
           borderRadius: BorderRadius.circular(8.0),
           pointColorMapper: (MonthlySleepData datum, _) => datum.color,
           width: 0.5
-          // markerSettings: const MarkerSettings(isVisible: true),
-          )
+        // markerSettings: const MarkerSettings(isVisible: true),
+      )
     ];
   }
 }

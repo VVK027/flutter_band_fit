@@ -35,7 +35,7 @@ class _FirmwareUpgradeState extends State<FirmwareUpgrade> {
                 child: MaterialButton(
                   disabledColor: Colors.grey[200],
                   onPressed: () {},
-                  child: Text('Check for updates',  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                  child: const Text('Check for updates',  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
                 )),
 
           ],
@@ -61,7 +61,7 @@ class _FirmwareUpgradeState extends State<FirmwareUpgrade> {
                 children: [
                   IconButton(
                       onPressed: () {
-                        Navigator.pop(context);
+                        GlobalMethods.navigatePopBack();
                       },
                       icon: const Icon(
                         Icons.arrow_back,
@@ -80,34 +80,34 @@ class _FirmwareUpgradeState extends State<FirmwareUpgrade> {
                 ],
               ),
               //vSpacer(30),
-             // getStepsGauge()
+              // getStepsGauge()
             ],
           ),
         ),
         //vSpacer(10),
-        Padding(
-          padding: const EdgeInsets.only(left: 10.0, top: 10),
+        const Padding(
+          padding: EdgeInsets.only(left: 10.0, top: 10),
           child: Text(
-            'Newest Version',  style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400)
+              'Newest Version',  style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400)
 
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 10.0, top: 10),
+        const Padding(
+          padding: EdgeInsets.only(left: 10.0, top: 10),
           child: Text(
-             'Newest Version',  style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400)
+              'Newest Version',  style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400)
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 10.0, top: 10),
+        const Padding(
+          padding: EdgeInsets.only(left: 10.0, top: 10),
           child: Text(
-             'Newest Version', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400)
+              'Newest Version', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400)
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(left: 10.0, top: 10),
+        const Padding(
+          padding: EdgeInsets.only(left: 10.0, top: 10),
           child: Text(
-             'Newest Version',  style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400)
+              'Newest Version',  style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400)
           ),
         ),
 
@@ -115,7 +115,7 @@ class _FirmwareUpgradeState extends State<FirmwareUpgrade> {
     );
   }
 
-  /*Widget getStepsGauge() {
+/*Widget getStepsGauge() {
     return SizedBox(
         width: 150,
         height: 150,

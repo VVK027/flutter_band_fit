@@ -1,7 +1,5 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
+import 'package:flutter_band_fit_app/common/common_imports.dart';
 import 'package:flutter_band_fit_app/presentation/vital_main.dart';
-import 'package:get/get.dart';
 
 
 class Splash extends StatefulWidget {
@@ -23,7 +21,8 @@ class VideoState extends State<Splash> with SingleTickerProviderStateMixin {
   }
 
   void navigationPage() {
-    Get.to(() => const VitalMain());
+    //Get.to(() => const VitalMain());
+    GlobalMethods.navigateTo(VitalMain());
     /* Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => const HomePage()));*/
   }
@@ -31,13 +30,10 @@ class VideoState extends State<Splash> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-
     animationController = AnimationController(vsync: this, duration: const Duration(seconds: 1));
     animation = CurvedAnimation(parent: animationController, curve: Curves.easeOut);
-
     animation.addListener(() => setState(() {}));
     animationController.forward();
-
     setState(() {
       _visible = !_visible;
     });

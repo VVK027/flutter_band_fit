@@ -14,15 +14,15 @@ class _WeatherInDetailsState extends State<WeatherInDetails> {
   // List<Weather> sortedWeekData=[];
   List<int> weatherForcastingDaysList = [];
   List<WeatherDailyData> weatherData = [];
- final  _activityServiceProvider = Get.put(ActivityServiceProvider());
+  final  _activityServiceProvider = Get.put(ActivityServiceProvider());
   //late String lang;
 
   @override
   void initState() {
     weatherData = widget.weatherModelData.weatherDailyList;
-  // _activityServiceProvider = Provider.of<ActivityServiceProvider>(context, listen: false);
+    // _activityServiceProvider = Provider.of<ActivityServiceProvider>(context, listen: false);
     super.initState();
-   // getMyLanguage();
+    // getMyLanguage();
   }
 
   @override
@@ -41,8 +41,8 @@ class _WeatherInDetailsState extends State<WeatherInDetails> {
       body: (weatherData.isNotEmpty)
           ? weatherDetails()
           : const Center(
-            child: Text(textSomethingWrong),
-          ),
+        child: Text(textSomethingWrong),
+      ),
     );
   }
 

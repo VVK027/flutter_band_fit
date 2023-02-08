@@ -17,14 +17,14 @@ class AddDeviceState extends State<AddDevice> {
   // final FlutterBlue flutterBlue = FlutterBlue.instance;
   // MobileSmartWatch _mobileSmartWatch = MobileSmartWatch();
 
- // DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  // DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   List<BandDeviceModel> smartDevicesList = [];
- // Position myLocation;
+  // Position myLocation;
   bool showProgress = false;
   String showMessage ='';
   List<String> arrConDisConButton = [];
 
- final  _activityServiceProvider = Get.put(ActivityServiceProvider());
+  final  _activityServiceProvider = Get.put(ActivityServiceProvider());
 
   int selectedIndex =0;
   late BandDeviceModel selectedDevice;
@@ -35,7 +35,7 @@ class AddDeviceState extends State<AddDevice> {
 
   @override
   void initState() {
-  // _activityServiceProvider = Provider.of<ActivityServiceProvider>(context, listen: false);
+    // _activityServiceProvider = Provider.of<ActivityServiceProvider>(context, listen: false);
     super.initState();
     //_activityServiceProvider.startListeningCallBacks();
     initialize();
@@ -87,9 +87,9 @@ class AddDeviceState extends State<AddDevice> {
       });
     }
 // handle only for android
-   // if(!Platform.isIOS){
-   // String initBlueResult = await _activityServiceProvider.reInitBluConnection();
-   // debugPrint('initBlueResult $initBlueResult');
+    // if(!Platform.isIOS){
+    // String initBlueResult = await _activityServiceProvider.reInitBluConnection();
+    // debugPrint('initBlueResult $initBlueResult');
     String initResult = await _activityServiceProvider.initializeDeviceConnection();
     debugPrint('initResult $initResult');
     if (initResult != null) {
@@ -105,7 +105,7 @@ class AddDeviceState extends State<AddDevice> {
         await fetchBluDevicesList();
       }
     }
-   // }
+    // }
     //  }
   }
 
@@ -120,20 +120,20 @@ class AddDeviceState extends State<AddDevice> {
           if (result == BandFitConstants.DEVICE_CONNECTED) {
             debugPrint("addDeviceListener>> Device Connected");
             if (status == BandFitConstants.SC_SUCCESS) {
-             //await compute(_activityServiceProvider.updateUserParamsWatch,true);
+              //await compute(_activityServiceProvider.updateUserParamsWatch,true);
               await checkDeviceConnectReset();
 
               // if(Platform.isIOS){
               //   await _activityServiceProvider.updateUserParamsWatch(false);
               // }
-             // await _activityServiceProvider.updateUserParamsWatch(true);
+              // await _activityServiceProvider.updateUserParamsWatch(true);
             }
           }
           else if (result == BandFitConstants.SYNC_TIME_OK) {
             debugPrint("addDeviceListener>> SYNC_TIME_OK");
             if (status == BandFitConstants.SC_SUCCESS) {
               await Future.delayed(const Duration(milliseconds: 500));
-               await _activityServiceProvider.updateUserParamsWatch(false);
+              await _activityServiceProvider.updateUserParamsWatch(false);
             }
           }
 
@@ -201,7 +201,7 @@ class AddDeviceState extends State<AddDevice> {
                     debugPrint('activityServiceProvider.getDeviceConnected>> ${_activityServiceProvider.getDeviceConnected}');
                     if (!_activityServiceProvider.getDeviceConnected) {
                       // no other device is not connected
-                      Navigator.pop(context);
+                      GlobalMethods.navigatePopBack();
                       // disconnect the device.
                       // bool isDeviceDisconnected = await _activityServiceProvider.disconnectDevice();
                       GlobalMethods.showAlertDialog(context, textConnectionFailed, textConnectionFailedMsg);
@@ -215,7 +215,7 @@ class AddDeviceState extends State<AddDevice> {
               // check if device is connected.
               /*if (!_activityServiceProvider.getDeviceConnected) {
                 // no other device is not connected
-                Navigator.pop(context);
+                GlobalMethods.navigatePopBack();
                 // disconnect the device.
                // bool isDeviceDisconnected = await _activityServiceProvider.disconnectDevice();
                 GlobalMethods.showAlertDialog(context, Utils.tr(context, 'string_connection_failed'),Utils.tr(context, 'string_connection_failed_msg'));
@@ -235,7 +235,7 @@ class AddDeviceState extends State<AddDevice> {
               // if(_activityServiceProvider.getJsonWeatherData!=null && _activityServiceProvider.getJsonWeatherData.isNotEmpty){
               //   await _activityServiceProvider.setWeatherInfoSevenDays();
               // }else{
-                await updateDeviceConnection();
+              await updateDeviceConnection();
               //}
             }
           }
@@ -255,7 +255,7 @@ class AddDeviceState extends State<AddDevice> {
 
           else if (result == BandFitConstants.SYNC_WEATHER_SUCCESS){
             if (status == BandFitConstants.SC_SUCCESS) {
-             // await updateDeviceConnection();
+              // await updateDeviceConnection();
               await _activityServiceProvider.enable24HourTest();
             }
           }
@@ -306,7 +306,7 @@ class AddDeviceState extends State<AddDevice> {
     }
 
     await _activityServiceProvider.updateDeviceBandLanguage();
-    Navigator.pop(context);
+    GlobalMethods.navigatePopBack();
     if (mounted) {
       //Utils.showToastMessage(context, Utils.tr(context, 'string_band_selected'));
     }
@@ -348,7 +348,7 @@ class AddDeviceState extends State<AddDevice> {
       }
       // Utils.showToastMessage(context, 'No Device found');
     }
-    // Navigator.pop(context);
+    // GlobalMethods.navigatePopBack();
   }
 
   Widget showDeviceContainer(List<BandDeviceModel> deviceList) {
@@ -469,7 +469,7 @@ class AddDeviceState extends State<AddDevice> {
       /*if (isDeviceConnected ) {
         // await GlobalMethods.setDeviceName(device.name);
         // await GlobalMethods.setDeviceAddress(device.address);
-        Navigator.pop(context);
+        GlobalMethods.navigatePopBack();
         Utils.showToastMessage(context, device.name + ' is connected');
         setState(() {
           arrConDisConButton[index] = 'Disconnect';
@@ -477,10 +477,10 @@ class AddDeviceState extends State<AddDevice> {
         //goDashboardPage();
       }*/
     } else {
-     // Utils.showWaiting(context, false);
+      // Utils.showWaiting(context, false);
       bool isDeviceDisconnected = await _activityServiceProvider.disconnectDevice();
       debugPrint("isDeviceDisconnected>>> $isDeviceDisconnected");
-      Navigator.pop(context);
+      GlobalMethods.navigatePopBack();
       //Utils.showToastMessage(context, device.name + ' ${Utils.tr(context, 'string_device_got_disconnect_msg')}');
       setState(() {
         arrConDisConButton[index] = 'Connect';
@@ -509,7 +509,7 @@ class AddDeviceState extends State<AddDevice> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_outlined, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context);
+            GlobalMethods.navigatePopBack();
           },
           // onPressed: () => goDashboardPage(),
         ),
@@ -551,7 +551,7 @@ class AddDeviceState extends State<AddDevice> {
               shape: const StadiumBorder(),
               //shape: shape ?? StadiumBorder(),
               onPressed: () {
-                //Get.to(() =>  AppleGoogleBind(deviceTypeName: Platform.isIOS ? appleHealthKey : googleFitKey));
+                Get.to(() =>  AppleGoogleBind(deviceTypeName: Platform.isIOS ? appleHealthKey : googleFitKey));
               },
               elevation: 2.0,
               child: Container(

@@ -2,6 +2,14 @@ import 'dart:math' as math;
 
 import 'package:flutter_band_fit_app/common/common_imports.dart';
 import 'package:flutter_band_fit_app/custom/custom_circle_progress.dart';
+import 'package:flutter_band_fit_app/presentation/add_device.dart';
+import 'package:flutter_band_fit_app/presentation/detail/activities_details.dart';
+import 'package:flutter_band_fit_app/presentation/detail/blood_pressure_details.dart';
+import 'package:flutter_band_fit_app/presentation/detail/heart_rate_detail.dart';
+import 'package:flutter_band_fit_app/presentation/detail/oxygen_detail.dart';
+import 'package:flutter_band_fit_app/presentation/detail/sleep_details.dart';
+import 'package:flutter_band_fit_app/presentation/detail/temperature_details.dart';
+import 'package:flutter_band_fit_app/presentation/device_settings.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -42,7 +50,7 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
 
   @override
   void initState() {
-   // _activityServiceProvider = Provider.of<ActivityServiceProvider>(context, listen: false);
+    // _activityServiceProvider = Provider.of<ActivityServiceProvider>(context, listen: false);
     reConnectMacAddress = _activityServiceProvider.getDeviceMacAddress;
     initializeProgressController();
     //ws = new WeatherFactory(Settings.openWeatherAPIKey);
@@ -77,7 +85,7 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
       } else {
         statuses = await [Permission.bluetooth, Permission.location].request();
       }
-     } else {
+    } else {
       statuses = await [Permission.bluetooth, Permission.location, Permission.locationAlways, Permission.locationWhenInUse].request();
     }
     debugPrint('statuses>> $statuses');
@@ -101,7 +109,7 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
     //       await _activityServiceProvider.callWeatherForecast(myLocation.latitude.toString(), myLocation.longitude.toString(), true);
     //       //  getCurrentWeatherByLocation(myLocation.latitude,myLocation.longitude);
     //       // if (mounted) {
-    //       //   Navigator.pop(context);
+    //       //   GlobalMethods.navigatePopBack();
     //       // }
     //       await checkConnectionValidate();
     //     }
@@ -110,7 +118,7 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
     //     await checkConnectionValidate();
     //   }
     // }else{
-      await checkConnectionValidate();
+    await checkConnectionValidate();
     //}
   }
   Future<void> checkConnectionValidate() async {
@@ -123,10 +131,10 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
       await validateTimeAndSync();
     } else {
       if (_activityServiceProvider.getDeviceConnected && _activityServiceProvider.getDeviceMacAddress.isNotEmpty) {
-         //debugPrint('123 ${_activityServiceProvider.getDeviceConnected}');
-         //debugPrint('12367 ${_activityServiceProvider.getDeviceMacAddress}');
-         //debugPrint('12345 ${_activityServiceProvider.getDeviceSWName}');
-         //debugPrint('isSyncProgress ${_activityServiceProvider.isSyncProgress}');
+        //debugPrint('123 ${_activityServiceProvider.getDeviceConnected}');
+        //debugPrint('12367 ${_activityServiceProvider.getDeviceMacAddress}');
+        //debugPrint('12345 ${_activityServiceProvider.getDeviceSWName}');
+        //debugPrint('isSyncProgress ${_activityServiceProvider.isSyncProgress}');
         if (_activityServiceProvider.isSyncProgress) {
           _activityServiceProvider.updateSyncingView(false);
         }else{
@@ -223,8 +231,8 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
       if (status == BandFitConstants.SC_SUCCESS) {
         List<dynamic> deviceDataList = eventData["data"];
         BandDeviceModel? deviceModel;
-        String swName = _activityServiceProvider.getDeviceSWName ??'';
-        String macAddress = _activityServiceProvider.getDeviceMacAddress ?? '';
+        String swName = _activityServiceProvider.getDeviceSWName;
+        String macAddress = _activityServiceProvider.getDeviceMacAddress;
 
         debugPrint('swName>>$swName');
         debugPrint('macAddress>>$macAddress');
@@ -282,7 +290,7 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
         debugPrint('syncFailureTimeOut>>$syncFailureTimeOut');
         if(Platform.isAndroid){
           if (syncFailureTimeOut > 1) {
-           // something went wrong
+            // something went wrong
             setState(() {
               isReConnectStatus = true;
             });
@@ -295,14 +303,14 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
       if (status == BandFitConstants.SC_SUCCESS) {
         //updateDeviceConnection(true);
         //if(_activityServiceProvider.getJsonWeatherData!=null && _activityServiceProvider.getJsonWeatherData.isNotEmpty){
-          //await Future.delayed(const Duration(milliseconds: 500));
+        //await Future.delayed(const Duration(milliseconds: 500));
         //  await _activityServiceProvider.setWeatherInfoSevenDays();
-          /*if (deviceConnectedBleWriteStatus) {
+        /*if (deviceConnectedBleWriteStatus) {
             debugPrint('deviceConnectedBleWriteStatus>>');
             updateDeviceConnection(true);
           }*/
-       // }else{
-          await updateDeviceConnection();
+        // }else{
+        await updateDeviceConnection();
         //}
       }
     }else if (result == BandFitConstants.SYNC_BLE_WRITE_SUCCESS) {
@@ -310,12 +318,12 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
         // bool deviceConnected = await _activityServiceProvider.checkIsDeviceConnected();
         //if (deviceConnected) {
         //if (mounted) {
-          setState(() {
-            deviceConnectedBleWriteStatus = true;
-            if (syncFailureTimeOut > 0) {
-              syncFailureTimeOut--;
-            }
-          });
+        setState(() {
+          deviceConnectedBleWriteStatus = true;
+          if (syncFailureTimeOut > 0) {
+            syncFailureTimeOut--;
+          }
+        });
         //}
         //}
       }
@@ -324,15 +332,16 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
         // connect successfully and data sync failed. Sync again after some time.
         //syncFailureTimeOut++;
         //if (mounted) {
-          setState(() {
-            syncFailureTimeOut++;
-          });
-       /// }
-          debugPrint('syncFailureTimeOut>> $syncFailureTimeOut');
+        setState(() {
+          syncFailureTimeOut++;
+        });
+        /// }
+        debugPrint('syncFailureTimeOut>> $syncFailureTimeOut');
         if (syncFailureTimeOut == 3) {
           if (deviceConnectedBleWriteStatus) {
             GlobalMethods.showAlertDialogWithFunction(context,syncFailed, syncFailedMsg, retryText, () async {
-              Navigator.of(context).pop();
+              // Navigator.of(context).pop();
+              GlobalMethods.navigatePopBack();
               validateTimeAndSync();
             });
           }
@@ -371,7 +380,7 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
                 debugPrint('last_connected_status>> $lastInitStatus');
               }else{
                 if (mounted) {
-                  Navigator.pop(context);
+                  GlobalMethods.navigatePopBack();
                   setState(() {
                     isReConnectStatus = false;
                   });
@@ -405,7 +414,8 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
             if (deviceConnectedBleWriteStatus) {
               _activityServiceProvider.updateSyncingView(false);
               GlobalMethods.showAlertDialogWithFunction(context,syncFailed, syncFailedMsg, retryText, () async {
-                Navigator.of(context).pop();
+                //Navigator.of(context).pop();
+                GlobalMethods.navigatePopBack();
                 validateTimeAndSync();
               });
             }
@@ -423,7 +433,8 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
             if (deviceConnectedBleWriteStatus) {
               _activityServiceProvider.updateSyncingView(false);
               GlobalMethods.showAlertDialogWithFunction(context,syncFailed, syncFailedMsg, retryText, () async {
-                Navigator.of(context).pop();
+                //Navigator.of(context).pop();
+                GlobalMethods.navigatePopBack();
                 validateTimeAndSync();
               });
             }
@@ -441,7 +452,8 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
             if (deviceConnectedBleWriteStatus) {
               _activityServiceProvider.updateSyncingView(false);
               GlobalMethods.showAlertDialogWithFunction(context,syncFailed, syncFailedMsg, retryText, () async {
-                Navigator.of(context).pop();
+                // Navigator.of(context).pop();
+                GlobalMethods.navigatePopBack();
                 validateTimeAndSync();
               });
             }
@@ -456,20 +468,20 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
   }
 
   Future<void> updateDeviceConnection() async {
-      await _activityServiceProvider.updateUserDeviceConnection(false, true, 'SP', 'SP');
-      //await Future.delayed(const Duration(milliseconds: 500));
-      await _activityServiceProvider.updateDeviceBandLanguage();
-      debugPrint('isReConnectStatus>> $isReConnectStatus');
-      if(isReConnectStatus){
-        debugPrint('nav_pop>>440');
-        Navigator.pop(context);
-        setState(() {
-          isReConnectStatus = false;
-        });
-      }
-     // Utils.showToastMessage(context, deviceConnected);
-      refreshPage();
-      validateTimeAndSync();
+    await _activityServiceProvider.updateUserDeviceConnection(false, true, 'SP', 'SP');
+    //await Future.delayed(const Duration(milliseconds: 500));
+    await _activityServiceProvider.updateDeviceBandLanguage();
+    debugPrint('isReConnectStatus>> $isReConnectStatus');
+    if(isReConnectStatus){
+      debugPrint('nav_pop>>440');
+      GlobalMethods.navigatePopBack();
+      setState(() {
+        isReConnectStatus = false;
+      });
+    }
+    // Utils.showToastMessage(context, deviceConnected);
+    refreshPage();
+    validateTimeAndSync();
   }
 
   void refreshPage() {
@@ -480,7 +492,8 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
     GlobalMethods.showAlertDialogWithFunction(context, deviceDisconnected, deviceDisconnectedMsg, reconnectText, () async {
       debugPrint("pressed_ok");
       debugPrint('nav_pop>>457');
-      Navigator.of(context).pop();
+      //Navigator.of(context).pop();
+      GlobalMethods.navigatePopBack();
       //Utils.showLoading(context, false, title: reconnectingText);
       //await Future.delayed(const Duration(milliseconds: 500));
       bool statusReconnect = await _activityServiceProvider.connectDeviceWithMacAddress(context);
@@ -491,7 +504,7 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
           isReConnectStatus = true;
           reConnectMacAddress = _activityServiceProvider.getDeviceMacAddress;
         });
-        // Navigator.pop(context);
+        // GlobalMethods.navigatePopBack();
       }else{
         //await Future.delayed(const Duration(milliseconds: 500));
         String address = await _activityServiceProvider.getConnectedLastDeviceAddress();
@@ -501,15 +514,15 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
           bool lastInitStatus = await _activityServiceProvider.connectWithLastDeviceAddress();
           debugPrint('last_connected_status>> $lastInitStatus');
           debugPrint('nav_pop>>477');
-          Navigator.pop(context);
+          GlobalMethods.navigatePopBack();
         }else{
           debugPrint('nav_pop>>480');
-          Navigator.pop(context);
+          GlobalMethods.navigatePopBack();
         }
       }
 
       /*if (!statusReconnect) {
-        Navigator.pop(context);
+        GlobalMethods.navigatePopBack();
       }*/
     });
   }
@@ -617,13 +630,13 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
 
   goBack() {
     debugPrint('inside_go_back');
-    Navigator.pop(context);
-   // Get.offAll(const VitalMain());
+    GlobalMethods.navigatePopBack();
+    // Get.offAll(const VitalMain());
   }
 
   @override
   Widget build(BuildContext context) {
-   
+
     return GetBuilder<ActivityServiceProvider>(
       builder: (provider) {
         return WillPopScope(
@@ -645,7 +658,7 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
               leading:  Platform.isIOS? IconButton(
                 icon: const Icon(Icons.arrow_back_ios_outlined, color: Colors.black),
                 /*onPressed: () {
-                  Navigator.pop(context);
+                  GlobalMethods.navigatePopBack();
                 },*/
                 onPressed: () => goBack(),
               ) :null,
@@ -667,15 +680,13 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
                   //icon: Icon(Icons.watch_outlined, color: Colors.black),
                   icon: Image.asset('assets/fit/watch_selected.png', width: 32.0, height: 32.0, fit: BoxFit.fill),
                   onPressed: () {
-                    // navigate to device connections & goals seetings
+                    // navigate to device connections & goals settings
+
                     //if (!provider.isSyncProgress) {
-                    // Navigator.push(context,
-                    //   MaterialPageRoute(builder: (context) => DeviceSettings(fromLogin: fromLoginUI)),
-                    // );
+                    GlobalMethods.navigateTo( const DeviceSettings());
                     // }else{
                     //   showSyncMessage(context);
                     // }
-
                   },
                 ),
               ],
@@ -704,6 +715,8 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
                           children: [
                             GestureDetector(
                               onTap: () {
+
+                                //  GlobalMethods.navigateTo( WeatherInDetails(weatherModelData: provider.getWeatherModelData));
                                 // if (provider.getWeatherModelData != null) {
                                 //   Navigator.push(context,
                                 //     MaterialPageRoute(
@@ -807,6 +820,14 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
                                 child: GestureDetector(
                                   onTap: () {
                                     if (!provider.isSyncProgress) {
+                                      GlobalMethods.navigateTo(() => ActivitiesDetails(
+                                        displayTitle: Activity.steps.name,
+                                        activityLabel: Activity.steps.textLabel,
+                                        stepsView: true,
+                                        distanceView: false,
+                                        calView: false,
+                                      ));
+
                                       // Navigator.push(context,
                                       //     MaterialPageRoute(
                                       //       builder: (context) => ActivitiesDetails(
@@ -851,6 +872,13 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
                             GestureDetector(
                               onTap: () {
                                 if (!provider.isSyncProgress) {
+                                  GlobalMethods.navigateTo(ActivitiesDetails(
+                                    displayTitle: Activity.steps.name,
+                                    activityLabel: Activity.steps.textLabel,
+                                    stepsView: true,
+                                    distanceView: false,
+                                    calView: false,
+                                  ));
                                   // Navigator.push(context,
                                   //   MaterialPageRoute(
                                   //     builder: (context) => ActivitiesDetails(
@@ -883,6 +911,13 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
                             GestureDetector(
                               onTap: () {
                                 if (!provider.isSyncProgress) {
+                                  GlobalMethods.navigateTo(ActivitiesDetails(
+                                    displayTitle: Activity.distance.name,
+                                    activityLabel: Activity.distance.textLabel,
+                                    stepsView: true,
+                                    distanceView: false,
+                                    calView: false,
+                                  ));
                                   // Navigator.push(
                                   //   context,
                                   //   MaterialPageRoute(
@@ -916,6 +951,13 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
                             GestureDetector(
                               onTap: () {
                                 if (!provider.isSyncProgress) {
+                                  GlobalMethods.navigateTo(ActivitiesDetails(
+                                    displayTitle: Activity.cal.name,
+                                    activityLabel: Activity.cal.textLabel,
+                                    stepsView: true,
+                                    distanceView: false,
+                                    calView: false,
+                                  ));
                                   // Navigator.push(
                                   //   context,
                                   //   MaterialPageRoute(
@@ -1000,7 +1042,7 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
                                       TextButton(
                                         style: TextButton.styleFrom(
                                           //fixedSize: Size(86.0, 16.0),
-                                          primary: Colors.blue,
+                                          foregroundColor: Colors.blue,
                                           //onSurface: Colors.red,
                                         ),
                                         onPressed: () async {
@@ -1052,6 +1094,7 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
                     margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 4.0),
                     child: GestureDetector(
                       onTap: () {
+                        GlobalMethods.navigateTo(const AddDevice());
                         // Get.to(() => AddDevice());
                         // Navigator.push(context,
                         //   MaterialPageRoute(
@@ -1097,7 +1140,7 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
                     margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 4.0),
                     child: GestureDetector(
                       onTap: () {
-                        // Get.to(() => AddDevice());
+                        GlobalMethods.navigateTo(const AddDevice());
                         /*Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => AddDevice()),
@@ -1157,7 +1200,10 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
                     onTap: () {
                       //Get.to(() => VitalInDetail( displayTitle: 'Heart Rate'));
                       // if (!provider.isSyncProgress) {
-
+                      GlobalMethods.navigateTo(HeartRateDetail(
+                        displayTitle: Activity.heartRate.name,
+                        activityLabel: Activity.heartRate.textLabel,
+                      ));
                       // Navigator.push(context,
                       //   MaterialPageRoute(
                       //       builder: (context) => HeartRateDetail(
@@ -1185,6 +1231,12 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
                   child: GestureDetector(
                     onTap: () {
                       //if (!provider.isSyncProgress) {
+
+                      GlobalMethods.navigateTo(SleepDetails(
+                        displayTitle: Activity.sleepDuration.name,
+                        activityLabel: Activity.sleepDuration.textLabel,
+                      ));
+
                       // Navigator.push(
                       //   context,
                       //   MaterialPageRoute(
@@ -1215,6 +1267,11 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
                     onTap: () {
                       //Get.to(() => VitalInDetail( displayTitle: 'Blood Pressure'));
                       if (!provider.isSyncProgress) {
+                        GlobalMethods.navigateTo(BloodPressureDetails(
+                          displayTitle: Activity.bp.name,
+                          activityLabel: Activity.bp.textLabel,
+                        ));
+
                         // Navigator.push(
                         //   context,
                         //   MaterialPageRoute(
@@ -1247,6 +1304,11 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
                     child: GestureDetector(
                       onTap: () {
                         if (!provider.isSyncProgress) {
+
+                          GlobalMethods.navigateTo(OxygenDetail(
+                            displayTitle: Activity.oxygen.name,
+                            activityLabel: Activity.oxygen.textLabel,
+                          ));
                           // Navigator.push(context,
                           //   MaterialPageRoute(
                           //       builder: (context) => OxygenDetail(
@@ -1276,6 +1338,12 @@ class VitalMainState extends State<VitalMain> with TickerProviderStateMixin, Wid
                     onTap: () {
                       //Get.to(() => VitalInDetail( displayTitle: 'Body Temperature'));
                       //if (!provider.isSyncProgress) {
+
+                      GlobalMethods.navigateTo(TemperatureDetails(
+                        displayTitle: Activity.temperature.name,
+                        activityLabel: Activity.temperature.textLabel,
+                      ));
+
                       // Navigator.push(context,
                       //   MaterialPageRoute(
                       //       builder: (context) => TemperatureDetails(

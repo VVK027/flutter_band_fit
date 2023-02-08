@@ -1,11 +1,11 @@
 import 'package:flutter_band_fit_app/common/common_imports.dart';
 
-class CommonBandModel {
+/*class CommonBandModel {
   final DateTime time;
   final int dataPoint;
   final Color color;
   CommonBandModel({required this.time, required this.dataPoint, required this.color});
-}
+}*/
 
 class CommonDataResult {
   final DateTime time;

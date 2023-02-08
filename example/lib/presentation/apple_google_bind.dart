@@ -1,11 +1,13 @@
-/*
 import 'package:flutter_band_fit_app/common/common_imports.dart';
+import 'package:flutter_band_fit_app/presentation/vital_main.dart';
+import 'package:get/get.dart';
+import 'package:health/health.dart';
 
 class AppleGoogleBind extends StatefulWidget {
 
   final String deviceTypeName;
   const AppleGoogleBind({Key? key, required this.deviceTypeName}) : super(key: key);
-  
+
   @override
   State<StatefulWidget> createState() {
     return AppleGoogleBindState();
@@ -13,11 +15,11 @@ class AppleGoogleBind extends StatefulWidget {
 }
 
 class AppleGoogleBindState extends State<AppleGoogleBind> {
+  final  _myActivityServiceProvider = Get.put(ActivityServiceProvider());
 
   bool isBounded = false;
   List<HealthDataPoint> _healthDataList = [];
   AppState _state = AppState.DATA_NOT_FETCHED;
-  ActivityServiceProvider _myActivityServiceProvider;
   HealthFactory health = HealthFactory();
 
   bool physicalActStatus = false;
@@ -26,14 +28,37 @@ class AppleGoogleBindState extends State<AppleGoogleBind> {
   @override
   void initState() {
     super.initState();
-    _myActivityServiceProvider = Provider.of<ActivityServiceProvider>(context, listen: false);
+    //_myActivityServiceProvider = Provider.of<ActivityServiceProvider>(context, listen: false);
     // ask permissions for the physical activities, etc.
     initialize();
   }
+  Future<bool> askPhysicalGranted() async {
+    var permission = await Permission.activityRecognition.status;
+    print('permission>> $permission');
+    if (permission.isPermanentlyDenied) {
+      await openAppSettings();
+    } else if (await Permission.activityRecognition.request().isGranted) {
+      return true;
+    } else {
+      permission = await Permission.activityRecognition.request();
+    }
+    return permission.isGranted;
+  }
+  Future<bool> locationPermissionsGranted() async {
+    var permission = await Permission.location.status;
+    if (permission.isPermanentlyDenied) {
+      await openAppSettings();
+    } else if (await Permission.location.request().isGranted) {
+      return true;
+    } else {
+      permission = await Permission.location.request();
+    }
+    return permission.isGranted;
+  }
 
   Future<bool> initialize() async {
-    bool physicalAct = await Permissions.askPhysicalGranted();
-    bool locationGranted = await Permissions.locationPermissionsGranted();
+    bool physicalAct = await askPhysicalGranted();
+    bool locationGranted = await locationPermissionsGranted();
     debugPrint('physicalAct>> $physicalAct');
     setState(() {
       physicalActStatus = physicalAct;
@@ -87,34 +112,38 @@ class AppleGoogleBindState extends State<AppleGoogleBind> {
 
     if (accessWasGranted) {
       try {
-       // _myActivityServiceProvider.updateUserDeviceConnection(true, false, 'GoogleFit', '');
+        // _myActivityServiceProvider.updateUserDeviceConnection(true, false, 'GoogleFit', '');
         debugPrint('widget.deviceTypeName>> ${widget.deviceTypeName}');
 
         //_myActivityServiceProvider.updateUserDeviceConnection(true, false, widget.deviceTypeName, '');
         // await GlobalMethods.setDeviceType('fitBand');
-        Utils.showWaiting(context, false);
+        //Utils.showWaiting(context, false);
         // fetch new data
         List<HealthDataPoint> healthData = await health.getHealthDataFromTypes(fiftyDaysFromNow, endDateTime, types);
         debugPrint('healthData $healthData');
         // save all the new data points
         if(healthData.isNotEmpty){
           _healthDataList.addAll(healthData);
-          HealthDataPoint p = _healthDataList[0];
-          _myActivityServiceProvider.updateUserDeviceConnection(true, false, widget.deviceTypeName, p.sourceName);
-        }else{
-          _myActivityServiceProvider.updateUserDeviceConnection(true, false, widget.deviceTypeName, widget.deviceTypeName);
-        }
-        Navigator.pop(context);
-        setState(() {
-          isBounded = true;
-        });
-        //if(Platform.isIOS){
-          // await GlobalMethods.setDeviceName('Apple Fit Band');
-       // }else {
-         // _myActivityServiceProvider.updateUserDeviceConnection(true, false, 'GoogleFit', p.sourceName);
 
-          // await GlobalMethods.setDeviceName('Google Fit Band');
-          // await GlobalMethods.setDeviceAddress(p.sourceName);
+          _healthDataList = await HealthFactory.removeDuplicates(_healthDataList);
+
+
+          HealthDataPoint p = _healthDataList[0];
+          // _myActivityServiceProvider.updateUserDeviceConnection(true, false, widget.deviceTypeName, p.sourceName);
+        }else{
+          // _myActivityServiceProvider.updateUserDeviceConnection(true, false, widget.deviceTypeName, widget.deviceTypeName);
+        }
+        //GlobalMethods.navigatePopBack();
+        // setState(() {
+        //   isBounded = true;
+        // });
+        //if(Platform.isIOS){
+        // await GlobalMethods.setDeviceName('Apple Fit Band');
+        // }else {
+        // _myActivityServiceProvider.updateUserDeviceConnection(true, false, 'GoogleFit', p.sourceName);
+
+        // await GlobalMethods.setDeviceName('Google Fit Band');
+        // await GlobalMethods.setDeviceAddress(p.sourceName);
         //}
       } catch (e) {
         debugPrint("exception in fetching data: $e");
@@ -140,23 +169,14 @@ class AppleGoogleBindState extends State<AppleGoogleBind> {
     //if(_myActivityServiceProvider.getDeviceSWName == 'GoogleFit'){
     if(_myActivityServiceProvider.getDeviceSWName == widget.deviceTypeName){
       debugPrint('goDashboard_inside_if');
-      Navigator.pushAndRemoveUntil(context,
-          MaterialPageRoute(builder: (context) => GFitVitalMain(fromLogin: false)), (_) => false);
+      // Navigator.pushAndRemoveUntil(context,
+      //     MaterialPageRoute(builder: (context) => GFitVitalMain(fromLogin: false)), (_) => false);
+
     }else {
       debugPrint('goDashboard_inside_else');
-      //if(!Platform.isIOS){
-        Navigator.pushAndRemoveUntil(context,
-            MaterialPageRoute(builder: (context) => VitalMain(fetchWeather: false, fromLogin: false,)), (_) => false);
-     // }else{
-     //   Navigator.pop(context);
-     // }
-
+      // Get.offAll(const VitalMain());
+      Get.back();
     }
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //       builder: (context) => GFitVitalMain()),
-    // );
   }
 
   @override
@@ -170,8 +190,7 @@ class AppleGoogleBindState extends State<AppleGoogleBind> {
           backgroundColor: Colors.white,
           elevation: 2.0,
           title: Text(
-          //  Platform.isIOS ? 'Apple Health' : 'Google Fit',
-            Platform.isIOS ? Utils.tr(context, 'string_text_apple_health') :Utils.tr(context, 'string_text_google_fit'),
+            Platform.isIOS ? textAppleHealth : textGoogleFit,
             style: const TextStyle(
               color: Colors.black,
             ),
@@ -181,13 +200,12 @@ class AppleGoogleBindState extends State<AppleGoogleBind> {
             icon: const Icon(Icons.arrow_back_ios_outlined, color: Colors.black),
             onPressed: () => goDashboardPage(),
           ),
-          */
-/* actions: [
+          actions: [
             IconButton(
               icon: Icon(Icons.refresh_outlined, color: Colors.black),
               onPressed: () {},
             ),
-          ],*//*
+          ],
 
         ),
         body: SingleChildScrollView(
@@ -215,7 +233,7 @@ class AppleGoogleBindState extends State<AppleGoogleBind> {
                 alignment: Alignment.center,
                 margin: const EdgeInsets.all(4.0),
                 padding: const EdgeInsets.all(4.0),
-                child: Text(Platform.isIOS ? Utils.tr(context, 'string_text_apple_health') : Utils.tr(context, 'string_text_google_fit'),
+                child: Text(Platform.isIOS ? textAppleHealth : textGoogleFit,
                     style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w500)),
               ),
 
@@ -260,7 +278,7 @@ class AppleGoogleBindState extends State<AppleGoogleBind> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(Platform.isIOS ? Utils.tr(context, 'string_text_apple_health') : Utils.tr(context, 'string_text_google_fit'),
+                        child: Text(Platform.isIOS  ? textAppleHealth : textGoogleFit,
                             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                       ),
 
@@ -268,7 +286,7 @@ class AppleGoogleBindState extends State<AppleGoogleBind> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(4.0),
-                            child: Text(isBounded ? Utils.tr(context, 'string_text_unbound') : Utils.tr(context, 'string_text_bound'),
+                            child: Text(isBounded ? 'UnBound' : 'Bound',
                                 style: TextStyle(fontSize: 16, color: Colors.blueGrey.withOpacity(0.7),fontWeight: FontWeight.w400)),
                           ),
 
@@ -287,18 +305,6 @@ class AppleGoogleBindState extends State<AppleGoogleBind> {
                   ),
                 ),
               )
-              */
-/*Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    ]
-                ),
-              ),*//*
-
             ],
           ),
         ),
@@ -315,4 +321,3 @@ enum AppState {
   NO_DATA,
   AUTH_NOT_GRANTED
 }
-*/

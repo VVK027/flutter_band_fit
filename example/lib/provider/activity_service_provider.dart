@@ -1,6 +1,5 @@
 import 'package:flutter_band_fit_app/common/common_imports.dart';
 //import 'package:flutter_band_fit_app/model/weather_model.dart';
-import 'package:flutter_band_fit_app/utils/shared_service.dart';
 import 'package:get/get.dart';
 //import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
@@ -177,8 +176,8 @@ class ActivityServiceProvider extends GetxController {
   int _syncDialProgress = 0;
   int get getSyncDialProgress => _syncDialProgress;
 
-   int _dialDownloadProgress = 0;
-   int get getDialDownloadProgress => _dialDownloadProgress;
+  int _dialDownloadProgress = 0;
+  int get getDialDownloadProgress => _dialDownloadProgress;
 
   bool dialDownloading = false;
   bool get isDialDownloading => dialDownloading;
@@ -672,7 +671,7 @@ class ActivityServiceProvider extends GetxController {
     }else{
       bpDateTime = dateTime;
     }
-   // bpDateTime = dateTime;
+    // bpDateTime = dateTime;
     update();
   }
 
@@ -692,7 +691,7 @@ class ActivityServiceProvider extends GetxController {
     }else{
       bpDateTime = dateTime;
     }
-   // bpDateTime = dateTime;
+    // bpDateTime = dateTime;
     overAllBPData = jsonEncode(bpData);
     update();
     await sharedService.setOverAllBP(getOverAllBPData);
@@ -722,7 +721,7 @@ class ActivityServiceProvider extends GetxController {
     } else {
       temperatureValue = inFahrenheit;
     }
-   // temperatureDateTime = dateTime;
+    // temperatureDateTime = dateTime;
     if (dateTime.isNotEmpty) {
       var outputFormat = DateFormat(defaultDateTimeParseFormat);
       String outputDate = outputFormat.format(DateTime.parse(dateTime));
@@ -777,14 +776,14 @@ class ActivityServiceProvider extends GetxController {
     var jsonData = eventData['data'];
     switch (result) {
       case BandFitConstants.DEVICE_VERSION:
-        // data contains only "deviceVersion" returns as String
+      // data contains only "deviceVersion" returns as String
         String deviceID = jsonData['deviceVersion'].toString() ?? '';
         debugPrint('deviceVersion>>$deviceID');
         setDeviceVersion(deviceID);
         break;
 
       case BandFitConstants.BATTERY_STATUS:
-        // data contains only "deviceVersion"," batteryStatus" returns as String
+      // data contains only "deviceVersion"," batteryStatus" returns as String
         String batteryStat = jsonData['batteryStatus'].toString() ?? '';
         debugPrint('batteryStatus>>$batteryStat');
         setBatteryPercentage(batteryStat, true);
@@ -799,15 +798,15 @@ class ActivityServiceProvider extends GetxController {
               debugPrint('resultValue>> $resultValue');
               if (Platform.isIOS) {
                 if (resultValue.isNotEmpty) {
-                 if(resultValue == "70"){
-                   // DND OFF
-                   await updateDoNotDisturbEnable(false, getMotorVibrateEnabled, getMessagesOnEnabled);
-                 }else if(resultValue == "78"){
-                   // DND ON
-                   await updateDoNotDisturbEnable(true, getMotorVibrateEnabled, getMessagesOnEnabled);
-                 }else{
+                  if(resultValue == "70"){
+                    // DND OFF
+                    await updateDoNotDisturbEnable(false, getMotorVibrateEnabled, getMessagesOnEnabled);
+                  }else if(resultValue == "78"){
+                    // DND ON
+                    await updateDoNotDisturbEnable(true, getMotorVibrateEnabled, getMessagesOnEnabled);
+                  }else{
 
-                 }
+                  }
                 }
               }else{
                 if (jsonData['decimal'] != null &&
@@ -927,7 +926,7 @@ class ActivityServiceProvider extends GetxController {
         }
         break;
 
-     /* case BandFitConstants.WATCH_DIAL_PROGRESS_STATUS:
+    /* case BandFitConstants.WATCH_DIAL_PROGRESS_STATUS:
         if (status == BandFitConstants.SC_SUCCESS) {
           int syncProcess = jsonData['progress'] ?? 0;
           debugPrint('syncProcess>> $syncProcess');
@@ -940,7 +939,7 @@ class ActivityServiceProvider extends GetxController {
           }
         }
         break;*/
-      /* case BandFitConstants.DEVICE_DISCONNECTED:
+    /* case BandFitConstants.DEVICE_DISCONNECTED:
       // data object will be empty always
         if (status == BandFitConstants.SC_SUCCESS) {
           //Global.showAlertDialog(context, "Invalid Device", "The device trying to connect is not a valid device or unsupported to connect the data or fetch the data");
@@ -1063,7 +1062,7 @@ class ActivityServiceProvider extends GetxController {
 
 
       case BandFitConstants.STEPS_REAL_TIME:
-        // real time sync as well as the daily sync
+      // real time sync as well as the daily sync
         if (status == BandFitConstants.SC_SUCCESS) {
           String steps = jsonData['steps'].toString() ?? '0';
           String distance = jsonData['distance'].toString() ?? '-';
@@ -1075,7 +1074,7 @@ class ActivityServiceProvider extends GetxController {
         break;
 
       case BandFitConstants.HR_REAL_TIME:
-        // real time sync as well as the daily sync
+      // real time sync as well as the daily sync
         if (status == BandFitConstants.SC_SUCCESS) {
           String hr = jsonData['hr'].toString();
           debugPrint('inside hr $hr');
@@ -1084,7 +1083,7 @@ class ActivityServiceProvider extends GetxController {
         break;
 
       case BandFitConstants.HR_24_REAL_RESULT:
-        // real time sync as well as the daily sync
+      // real time sync as well as the daily sync
         if (status == BandFitConstants.SC_SUCCESS) {
           String maxHr = jsonData['maxHr'].toString();
           String minHr = jsonData['minHr'].toString();
@@ -1125,7 +1124,7 @@ class ActivityServiceProvider extends GetxController {
         }
         break;
       case BandFitConstants.CALLBACK_EXCEPTION:
-        // something went wrong, which falls in the exception
+      // something went wrong, which falls in the exception
         debugPrint('event_exception_occurred');
         break;
       default:
@@ -1242,7 +1241,7 @@ class ActivityServiceProvider extends GetxController {
     return await flutterBandFit.prepareSendOnlineDialData();
   }
 
- /* Future<String> listenWatchDialProgress() async {
+  /* Future<String> listenWatchDialProgress() async {
     return await _mobileSmartWatch.listenWatchDialProgress();
   }*/
 
@@ -1392,52 +1391,52 @@ class ActivityServiceProvider extends GetxController {
   Future<String> setDefaultLocationCoOrdinates(double lat, double long) async {
     deviceLatitude = lat;
     deviceLongitude = long;
-   // Placemark address = await GlobalMethods.getLocationAddress(getDeviceLatitude, getDeviceLongitude);
-   // if (address !=null) {
-      // debugPrint('address.name>> ${address.name}');
-      // debugPrint('address.street>> ${address.street}');
-      // debugPrint('address.isoCountryCode>> ${address.isoCountryCode}');
-      // debugPrint('address.country>> ${address.country}');
-      // debugPrint('address.postal>> ${address.postalCode}');
-      // debugPrint('address.administrativeArea>> ${address.administrativeArea}');
-      // debugPrint('address.subAdministrativeArea>> ${address.subAdministrativeArea}');
-      // debugPrint('address.locality>> ${address.locality}');
-      // debugPrint('address.subLocality>> ${address.subLocality}');
-      // debugPrint('address.thoroughfare>> ${address.thoroughfare}');
-      // debugPrint('address.subThoroughfare>> ${address.subThoroughfare}');
+    // Placemark address = await GlobalMethods.getLocationAddress(getDeviceLatitude, getDeviceLongitude);
+    // if (address !=null) {
+    // debugPrint('address.name>> ${address.name}');
+    // debugPrint('address.street>> ${address.street}');
+    // debugPrint('address.isoCountryCode>> ${address.isoCountryCode}');
+    // debugPrint('address.country>> ${address.country}');
+    // debugPrint('address.postal>> ${address.postalCode}');
+    // debugPrint('address.administrativeArea>> ${address.administrativeArea}');
+    // debugPrint('address.subAdministrativeArea>> ${address.subAdministrativeArea}');
+    // debugPrint('address.locality>> ${address.locality}');
+    // debugPrint('address.subLocality>> ${address.subLocality}');
+    // debugPrint('address.thoroughfare>> ${address.thoroughfare}');
+    // debugPrint('address.subThoroughfare>> ${address.subThoroughfare}');
 
-      // if (address.locality != null && address.locality.isNotEmpty) {
-      //   deviceCityName = address.locality;
-      // } else {
-      //   if (address.name != null && address.name.isNotEmpty) {
-      //     deviceCityName = address.name;
-      //   } else {
-      //     if (address.administrativeArea != null &&
-      //         address.administrativeArea.isNotEmpty) {
-      //       deviceCityName = address.administrativeArea;
-      //     } else {
-      //       deviceCityName = address.subAdministrativeArea ?? '';
-      //     }
-      //   }
-      // }
+    // if (address.locality != null && address.locality.isNotEmpty) {
+    //   deviceCityName = address.locality;
+    // } else {
+    //   if (address.name != null && address.name.isNotEmpty) {
+    //     deviceCityName = address.name;
+    //   } else {
+    //     if (address.administrativeArea != null &&
+    //         address.administrativeArea.isNotEmpty) {
+    //       deviceCityName = address.administrativeArea;
+    //     } else {
+    //       deviceCityName = address.subAdministrativeArea ?? '';
+    //     }
+    //   }
+    // }
 
+    update();
+    sharedService.setLatitude(getDeviceLatitude.toString());
+    sharedService.setLongitude(getDeviceLongitude.toString());
+    sharedService.setDeviceCityName(getDeviceCityName);
+    //return address.isoCountryCode ?? '';
+
+    // }else{
+    if (sharedService.getDeviceCityName() != null && sharedService.getLatitude() != null) {
+      deviceCityName = sharedService.getDeviceCityName()!;
+      deviceLatitude = double.tryParse(sharedService.getLatitude()!)!;
+      deviceLongitude = double.tryParse(sharedService.getLongitude()!)!;
       update();
       sharedService.setLatitude(getDeviceLatitude.toString());
       sharedService.setLongitude(getDeviceLongitude.toString());
       sharedService.setDeviceCityName(getDeviceCityName);
-      //return address.isoCountryCode ?? '';
-
-   // }else{
-      if (sharedService.getDeviceCityName() != null && sharedService.getLatitude() != null) {
-        deviceCityName = sharedService.getDeviceCityName()!;
-        deviceLatitude = double.tryParse(sharedService.getLatitude()!)!;
-        deviceLongitude = double.tryParse(sharedService.getLongitude()!)!;
-        update();
-        sharedService.setLatitude(getDeviceLatitude.toString());
-        sharedService.setLongitude(getDeviceLongitude.toString());
-        sharedService.setDeviceCityName(getDeviceCityName);
-      }
-      return '';
+    }
+    return '';
     //}
 
   }
@@ -1594,13 +1593,13 @@ class ActivityServiceProvider extends GetxController {
 
   Future<void> enable24HourTest() async {
     //if (status.toString().trim() == BandFitConstants.SC_INIT) {
-      // await Future.delayed(const Duration(milliseconds: 500));
-      await set24HrHeartRate(true);
-      // await Future.delayed(const Duration(milliseconds: 500));
-      await set24HrOxygen(true);
-      // await Future.delayed(const Duration(milliseconds: 500));
-      await set24HrTemperatureTest(true);
-   // }
+    // await Future.delayed(const Duration(milliseconds: 500));
+    await set24HrHeartRate(true);
+    // await Future.delayed(const Duration(milliseconds: 500));
+    await set24HrOxygen(true);
+    // await Future.delayed(const Duration(milliseconds: 500));
+    await set24HrTemperatureTest(true);
+    // }
   }
   Future<void> updateUserParamsWatch(bool enableHRTemperature) async {
     var userParams = {
@@ -1628,11 +1627,11 @@ class ActivityServiceProvider extends GetxController {
     debugPrint('userParamsStatus>>>$status');
     if (enableHRTemperature) {
       if (status.toString().trim() == BandFitConstants.SC_INIT) {
-       // await Future.delayed(const Duration(milliseconds: 500));
+        // await Future.delayed(const Duration(milliseconds: 500));
         await set24HrHeartRate(true);
-       // await Future.delayed(const Duration(milliseconds: 500));
+        // await Future.delayed(const Duration(milliseconds: 500));
         await set24HrOxygen(true);
-       // await Future.delayed(const Duration(milliseconds: 500));
+        // await Future.delayed(const Duration(milliseconds: 500));
         await set24HrTemperatureTest(true);
       }
     }
@@ -1679,7 +1678,7 @@ class ActivityServiceProvider extends GetxController {
     messagesOnEnabled = isMessageOn;
     motorVibrateEnabled = isMotorOn;
     if (disturbTimeSwitch) {
-      String enabledDNDTime = fromHr.padLeft(2, "0") + ":" + fromMin.padLeft(2, "0") + ":" + toHour.padLeft(2, "0") + ":" + toMin.padLeft(2, "0");
+      String enabledDNDTime = "${fromHr.padLeft(2, "0")}:${fromMin.padLeft(2, "0")}:${toHour.padLeft(2, "0")}:${toMin.padLeft(2, "0")}";
       dndEnabledTime = enabledDNDTime;
     }
 
@@ -1796,7 +1795,7 @@ class ActivityServiceProvider extends GetxController {
 
   // Individual Sync starts here
   Future<void> updateStepsSyncSDKData(List<dynamic> stepsData) async {
-   // log('inside_stepsData>> $stepsData');
+    // log('inside_stepsData>> $stepsData');
     List<StepsMainModel> stepsTodayList = await getSelectedDayStepsData(stepsData);
     debugPrint('stepsTodayList1>> ${stepsTodayList.length}');
     if (stepsTodayList.isNotEmpty) {
@@ -1838,8 +1837,8 @@ class ActivityServiceProvider extends GetxController {
     }else{
       if (getCalenderDateTimeList.isNotEmpty) {
         for (String calender in getCalenderDateTimeList) {
-         //int steps = 0;
-         // DateTime dateTime = DateTime.tryParse(calender);
+          //int steps = 0;
+          // DateTime dateTime = DateTime.tryParse(calender);
           stepsData.where((element) => element['calender'].toString().trim() == calender).toList().forEach((item) {
             //steps = steps + int.parse(element['step'].toString());
             double distance =  double.tryParse(item['distance'].toString())!;
@@ -1861,12 +1860,12 @@ class ActivityServiceProvider extends GetxController {
             //   "calories": stepsMainModel.calories, //common
             //   "distance": stepsMainModel.distance, //common
             // };
-           // sendWalkingData.add(jsonData);
+            // sendWalkingData.add(jsonData);
           });
         }
       }
     }
-   // overAllStepsData
+    // overAllStepsData
   }
 
   Future<void> updateSleepSyncSDKData(List<dynamic> sleepData) async {
@@ -2170,7 +2169,7 @@ class ActivityServiceProvider extends GetxController {
         var sendSpo2 = [];
 
         if (stepsData != null && stepsData.length > 0) {
-         // log('inside_stepsData>> $stepsData');
+          // log('inside_stepsData>> $stepsData');
           List<StepsMainModel> stepsTodayList = await getCurrentDaySteps(stepsData);
           debugPrint('stepsTodayList1>> ${stepsTodayList.length}');
           if (stepsTodayList.isNotEmpty) {
@@ -2453,8 +2452,8 @@ class ActivityServiceProvider extends GetxController {
 
         totalStepsValue = totalStepsValue + int.parse(stepsDataModel.step);
 
-      //  debugPrint('stepsDataModel.calories>> ${double.parse(stepsDataModel.calories).toStringAsFixed(2)}');
-       // debugPrint('stepsDataModel.distance>> ${double.parse(stepsDataModel.distance).round()}');
+        //  debugPrint('stepsDataModel.calories>> ${double.parse(stepsDataModel.calories).toStringAsFixed(2)}');
+        // debugPrint('stepsDataModel.distance>> ${double.parse(stepsDataModel.distance).round()}');
 
         totalCal = totalCal + double.parse(stepsDataModel.calories);
         totalDistance = totalDistance + double.parse(stepsDataModel.distance);
@@ -2466,14 +2465,14 @@ class ActivityServiceProvider extends GetxController {
       debugPrint('totalCal>> $totalCal');
       debugPrint('totalDistance>> $totalDistance');
 
-     // debugPrint('stepsDataModel.distance>> ${totalDistance.round()}');
-     // debugPrint('stepsDataModel.distance>> ${totalDistance.roundToDouble()}');
+      // debugPrint('stepsDataModel.distance>> ${totalDistance.round()}');
+      // debugPrint('stepsDataModel.distance>> ${totalDistance.roundToDouble()}');
 
       if (totalDistance > 0.0) {
         totalDistance = totalDistance.roundToDouble() / 1000; //Converting in kM
       }
 
-     // debugPrint('totalDistance12>> $totalDistance');
+      // debugPrint('totalDistance12>> $totalDistance');
       // if (totalCal > 0.0) {
       //   totalCal = totalCal.roundToDouble() / 1000; //Converting in kCal
       // }
@@ -2691,7 +2690,7 @@ class ActivityServiceProvider extends GetxController {
 
       if (sleepDataList.isNotEmpty) {
         for (var element in sleepDataList) {
-         // debugPrint('sleep_element>> $element');
+          // debugPrint('sleep_element>> $element');
           try{
             DateTime startDateTime = DateTime.parse(element['startDateTime'].toString());//.toLocal();
             DateTime endDateTime = DateTime.parse(element['endDateTime'].toString());//.toLocal();
@@ -2700,7 +2699,7 @@ class ActivityServiceProvider extends GetxController {
             int inMinutes = endDateTime.difference(startDateTime).inMinutes;
             //int inSeconds = endDateTime.difference(startDateTime).inSeconds;
             //debugPrint('inHours>> $inHours, inMinutes>> $inMinutes');
-           // int diffNum =  inMinutes;
+            // int diffNum =  inMinutes;
             if (element['state'].toString() == "0") {//deep
               totalDeepNum = totalDeepNum + inMinutes;
             }
@@ -2715,7 +2714,7 @@ class ActivityServiceProvider extends GetxController {
             debugPrint('sleep_exp>> $e');
           }
           //int startNum = int.parse(element['startTimeNum'].toString());
-         // int endNum = int.parse(element['endTimeNum'].toString());
+          // int endNum = int.parse(element['endTimeNum'].toString());
           //int diffNum = endNum - startNum;
           // if (element['state'].toString() == "0") {
           //   //deep
@@ -2993,7 +2992,7 @@ class ActivityServiceProvider extends GetxController {
     for (var data in temperatureData) {
       //debugPrint('temp_data >> $data');
       if (data['calender'].toString().trim() == findCalenderTime) {
-       // debugPrint('todayTempData>> $data');
+        // debugPrint('todayTempData>> $data');
         tempList.add(BandTempModel.fromJson(data));
       }
     }
@@ -3011,17 +3010,17 @@ class ActivityServiceProvider extends GetxController {
         String hourStr ='';
         String minStr ='';
         if (hour < 9){
-          hourStr = "0"+hour.toString();
+          hourStr = "0$hour";
         }else{
           hourStr = hour.toString();
         }
         if (min < 9){
-          minStr = "0"+min.toString();
+          minStr = "0$min";
         }else{
           minStr = min.toString();
         }
 
-        return hourStr+':'+minStr;
+        return '$hourStr:$minStr';
 
       }else{
         return timeString;
@@ -3051,11 +3050,11 @@ class ActivityServiceProvider extends GetxController {
             timeStr = timesList[0].padLeft(2,"0")+timesList[1].padLeft(2,"0")+timesList[2].padLeft(2,"0");
           }else{
             // convert it double digits
-            timeStr = timesList[0].padLeft(2,"0")+timesList[1].padLeft(2,"0")+'00';
+            timeStr = '${timesList[0].padLeft(2,"0")}${timesList[1].padLeft(2,"0")}00';
           }
-          return outputDate+'T'+ timeStr;
+          return '${outputDate}T$timeStr';
         }else{
-          return outputDate+'T'+ '000000';
+          return '${outputDate}T000000';
         }
         //return outputDate+' '+ verifyTimeMinutes(time.trim());
         //return outputDate+'T'+ timeStr;
@@ -3134,7 +3133,7 @@ class ActivityServiceProvider extends GetxController {
     //also update the weather conditions along language
     //await callWeatherForecast(getDeviceLatitude.toString(), getDeviceLongitude.toString(), false);
   }
-  
+
 
   /*Future<void> callWeatherForecast(String lat, String lon, [bool syncWeatherAPI]) async {
     String lang = await Utils.getLanguage();
@@ -3278,7 +3277,7 @@ class ActivityServiceProvider extends GetxController {
       }
     }
   }*/
-  
+
   int getDeviceWeatherCode(int weatherCode) {
     //print('input_weatherCode>> $weatherCode');
     int returnValue = 999;

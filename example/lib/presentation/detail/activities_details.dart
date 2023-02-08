@@ -33,7 +33,7 @@ class ActivitiesDetailsState extends State<ActivitiesDetails> {
   DateTime currentDateTime = DateTime.now();
   String dayDateTitle = '';
   bool dayNextDisable = true;
-  List<CommonBandModel> stepsDayDataList = [];
+  List<CommonDataResult> stepsDayDataList = [];
   String dayTotalSteps = '0';
   String dayTotalDistance = '0.0';
   String dayTotalCalories = '0.0';
@@ -66,7 +66,7 @@ class ActivitiesDetailsState extends State<ActivitiesDetails> {
     _tooltipWeekBehavior = TooltipBehavior(enable: true, canShowMarker: false, header: '');
     super.initState();
     Future.delayed(Duration.zero, () {
-       initializeData();
+      initializeData();
     });
     //initializeData();
   }
@@ -96,7 +96,7 @@ class ActivitiesDetailsState extends State<ActivitiesDetails> {
     String month = calMonths[dateTime.month - 1];
     String week = calWeeks[dateTime.weekday - 1];
     setState(() {
-     // dayDateTitle = firstDay + ', ' + month + ' (' + week + ')';
+      // dayDateTitle = firstDay + ', ' + month + ' (' + week + ')';
       dayDateTitle = '$firstDay, $month ($week)';
     });
     try {
@@ -114,16 +114,16 @@ class ActivitiesDetailsState extends State<ActivitiesDetails> {
         if (stepsMainModelList.isNotEmpty) {
           StepsMainModel stepsMainModel = stepsMainModelList[0];
           List<BandStepsModel> stepsDataList = stepsMainModelList[0].dataList;
-          List<CommonBandModel> dataRepList = [];
+          List<CommonDataResult> dataRepList = [];
           double totalSteps = double.tryParse(stepsMainModel.steps)!;
           double totalDistance = double.tryParse(stepsMainModel.distance)!;
           double totalCalories = double.tryParse(stepsMainModel.calories)!;
           if (stepsDataList.isNotEmpty) {
             for (var element in stepsDataList) {
-              int stepValue = int.tryParse(element.step)!;
+              double stepValue = double.parse(element.step);
               List<String> times = element.time.split(':');
               DateTime _dateTime = DateTime(dateTime.year, dateTime.month, dateTime.day, int.tryParse(times[0])!, int.tryParse(times[1])!);
-              dataRepList.add(CommonBandModel(
+              dataRepList.add(CommonDataResult(
                   time: _dateTime,
                   dataPoint: stepValue,
                   //color: stepValue >= totalTargetedSteps ?completeColor :inCompletedColor
@@ -289,7 +289,7 @@ class ActivitiesDetailsState extends State<ActivitiesDetails> {
     if (monthList.isNotEmpty) {
       String year = monthList[0].year.toString();
       //String lastDay = monthList[monthList.length - 1].day.toString();
-     // String month = tempCalenderMonth[monthList[0].month - 1];
+      // String month = tempCalenderMonth[monthList[0].month - 1];
       String month = calMonths[monthList[0].month - 1];
       setState(() {
         monthlyDateTitle ='$month $year';
@@ -413,7 +413,7 @@ class ActivitiesDetailsState extends State<ActivitiesDetails> {
           ),
           actions: const <Widget>[],
           bottom: TabBar(
-          //  labelColor: Colors.blueGrey,
+            //  labelColor: Colors.blueGrey,
             labelColor: Colors.black,
             unselectedLabelColor: Colors.white,
             indicatorSize: TabBarIndicatorSize.label,
@@ -484,7 +484,7 @@ class ActivitiesDetailsState extends State<ActivitiesDetails> {
                 iconSize: 18,
                 onPressed: () async {
                   // debugPrint('date time>> ${currentMonthDateTime[0]}');
-                 // Utils.showWaiting(context, false);
+                  // Utils.showWaiting(context, false);
                   DateTime time = GlobalMethods.getOneDayBackward(currentMonthDateTime[0]);
                   List<DateTime> pastNextMonth = await GlobalMethods.getMonthyDatesListByTime(time);
 
@@ -494,7 +494,7 @@ class ActivitiesDetailsState extends State<ActivitiesDetails> {
                   });
 
                   await setMonthDateTitle(currentMonthDateTime);
-                 // Navigator.pop(context);
+                  // GlobalMethods.navigatePopBack();
                 },
                 icon: const Icon(Icons.arrow_back_ios_outlined, color: Colors.black),
               ),
@@ -768,7 +768,7 @@ class ActivitiesDetailsState extends State<ActivitiesDetails> {
                   });
 
                   await setWeekDateTitle(currentWeekDateTime);
-                 // Navigator.pop(context);
+                  // GlobalMethods.navigatePopBack();
                 },
                 icon: const Icon(Icons.arrow_back_ios_outlined, color: Colors.black),
               ),
@@ -790,7 +790,7 @@ class ActivitiesDetailsState extends State<ActivitiesDetails> {
                     }
                   });
                   await setWeekDateTitle(currentWeekDateTime);
-                 // Navigator.pop(context);
+                  // GlobalMethods.navigatePopBack();
                 },
                 icon: Icon(Icons.arrow_forward_ios_outlined,
                     color: weekNextDisable
@@ -827,150 +827,150 @@ class ActivitiesDetailsState extends State<ActivitiesDetails> {
           height: 2.0,
         ),
         GridView.extent(
-         // crossAxisSpacing: 5,
-         // mainAxisSpacing: 5,
-         padding: const EdgeInsets.all(2.0),
-         maxCrossAxisExtent: 200,
-         scrollDirection: Axis.vertical,
-         shrinkWrap: true,
-         //crossAxisCount: 2,
-         childAspectRatio: (2 / 1),
-         mainAxisSpacing: 4.0,
-         crossAxisSpacing: 4.0,
-        /* gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          // crossAxisSpacing: 5,
+          // mainAxisSpacing: 5,
+          padding: const EdgeInsets.all(2.0),
+          maxCrossAxisExtent: 200,
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          //crossAxisCount: 2,
+          childAspectRatio: (2 / 1),
+          mainAxisSpacing: 4.0,
+          crossAxisSpacing: 4.0,
+          /* gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
            crossAxisCount: 3,
            crossAxisSpacing: 5.0,
            mainAxisSpacing: 5.0,
          ),*/
-        // maxCrossAxisExtent: 2.0,
-         children: [
-           Card(
-            shape: RoundedRectangleBorder(
-               side: const BorderSide(color: Colors.white70, width: 1),
-               borderRadius: BorderRadius.circular(8),
-             ),
-            child: Container(
-             // padding: EdgeInsets.all(2.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Image.asset(
-                      'assets/fit/footsteps.png',
-                      width: 45.0,
-                      height: 45.0,
-                      fit: BoxFit.fill,
+          // maxCrossAxisExtent: 2.0,
+          children: [
+            Card(
+              shape: RoundedRectangleBorder(
+                side: const BorderSide(color: Colors.white70, width: 1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Container(
+                // padding: EdgeInsets.all(2.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Image.asset(
+                        'assets/fit/footsteps.png',
+                        width: 45.0,
+                        height: 45.0,
+                        fit: BoxFit.fill,
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.all(4.0),
-                          child: Text(textTotalSteps,  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Text(GlobalMethods.formatNumber(int.parse(weekTotalSteps)), style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 16)),
-                        ),
-                      ],
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.all(4.0),
+                            child: Text(textTotalSteps,  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text(GlobalMethods.formatNumber(int.parse(weekTotalSteps)), style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 16)),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-           Card(
-            shape: RoundedRectangleBorder(
-               side: const BorderSide(color: Colors.white70, width: 1),
-               borderRadius: BorderRadius.circular(8),
-             ),
-            child: Container(
-              child:  Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Image.asset(
-                      'assets/fit/distance.png',
-                      width: 45.0,
-                      height: 45.0,
-                      fit: BoxFit.fill,
+            Card(
+              shape: RoundedRectangleBorder(
+                side: const BorderSide(color: Colors.white70, width: 1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Container(
+                child:  Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Image.asset(
+                        'assets/fit/distance.png',
+                        width: 45.0,
+                        height: 45.0,
+                        fit: BoxFit.fill,
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.all(4.0),
-                          child: Text(textDistance,  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Text('$weekTotalDistance kms',  style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 16)),
-                        ),
-                      ],
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.all(4.0),
+                            child: Text(textDistance,  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text('$weekTotalDistance kms',  style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 16)),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-           Card(
-            shape: RoundedRectangleBorder(
-               side: const BorderSide(color: Colors.white70, width: 1),
-               borderRadius: BorderRadius.circular(8),
-             ),
-            child: Container(
-              //alignment: Alignment.center,
-              child:  Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Image.asset(
-                      'assets/fit/kcal.png',
-                      width: 45.0,
-                      height: 45.0,
-                      fit: BoxFit.fill,
+            Card(
+              shape: RoundedRectangleBorder(
+                side: const BorderSide(color: Colors.white70, width: 1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Container(
+                //alignment: Alignment.center,
+                child:  Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Image.asset(
+                        'assets/fit/kcal.png',
+                        width: 45.0,
+                        height: 45.0,
+                        fit: BoxFit.fill,
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.all(4.0),
-                          child: Text(textCalories, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Text('$weekTotalCalories kCal', style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 16)),
-                        ),
-                      ],
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.all(4.0),
+                            child: Text(textCalories, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Text('$weekTotalCalories kCal', style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 16)),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-       ),
+          ],
+        ),
       ],
     );
   }
@@ -1000,7 +1000,7 @@ class ActivitiesDetailsState extends State<ActivitiesDetails> {
                   });
 
                   await setCurrentDateTitle(currentDateTime);
-                 // Navigator.pop(context);
+                  // GlobalMethods.navigatePopBack();
                 },
                 icon: const Icon(Icons.arrow_back_ios_outlined, color: Colors.black),
               ),
@@ -1013,18 +1013,18 @@ class ActivitiesDetailsState extends State<ActivitiesDetails> {
                 onPressed: dayNextDisable
                     ? null
                     : () async {
-                        //Utils.showWaiting(context, false);
-                        DateTime nextDate =
-                            GlobalMethods.getOneDayForward(currentDateTime);
-                        setState(() {
-                          if (checkNextDayAvailable(todayTime, nextDate)) {
-                            dayNextDisable = true;
-                          }
-                          currentDateTime = nextDate;
-                        });
-                        await setCurrentDateTitle(currentDateTime);
-                       // Navigator.pop(context);
-                      },
+                  //Utils.showWaiting(context, false);
+                  DateTime nextDate =
+                  GlobalMethods.getOneDayForward(currentDateTime);
+                  setState(() {
+                    if (checkNextDayAvailable(todayTime, nextDate)) {
+                      dayNextDisable = true;
+                    }
+                    currentDateTime = nextDate;
+                  });
+                  await setCurrentDateTitle(currentDateTime);
+                  // GlobalMethods.navigatePopBack();
+                },
                 icon: Icon(Icons.arrow_forward_ios_outlined,
                     color: dayNextDisable
                         ? Colors.grey.withOpacity(0.5)
@@ -1129,11 +1129,11 @@ class ActivitiesDetailsState extends State<ActivitiesDetails> {
                       GlobalMethods.formatNumber(int.parse(dayTotalSteps)),
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                          /*color: int.parse(dayTotalSteps) <
+                        /*color: int.parse(dayTotalSteps) <
                                   totalTargetedSteps - 1500
                               ? inCompletedColor
                               : completeColor,*/
-                          //color: int.parse(dayTotalSteps),
+                        //color: int.parse(dayTotalSteps),
                           fontWeight: FontWeight.w400,
                           fontSize: 14.0),
                     ),
@@ -1264,18 +1264,18 @@ class ActivitiesDetailsState extends State<ActivitiesDetails> {
     );
   }
 
-  List<ColumnSeries<CommonBandModel, DateTime>> getDaySeriesDataList(DateTime currentDateTime) {
+  List<ColumnSeries<CommonDataResult, DateTime>> getDaySeriesDataList(DateTime currentDateTime) {
     return [
-      ColumnSeries<CommonBandModel, DateTime>(
+      ColumnSeries<CommonDataResult, DateTime>(
           name: currentDateTime.toString().substring(0, 10),
           dataSource: stepsDayDataList,
-          xValueMapper: (CommonBandModel x, int xx) => x.time,
-          yValueMapper: (CommonBandModel sales, _) => sales.dataPoint,
+          xValueMapper: (CommonDataResult x, int xx) => x.time,
+          yValueMapper: (CommonDataResult sales, _) => sales.dataPoint,
           color: darkStepsColor,
           width: stepsDayDataList.length <= 4 ? 0.15 : 0.5
-          //pointColorMapper: (datum, index) =>  datum.color,
-          // markerSettings: const MarkerSettings(isVisible: true),
-          )
+        //pointColorMapper: (datum, index) =>  datum.color,
+        // markerSettings: const MarkerSettings(isVisible: true),
+      )
     ];
   }
 
@@ -1285,7 +1285,7 @@ class ActivitiesDetailsState extends State<ActivitiesDetails> {
         //name: currentDateTime.toString().substring(0,10),
         xValueMapper:  (WeekStepsData sales, _) => sales.weekName,
         yValueMapper:(WeekStepsData sales, _) => sales.dataPoint,
-       // dataLabelMapper: (datum, index) => datum.dateTime.toString().substring(0,10),
+        // dataLabelMapper: (datum, index) => datum.dateTime.toString().substring(0,10),
         dataLabelMapper: (datum, index) => '${datum.dateTime.day.toString().padLeft(2,'0')}-${datum.dateTime.month.toString().padLeft(2,'0')}',
         /*onCreateShader: (ShaderDetails details) {
           return ui.Gradient.linear(

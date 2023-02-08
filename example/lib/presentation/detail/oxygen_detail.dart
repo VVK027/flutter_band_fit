@@ -17,7 +17,7 @@ class OxygenDetail extends StatefulWidget {
 
 class OxygenDetailState extends State<OxygenDetail> {
 
-   final  _activityServiceProvider = Get.put(ActivityServiceProvider());
+  final  _activityServiceProvider = Get.put(ActivityServiceProvider());
   late TooltipBehavior _tooltipBehavior;
 
 
@@ -28,12 +28,12 @@ class OxygenDetailState extends State<OxygenDetail> {
   bool isNextDisable = true;
 
   dynamic oxygenData;
-  List<CommonBandModel> _dataRepresentList = [];
+  List<CommonDataResult> _dataRepresentList = [];
 
   String maxOxygenValue ='--', minOxygenValue = '--';
   String currentOxygen ='--';
 
- // late String lang;
+  // late String lang;
   bool statusReconnected = false;
   var oxyJsonData ={};
 
@@ -41,7 +41,7 @@ class OxygenDetailState extends State<OxygenDetail> {
 
   @override
   void initState() {
-  // _activityServiceProvider = Provider.of<ActivityServiceProvider>(context, listen: false);
+    // _activityServiceProvider = Provider.of<ActivityServiceProvider>(context, listen: false);
     _tooltipBehavior = TooltipBehavior(enable: true, canShowMarker: false);
     super.initState();
     listenResults();
@@ -61,87 +61,87 @@ class OxygenDetailState extends State<OxygenDetail> {
     // resume bp listeners
     _activityServiceProvider.pauseEventListeners();
     _activityServiceProvider.receiveBPListeners(
-        onDataUpdate: (data) async {
-          debugPrint("receiveOxyListeners>> $data");
-          var eventData = jsonDecode(data);
-          String result = eventData['result'].toString();
-          String status = eventData['status'].toString();
-          var jsonData = eventData['data'];
-          if (result == BandFitConstants.DEVICE_CONNECTED){
-            if (status == BandFitConstants.SC_SUCCESS) {
-              if (statusReconnected) {
-                Navigator.pop(context);
-                await startOxygenTest();
-              }
+      onDataUpdate: (data) async {
+        debugPrint("receiveOxyListeners>> $data");
+        var eventData = jsonDecode(data);
+        String result = eventData['result'].toString();
+        String status = eventData['status'].toString();
+        var jsonData = eventData['data'];
+        if (result == BandFitConstants.DEVICE_CONNECTED){
+          if (status == BandFitConstants.SC_SUCCESS) {
+            if (statusReconnected) {
+              GlobalMethods.navigatePopBack();
+              await startOxygenTest();
             }
-          }else if (result == BandFitConstants.OXYGEN_TEST_STARTED) {
-            if (status == BandFitConstants.SC_SUCCESS) {
+          }
+        }else if (result == BandFitConstants.OXYGEN_TEST_STARTED) {
+          if (status == BandFitConstants.SC_SUCCESS) {
             // Utils.showToastMessage(context,Utils.tr(context, 'string_text_test_started'));
-            }
-          } else if (result == BandFitConstants.OXYGEN_TEST_FINISHED){
-            if (status == BandFitConstants.SC_SUCCESS) {
-              // String calender = GlobalMethods.convertBandReadableCalender(DateTime.now());
-              //Map<String, dynamic> overAllData =  await _activityServiceProvider.fetchOxygenByDate(calender);
-              // debugPrint('overAllData>> $overAllData');
+          }
+        } else if (result == BandFitConstants.OXYGEN_TEST_FINISHED){
+          if (status == BandFitConstants.SC_SUCCESS) {
+            // String calender = GlobalMethods.convertBandReadableCalender(DateTime.now());
+            //Map<String, dynamic> overAllData =  await _activityServiceProvider.fetchOxygenByDate(calender);
+            // debugPrint('overAllData>> $overAllData');
 
-              debugPrint('oxyJsonData>> $oxyJsonData');
-              debugPrint('latestOxyTime>> $latestOxyTime');
-              //print('latestOxyStartTime>> $latestOxyStartTime');
+            debugPrint('oxyJsonData>> $oxyJsonData');
+            debugPrint('latestOxyTime>> $latestOxyTime');
+            //print('latestOxyStartTime>> $latestOxyStartTime');
 
-              //if (oxyJsonData !=null && latestOxyStartTime !=null) {
-              if (!Platform.isIOS) {
-                if (oxyJsonData !=null ) {
-                  await updateOxygenData(oxyJsonData);
-                }else{
-                  Navigator.pop(context);
-                }
+            //if (oxyJsonData !=null && latestOxyStartTime !=null) {
+            if (!Platform.isIOS) {
+              if (oxyJsonData !=null ) {
+                await updateOxygenData(oxyJsonData);
+              }else{
+                GlobalMethods.navigatePopBack();
               }
             }
-          }/*else if(result == BandFitConstants.OXYGEN_TEST_TIME_OUT){
-            Navigator.pop(context);
+          }
+        }/*else if(result == BandFitConstants.OXYGEN_TEST_TIME_OUT){
+            GlobalMethods.navigatePopBack();
             //Utils.showToastMessage(context,'BP Test TimeOut !');
           // Utils.showToastMessage(context,Utils.tr(context, 'string_bp_test_time_out'));
           }else if(result == BandFitConstants.OXYGEN_TEST_ERROR){
-            Navigator.pop(context);
+            GlobalMethods.navigatePopBack();
             //Utils.showToastMessage(context,'Something went wrong, retry again..!');
           // Utils.showToastMessage(context,Utils.tr(context, 'string_something_went_wrong'));
           }*/else if (result == BandFitConstants.OXYGEN_RESULT){
-            if (status == BandFitConstants.SC_SUCCESS) {
-              debugPrint('jsonData>> $jsonData');
-              // {calender: 20220614, value: 97, startDate: 202206141705, time: 17:05}
-              String oxyValue = jsonData['value'].toString();
-              String oxyTime = jsonData['time'].toString();
-              // String oxyStartDate = jsonData['startDate'];
-              String oxyCalender = jsonData['calender'].toString();
-              setState(() {
-                latestOxyValue = oxyValue;
-                latestOxyTime = oxyTime;
-                //latestOxyStartTime = oxyStartDate;
-                latestOxyCalender = oxyCalender;
-                oxyJsonData = jsonData;
-              });
+          if (status == BandFitConstants.SC_SUCCESS) {
+            debugPrint('jsonData>> $jsonData');
+            // {calender: 20220614, value: 97, startDate: 202206141705, time: 17:05}
+            String oxyValue = jsonData['value'].toString();
+            String oxyTime = jsonData['time'].toString();
+            // String oxyStartDate = jsonData['startDate'];
+            String oxyCalender = jsonData['calender'].toString();
+            setState(() {
+              latestOxyValue = oxyValue;
+              latestOxyTime = oxyTime;
+              //latestOxyStartTime = oxyStartDate;
+              latestOxyCalender = oxyCalender;
+              oxyJsonData = jsonData;
+            });
 
-              if (Platform.isIOS) {
-                if (oxyJsonData !=null ) {
-                  await updateOxygenData(oxyJsonData);
-                }else{
-                  Navigator.pop(context);
-                }
+            if (Platform.isIOS) {
+              if (oxyJsonData !=null ) {
+                await updateOxygenData(oxyJsonData);
+              }else{
+                GlobalMethods.navigatePopBack();
               }
             }
-          }else{
-            debugPrint("receiveOxyListeners::>> no result found");
-            /* if (mounted) {
+          }
+        }else{
+          debugPrint("receiveOxyListeners::>> no result found");
+          /* if (mounted) {
             _activityServiceProvider.updateEventResult(eventData, context);
            }*/
-          }
-        },
-        onError: (error) {
-          debugPrint("receiveOxyListenersError::>> $error");
-        },
-        onDone: () {
-          debugPrint("receiveOxyListenersOnDone::>> ");
-        },
+        }
+      },
+      onError: (error) {
+        debugPrint("receiveOxyListenersError::>> $error");
+      },
+      onDone: () {
+        debugPrint("receiveOxyListenersOnDone::>> ");
+      },
     );
     _activityServiceProvider.resumeBPListeners();
     /*_activityServiceProvider.receiveOxygenListeners(
@@ -169,15 +169,15 @@ class OxygenDetailState extends State<OxygenDetail> {
               if (oxyJsonData !=null ) {
                 await updateOxygenData(oxyJsonData);
               }else{
-                Navigator.pop(context);
+                GlobalMethods.navigatePopBack();
               }
             }
           }*//*else if(result == BandFitConstants.OXYGEN_TEST_TIME_OUT){
-            Navigator.pop(context);
+            GlobalMethods.navigatePopBack();
             //Utils.showToastMessage(context,'BP Test TimeOut !');
           // Utils.showToastMessage(context,Utils.tr(context, 'string_bp_test_time_out'));
           }else if(result == BandFitConstants.OXYGEN_TEST_ERROR){
-            Navigator.pop(context);
+            GlobalMethods.navigatePopBack();
             //Utils.showToastMessage(context,'Something went wrong, retry again..!');
           // Utils.showToastMessage(context,Utils.tr(context, 'string_something_went_wrong'));
           }*//*else if (result == BandFitConstants.OXYGEN_RESULT){
@@ -198,7 +198,7 @@ class OxygenDetailState extends State<OxygenDetail> {
               // if(high!=null ){
               //   updateBPData(high, low);
               // }else{
-              //   Navigator.pop(context);
+              //   GlobalMethods.navigatePopBack();
               // }
             }
           }else{
@@ -212,9 +212,9 @@ class OxygenDetailState extends State<OxygenDetail> {
     }, onDone: () {
       debugPrint("receiveOxyListenersOnDone::>> ");
     });*/
-   // _activityServiceProvider.resumeOxygenListeners();
+    // _activityServiceProvider.resumeOxygenListeners();
   }
-  
+
   @override
   void dispose() {
     _activityServiceProvider.cancelBPEvents();
@@ -222,7 +222,7 @@ class OxygenDetailState extends State<OxygenDetail> {
     //_activityServiceProvider.pauseOxygenListeners();
     super.dispose();
   }
-  
+
   Future<void> updateOxygenData(dynamic addData) async {
     DateTime dateTime = DateTime.now();
     if (oxygenData != null) {
@@ -237,8 +237,8 @@ class OxygenDetailState extends State<OxygenDetail> {
 
       debugPrint('oxygenDataAfterLength>> ${oxygenData.length}');
       await setDateTitle(dateTime);
-      Navigator.pop(context);
-    // Utils.showToastMessage(context,Utils.tr(context, 'string_test_completed'));
+      GlobalMethods.navigatePopBack();
+      // Utils.showToastMessage(context,Utils.tr(context, 'string_test_completed'));
       _activityServiceProvider.updateOxygenSaturation(oxyValue, oxyDateTime);
     }
   }
@@ -260,7 +260,7 @@ class OxygenDetailState extends State<OxygenDetail> {
     String month = calMonths[dateTime.month - 1];
     String week = calWeeks[dateTime.weekday - 1];
     setState(() {
-     // dateTitle = firstDay + ', ' + month + ' (' + week + ')';
+      // dateTitle = firstDay + ', ' + month + ' (' + week + ')';
       dateTitle = '$firstDay, $month ($week)';
     });
     try {
@@ -269,11 +269,11 @@ class OxygenDetailState extends State<OxygenDetail> {
         List<BandOxygenModel> smartOxygenList = await _activityServiceProvider.getCurrentDayOxygenData(oxygenData, calender);
         debugPrint('smartOxygenList>> $smartOxygenList -- ${smartOxygenList.length}');
         if (smartOxygenList.isNotEmpty) {
-          List<CommonBandModel> dataRepList = [];
+          List<CommonDataResult> dataRepList = [];
           //List<double> dataPointsList =[];
-          int sumOfDataPoints = 0;
-          int largestValue = int.parse(smartOxygenList[0].value);
-          int smallestValue = int.parse(smartOxygenList[0].value);
+          double sumOfDataPoints = 0.0;
+          double largestValue = double.parse(smartOxygenList[0].value);
+          double smallestValue = double.parse(smartOxygenList[0].value);
 
           String currentValue = smartOxygenList[smartOxygenList.length - 1].value;
 
@@ -281,7 +281,7 @@ class OxygenDetailState extends State<OxygenDetail> {
             List<String> times = element.time.split(':');
             DateTime _dateTime = DateTime(dateTime.year, dateTime.month, dateTime.day, int.tryParse(times[0])!, int.tryParse(times[1])!);
             //final dateTime = DateTime.parse(element.time);
-            int dataPoint = int.parse(element.value);
+            double dataPoint = double.parse(element.value);
             //debugPrint('oxyDataPoint>> $dataPoint');
             if (dataPoint > largestValue) {
               largestValue = dataPoint;
@@ -291,8 +291,8 @@ class OxygenDetailState extends State<OxygenDetail> {
             }
             // dataPointsList.add(dataPoint);
             sumOfDataPoints = sumOfDataPoints + dataPoint;
-           // dataRepList.add(DayDataRep(time: _dateTime, dataPoint: dataPoint, color: inCompletedColor));
-            dataRepList.add(CommonBandModel(time: _dateTime, dataPoint: dataPoint, color:oxygenColorLight));
+            // dataRepList.add(DayDataRep(time: _dateTime, dataPoint: dataPoint, color: inCompletedColor));
+            dataRepList.add(CommonDataResult(time: _dateTime, dataPoint: dataPoint, color:oxygenColorLight));
           }
 
           double average = (sumOfDataPoints / smartOxygenList.length);
@@ -464,7 +464,7 @@ class OxygenDetailState extends State<OxygenDetail> {
                   majorGridLines: const MajorGridLines(width: 0),
                   majorTickLines: const MajorTickLines(size: 4),
 
-                 // dateFormat: DateFormat('''h:mm\na'''),
+                  // dateFormat: DateFormat('''h:mm\na'''),
                   minimum: DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day,0,0,0),
                   maximum: DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day,24,0,0),
                   labelIntersectAction: AxisLabelIntersectAction.wrap,
@@ -504,7 +504,7 @@ class OxygenDetailState extends State<OxygenDetail> {
                       width: 10,
                       borderWidth: 1,
                     ),
-                   // hideDelay: 1.0 * 1000,
+                    // hideDelay: 1.0 * 1000,
                     // hide delay 2 secs
                     activationMode: ActivationMode.singleTap,
                     tooltipAlignment: ChartAlignment.near,
@@ -541,7 +541,7 @@ class OxygenDetailState extends State<OxygenDetail> {
                 ),
                 // Text('77 Times/minutes'),
                 Text('$currentOxygen %',style: const TextStyle(
-                  fontWeight: FontWeight.bold
+                    fontWeight: FontWeight.bold
                 ),),
               ],
             ),
@@ -656,22 +656,22 @@ class OxygenDetailState extends State<OxygenDetail> {
     String status = await _activityServiceProvider.startOxygenTest();
     if (status == BandFitConstants.SC_INIT) {
       //Utils.showWaiting(context, false);
-    // Utils.showToastMessage(context, Utils.tr(context, 'string_text_test_started'));
+      // Utils.showToastMessage(context, Utils.tr(context, 'string_text_test_started'));
     } else if (status == BandFitConstants.SC_DISCONNECTED) {
       // disconnected
     } else if (status == BandFitConstants.SC_NOT_SUPPORTED) {
       // disconnected
-    // Utils.showToastMessage(context, Utils.tr(context, 'oxy_not_support'));
+      // Utils.showToastMessage(context, Utils.tr(context, 'oxy_not_support'));
     }
   }
-  List<LineSeries<CommonBandModel, DateTime>> getSeriesDataList(DateTime currentDateTime) {
+  List<LineSeries<CommonDataResult, DateTime>> getSeriesDataList(DateTime currentDateTime) {
     return [
-      LineSeries<CommonBandModel, DateTime>(
+      LineSeries<CommonDataResult, DateTime>(
         name: currentDateTime.toString().substring(0, 10),
         dataSource: _dataRepresentList,
-        xValueMapper: (CommonBandModel x, int xx) => x.time,
-        yValueMapper: (CommonBandModel sales, _) => sales.dataPoint,
-       // color: inCompletedColor,
+        xValueMapper: (CommonDataResult x, int xx) => x.time,
+        yValueMapper: (CommonDataResult sales, _) => sales.dataPoint,
+        // color: inCompletedColor,
         color: oxygenColorLight,
         //pointColorMapper: (datum, index) =>  datum.color,
         markerSettings: const MarkerSettings(isVisible: true),
@@ -682,7 +682,8 @@ class OxygenDetailState extends State<OxygenDetail> {
   void retryConnection(BuildContext context) {
     GlobalMethods.showAlertDialogWithFunction(context, deviceDisconnected, deviceDisconnectedMsg, reconnectText, () async {
       debugPrint("pressed_ok");
-      Navigator.of(context).pop();
+      //Navigator.of(context).pop();
+      GlobalMethods.navigatePopBack();
       //Utils.showLoading(context, false, title: reconnectingText);
       bool statusReconnect = await _activityServiceProvider.connectDeviceWithMacAddress(context);
       setState(() {
