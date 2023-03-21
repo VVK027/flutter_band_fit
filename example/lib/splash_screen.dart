@@ -22,7 +22,7 @@ class VideoState extends State<Splash> with SingleTickerProviderStateMixin {
 
   void navigationPage() {
     //Get.to(() => const VitalMain());
-    GlobalMethods.navigateTo(VitalMain());
+    GlobalMethods.navigateTo(const VitalMain());
     /* Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => const HomePage()));*/
   }

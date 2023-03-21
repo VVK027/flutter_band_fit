@@ -122,10 +122,9 @@ class AddDeviceState extends State<AddDevice> {
             if (status == BandFitConstants.SC_SUCCESS) {
               //await compute(_activityServiceProvider.updateUserParamsWatch,true);
               await checkDeviceConnectReset();
-
-              // if(Platform.isIOS){
-              //   await _activityServiceProvider.updateUserParamsWatch(false);
-              // }
+              if(Platform.isIOS){
+                await _activityServiceProvider.updateUserParamsWatch(false);
+              }
               // await _activityServiceProvider.updateUserParamsWatch(true);
             }
           }

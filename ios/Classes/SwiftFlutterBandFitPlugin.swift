@@ -618,7 +618,10 @@ public class SwiftFlutterBandFitPlugin: NSObject, FlutterPlugin, FlutterStreamHa
         if connectedModel != nil {
             //let status = connectedModel!.isConnected
             //connectResult = status as NSNumber
-            connectAddress = connectedModel!.advertisementAddress
+            //connectAddress = connectedModel!.advertisementAddress
+            if connectedModel?.advertisementAddress != nil{
+               connectAddress = connectedModel?.advertisementAddress ?? ""
+            }
             result(connectAddress)
         }else{
             result(connectAddress)
