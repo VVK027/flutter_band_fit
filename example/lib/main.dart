@@ -1,6 +1,4 @@
-import 'package:flutter_band_fit_app/app_theme.dart';
 import 'package:flutter_band_fit_app/common/common_imports.dart';
-import 'package:flutter_band_fit_app/controllers/theme_controller.dart';
 import 'package:flutter_band_fit_app/splash_screen.dart';
 import 'package:get/get.dart';
 

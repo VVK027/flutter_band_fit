@@ -9,6 +9,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:required="false" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"  android:required="false"/>
 
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <!-- NRF upgrade required -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -21,7 +23,7 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH" android:required="false"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:required="false"/>
-
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" android:required="false" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" android:required="false" />
@@ -94,5 +96,9 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAVIY7F_tO1duFMf-HrSfNSYH56cw7YaAg" />
     </application>
 </manifest>

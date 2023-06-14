@@ -2,6 +2,7 @@ import 'package:flutter_band_fit_app/common/common_imports.dart';
 import 'package:flutter_band_fit_app/presentation/vital_main.dart';
 import 'package:get/get.dart';
 import 'package:health/health.dart';
+import 'dart:developer';
 
 class AppleGoogleBind extends StatefulWidget {
 
@@ -75,7 +76,7 @@ class AppleGoogleBindState extends State<AppleGoogleBind> {
 
     DateTime endDateTime = DateTime.now();
 
-    var fiftyDaysFromNow = endDateTime.subtract(const Duration(days: 1));
+    var fiftyDaysFromNow = endDateTime.subtract(const Duration(days: 10));
 
     HealthFactory health = HealthFactory();
 
@@ -87,22 +88,34 @@ class AppleGoogleBindState extends State<AppleGoogleBind> {
       HealthDataType.HEART_RATE,
       HealthDataType.STEPS,
       HealthDataType.BLOOD_OXYGEN,
+      HealthDataType.BLOOD_GLUCOSE,
       HealthDataType.BODY_TEMPERATURE,
       HealthDataType.SLEEP_IN_BED,
       HealthDataType.BLOOD_PRESSURE_SYSTOLIC,
       HealthDataType.BLOOD_PRESSURE_DIASTOLIC,
+      //HealthDataType.ELECTROCARDIOGRAM, only on IOS
+      HealthDataType.WORKOUT,
     ];
     final permissions = [
-      HealthDataAccess.READ_WRITE,
-      HealthDataAccess.READ_WRITE,
-      HealthDataAccess.READ_WRITE,
-      HealthDataAccess.READ_WRITE,
-      HealthDataAccess.READ_WRITE,
-      HealthDataAccess.READ_WRITE,
-      HealthDataAccess.READ_WRITE,
-      HealthDataAccess.READ_WRITE,
-      HealthDataAccess.READ_WRITE,
-      HealthDataAccess.READ_WRITE,
+      HealthDataAccess.READ,
+      HealthDataAccess.READ,
+      HealthDataAccess.READ,
+      HealthDataAccess.READ,
+      HealthDataAccess.READ,
+      HealthDataAccess.READ,
+      HealthDataAccess.READ,
+      HealthDataAccess.READ,
+      HealthDataAccess.READ,
+      HealthDataAccess.READ,
+      HealthDataAccess.READ,
+      //HealthDataAccess.READ,
+      HealthDataAccess.READ,
+    ];
+
+    List<HealthDataType> sleepTypes = [
+      HealthDataType.SLEEP_ASLEEP,
+      HealthDataType.SLEEP_AWAKE,
+      HealthDataType.SLEEP_IN_BED,
     ];
 
     setState(() => _state = AppState.FETCHING_DATA);
@@ -118,17 +131,39 @@ class AppleGoogleBindState extends State<AppleGoogleBind> {
         //_myActivityServiceProvider.updateUserDeviceConnection(true, false, widget.deviceTypeName, '');
         // await GlobalMethods.setDeviceType('fitBand');
         //Utils.showWaiting(context, false);
+        int? steps;
+        try {
+          steps = await health.getTotalStepsInInterval(fiftyDaysFromNow, endDateTime);
+        } catch (error) {
+          print("Caught exception in getTotalStepsInInterval: $error");
+        }
+
+        print('Total number of steps: $steps');
+
         // fetch new data
         List<HealthDataPoint> healthData = await health.getHealthDataFromTypes(fiftyDaysFromNow, endDateTime, types);
-        debugPrint('healthData $healthData');
+
+        List<HealthDataPoint> healthSleepData = await health.getHealthDataFromTypes(fiftyDaysFromNow, endDateTime, sleepTypes);
+
+
+        //debugPrint('healthSleepData $healthSleepData');
+        debugPrint('healthData ${healthData.length}');
+        debugPrint('healthSleepData ${healthSleepData.length}');
+
+
         // save all the new data points
         if(healthData.isNotEmpty){
           _healthDataList.addAll(healthData);
+          _healthDataList.addAll(healthSleepData);
+          _healthDataList = HealthFactory.removeDuplicates(_healthDataList);
+          debugPrint('_healthDataList ${_healthDataList.length}');
 
-          _healthDataList = await HealthFactory.removeDuplicates(_healthDataList);
-
-
-          HealthDataPoint p = _healthDataList[0];
+          _healthDataList.forEach((HealthDataPoint dataPoint) {
+            print('dataPoint.unit>> ${dataPoint.unit}');
+            print('dataPoint.dataType>> ${dataPoint.type}');
+            print('dataPoint.value>> ${dataPoint.value}');
+          });
+          //HealthDataPoint p = _healthDataList[0];
           // _myActivityServiceProvider.updateUserDeviceConnection(true, false, widget.deviceTypeName, p.sourceName);
         }else{
           // _myActivityServiceProvider.updateUserDeviceConnection(true, false, widget.deviceTypeName, widget.deviceTypeName);
@@ -319,5 +354,8 @@ enum AppState {
   FETCHING_DATA,
   DATA_READY,
   NO_DATA,
-  AUTH_NOT_GRANTED
+  AUTH_NOT_GRANTED,
+  DATA_ADDED,
+  DATA_NOT_ADDED,
+  STEPS_READY,
 }

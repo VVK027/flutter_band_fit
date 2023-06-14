@@ -6,10 +6,10 @@ class Splash extends StatefulWidget {
   const Splash({Key? key}) : super(key: key);
 
   @override
-  VideoState createState() => VideoState();
+  SplashState createState() => SplashState();
 }
 
-class VideoState extends State<Splash> with SingleTickerProviderStateMixin {
+class SplashState extends State<Splash> with SingleTickerProviderStateMixin {
   var _visible = true;
 
   late AnimationController animationController;
