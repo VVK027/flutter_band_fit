@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-  package="com.vk.flutter_band_fit">
+    package="com.vk.flutter_band_fit">
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
@@ -52,8 +52,7 @@
 
     <!--<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />-->
 
-    <application
-        android:allowBackup="false">
+    <application android:allowBackup="false">
         <!--android:label="mobile_smart_watch_example"
         tools:replace="android:label"-->
         <service
@@ -64,8 +63,8 @@
         <!--  改成你的key，请联系sdk开发者申请提供 -->
         <meta-data
             android:name="YCAPPKEY"
-            tools:replace="android:value"
-            android:value="dcd05f241b65ec7b6af0bbe6f05145c2" />
+            android:value="dcd05f241b65ec7b6af0bbe6f05145c2"
+            tools:replace="android:value" />
 
         <!--Solve the bug of using ProtocolVersion to throw exception on android9.0-->
         <uses-library
@@ -73,10 +72,13 @@
             android:required="true" />
 
         <!--DFU firmware upgrade-->
-        <activity android:name="com.yc.pedometer.update.NotificationActivity"  android:exported="true"/>
-        <service android:name="com.yc.pedometer.update.DfuService"
+        <activity
+            android:name="com.yc.pedometer.update.NotificationActivity"
+            android:exported="true" />
+        <service
+            android:name="com.yc.pedometer.update.DfuService"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
 
         <meta-data
             android:name="flutterEmbedding"

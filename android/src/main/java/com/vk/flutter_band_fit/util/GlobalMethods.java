@@ -13,8 +13,8 @@ public class GlobalMethods {
 
     public static String getTempIntoFahrenheit(float tempInCelsius) {
         //  (°C × 9/5) + 32
-        double infoValue =  (tempInCelsius *1.8000)+32.00;
-       // return new DecimalFormat("0.00").format(infoValue);
+        double infoValue = (tempInCelsius * 1.8000) + 32.00;
+        // return new DecimalFormat("0.00").format(infoValue);
         return new DecimalFormat("0.0").format(infoValue);
     }
 
@@ -34,7 +34,7 @@ public class GlobalMethods {
         long s = seconds % 60;
         long m = (seconds / 60) % 60;
         long h = (seconds / (60 * 60)) % 24;
-        return String.format(Locale.getDefault(),"%02d:%02d:%02d", h,m,s);
+        return String.format(Locale.getDefault(), "%02d:%02d:%02d", h, m, s);
     }
 
     public static String getIntegerToHHmm(int minutes) {
@@ -78,7 +78,7 @@ public class GlobalMethods {
 
     public static String formatTime(long millis) {
         long secs = millis / 1000;
-        return String.format(Locale.getDefault(),"%02d:%02d:%02d", secs / 3600, (secs % 3600) / 60, secs % 60);
+        return String.format(Locale.getDefault(), "%02d:%02d:%02d", secs / 3600, (secs % 3600) / 60, secs % 60);
     }
 
     public String fromMinutesToHHmm(int minutes) {
