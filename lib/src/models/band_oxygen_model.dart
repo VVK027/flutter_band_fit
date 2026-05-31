@@ -1,38 +1,29 @@
-part of flutter_band_fit;
+part of '../../flutter_band_fit.dart';
 
 class BandOxygenModel {
   final String calender;
   final String time;
   final String value;
-  //final String startDate;  //yyyyMMddHHmmss
 
   const BandOxygenModel({
     required this.calender,
     required this.time,
     required this.value,
-   // required this.startDate,
   });
 
-  factory BandOxygenModel.fromJson(Map<String, dynamic> data) => BandOxygenModel(
-    calender: data['calender'].toString(),
-    time: data['time'].toString(),
-    value: data['value'].toString(),
-    //startDate: data['startDate'].toString(),
-  );
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> formData = <String, dynamic>{};
-    formData['calender'] = calender;
-    formData['time'] = time;
-    formData['value'] = value;
-   // formData['startDate'] = this.startDate;
-    return formData;
+  factory BandOxygenModel.fromJson(Map<String, dynamic> data) {
+    return BandOxygenModel(
+      calender: '${data['calender']}',
+      time: '${data['time']}',
+      value: '${data['value']}',
+    );
   }
 
-/* @override
-  // TODO: implement props
-  List<Object> get props => [index, name, alias, address, type, bondState];
-
-  @override
-  bool get stringify => false;*/
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'calender': calender,
+      'time': time,
+      'value': value,
+    };
+  }
 }

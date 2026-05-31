@@ -1,4 +1,4 @@
-part of flutter_band_fit;
+part of '../../flutter_band_fit.dart';
 
 // spirometer supported user params enum
 enum MeasureMode { ALL, FVC, VC, MVV, MV }
@@ -218,7 +218,7 @@ class BandFitConstants {
 
  // static const String SMART_EVENTS = "smartEvents";
 
-  static const  String BROADCAST_ACTION_NAME = "com.vk.band_fit";
+  static const  String BROADCAST_ACTION_NAME = "com.vvk.band_fit";
 
   //requires only for IOS
 //  static const String DC_APP_Id = "dcAppId";

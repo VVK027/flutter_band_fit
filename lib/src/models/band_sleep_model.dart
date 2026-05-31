@@ -1,64 +1,49 @@
-part of flutter_band_fit;
+part of '../../flutter_band_fit.dart';
 
 class BandSleepModel {
   final String calender;
-  final String state; // deep sleep: 0, Light sleep: 1,  awake: 2
+  final String state;
   final String startTime;
   final String endTime;
- // final String diffTime;
-
   final String startTimeNum;
   final String endTimeNum;
-
   final String startDateTime;
   final String endDateTime;
-  //final String diffTimeNum;
 
   const BandSleepModel({
     required this.calender,
     required this.state,
     required this.startTime,
     required this.endTime,
-   // required this.diffTime,
     required this.startTimeNum,
     required this.endTimeNum,
     required this.startDateTime,
     required this.endDateTime,
-   // required this.diffTimeNum
   });
 
-  factory BandSleepModel.fromJson(Map<String, dynamic> data) => BandSleepModel(
-    calender: data['calender'].toString(),
-    state: data['state'].toString(), // deep sleep: 0, Light sleep: 1,  awake: 2
-    startTime: data['startTime'].toString(),
-    endTime: data['endTime'].toString(),
-   // diffTime: data['diffTime'].toString(),
-    startTimeNum: data['startTimeNum'].toString(),
-    endTimeNum: data['endTimeNum'].toString(),
-    startDateTime: data['startDateTime'].toString(),
-    endDateTime: data['endDateTime'].toString(),
-   // diffTimeNum: data['diffTimeNum'].toString(),
-  );
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> formData = <String, dynamic>{};
-    formData['calender'] = calender;
-    formData['state'] = state;
-    formData['startTime'] = startTime;
-    formData['endTime'] = endTime;
-    //formData['diffTime'] = diffTime;
-    formData['startTimeNum'] = startTimeNum;
-    formData['endTimeNum'] = endTimeNum;
-    formData['startDateTime'] = startDateTime;
-    formData['endDateTime'] = endDateTime;
-   // formData['diffTimeNum'] = diffTimeNum;
-    return formData;
+  factory BandSleepModel.fromJson(Map<String, dynamic> data) {
+    return BandSleepModel(
+      calender: '${data['calender']}',
+      state: '${data['state']}',
+      startTime: '${data['startTime']}',
+      endTime: '${data['endTime']}',
+      startTimeNum: '${data['startTimeNum']}',
+      endTimeNum: '${data['endTimeNum']}',
+      startDateTime: '${data['startDateTime']}',
+      endDateTime: '${data['endDateTime']}',
+    );
   }
 
-/* @override
-  // TODO: implement props
-  List<Object> get props => [index, name, alias, address, type, bondState];
-
-  @override
-  bool get stringify => false;*/
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'calender': calender,
+      'state': state,
+      'startTime': startTime,
+      'endTime': endTime,
+      'startTimeNum': startTimeNum,
+      'endTimeNum': endTimeNum,
+      'startDateTime': startDateTime,
+      'endDateTime': endDateTime,
+    };
+  }
 }
