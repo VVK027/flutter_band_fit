@@ -1,16 +1,36 @@
 # flutter_band_fit_example
 
-Demonstrates how to use the flutter_band_fit plugin.
+Reference app for the [flutter_band_fit](../README.md) plugin — pair a UTE smart band, sync vitals, and manage device settings.
 
-## Getting Started
+## Run
 
-This project is a starting point for a Flutter application.
+```bash
+flutter pub get
+flutter run
+```
 
-A few resources to get you started if this is your first Flutter project:
+Requires Bluetooth and (on Android 12+) runtime BLE/location permissions.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Architecture and docs
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This example app follows a **feature-first clean architecture** layout.
+
+- High-level overview: [ARCHITECTURE.md](ARCHITECTURE.md)
+- Full docs index: [docs/README.md](docs/README.md)
+- Dependency boundaries: [docs/architecture/dependency-rules.md](docs/architecture/dependency-rules.md)
+- New feature template: [docs/architecture/feature-template.md](docs/architecture/feature-template.md)
+- Migration checklist: [docs/migration/clean-architecture-checklist.md](docs/migration/clean-architecture-checklist.md)
+
+## Code layout (quick)
+
+Main flows:
+
+- **Vitals home** — `features/vitals/presentation/views/vital_main.dart` + `VitalMainController`
+- **Add device** — `AddDeviceController` + scan list widgets
+- **Settings** — `DeviceSettingsController` + large settings view
+
+Top-level folders:
+
+- `lib/app` — app bootstrap, root bindings, routes, theme
+- `lib/core` — shared framework-level utilities/widgets/services
+- `lib/features` — feature modules (`device`, `vitals`, `health`, `profile`, `splash`)

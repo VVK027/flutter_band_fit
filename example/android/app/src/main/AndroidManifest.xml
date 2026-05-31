@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.vk.flutter_band_fit_example">
+    package="com.vvk.flutter_band_fit_example">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -34,10 +34,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" android:required="false"/>
 
-    <!-- <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
- -->
-    <!--    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />-->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />
     <!--
     &lt;!&ndash; Needed only if your app makes the device discoverable to Bluetooth devices. &ndash;&gt;
     <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
