@@ -6,9 +6,9 @@ abstract class DevicePresentationRepository {
   Future<String> initializeDeviceConnection();
 
   void receiveEventsFrom({
-    required Function(dynamic data) onDataUpdate,
-    required Function(dynamic error) onError,
-    required Function() onDone,
+    required void Function(dynamic data) onDataUpdate,
+    required void Function(dynamic error) onError,
+    required void Function() onDone,
   });
 
   Future<void> updateUserParamsWatch(bool isDisconnected);

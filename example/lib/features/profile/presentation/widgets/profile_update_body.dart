@@ -421,51 +421,28 @@ class ProfileUpdateBody extends StatelessWidget {
             String dob = submitDateOfBirth.isEmpty? controller.selectedDate.toString(): submitDateOfBirth;
             await controller.activityProvider.updateWatchProfile(controller.selectedHeight, controller.selectedWeight, controller.selectedGender.toLowerCase(), dob);
 
-            // bool zeroValue = int.parse(controller.height.toString()) == 0 && int.parse(controller.weight.toString()) == 0;
-            // bool changedValue = (int.parse(controller.height.toString()) != int.parse(controller.selectedHeight)) && (int.parse(controller.weight.toString()) != int.parse(controller.selectedWeight));
-
-            if (controller.gender != controller.selectedGender && submitDateOfBirth.isNotEmpty) {
-              // update gender & dob
-              //debugPrint('update gender & dob');
-              await updateUserDOBGender(submitDateOfBirth, controller.selectedGender);
-            }else if(controller.gender != controller.selectedGender ){
-              // update only gender
-              // debugPrint('update gender');
+            if (controller.gender != controller.selectedGender &&
+                submitDateOfBirth.isNotEmpty) {
+              await updateUserDOBGender(
+                submitDateOfBirth,
+                controller.selectedGender,
+              );
+            } else if (controller.gender != controller.selectedGender) {
               await updateUserDOBGender('', controller.selectedGender);
-            }else if (submitDateOfBirth.isNotEmpty){
+            } else if (submitDateOfBirth.isNotEmpty) {
               await updateUserDOBGender(submitDateOfBirth, '');
-            }//else if (submitDateOfBirth.isEmpty){
-            // debugPrint('do nothing with api');
-            //}
+            }
 
             if (isConnected) {
-              if (controller.tempTempUnits.toString().trim() != controller.selectedTemperatureUnits.toString().trim()) {
-                //await controller.activityProvider.callWeatherForecast(controller.activityProvider.getDeviceLatitude.toString(), controller.activityProvider.getDeviceLongitude.toString(), false);
-              }
               await controller.activityProvider.updateUserParamsWatch(false);
-            } else {
-
             }
             await sharedService.setProfileUpdate(true);
             debugPrint('profilecontroller.activityProvider.getDeviceSWName>> ${controller.activityProvider.getDeviceSWName}');
-            if (controller.activityProvider.getDeviceSWName == googleFitKey || controller.activityProvider.getDeviceSWName == appleHealthKey) {
-              // Navigator.pushAndRemoveUntil(context,
-              //     MaterialPageRoute(
-              //         builder: (context) => GFitVitalMain(fromLogin: false)),
-              //     (_) => false);
-            } else {
-              if (controller.fromSettings) {
-                // Navigator.of(context).pop();
-                GlobalMethods.navigatePopBack();
-              } else {
-                // Navigator.push(context,
-                //   MaterialPageRoute(
-                //       builder: (context) => const VitalMain(
-                //             fetchWeather: false,
-                //             fromLogin: false,
-                //           )),
-                // );
-              }
+            if (controller.activityProvider.getDeviceSWName != googleFitKey &&
+                controller.activityProvider.getDeviceSWName !=
+                    appleHealthKey &&
+                controller.fromSettings) {
+              GlobalMethods.navigatePopBack();
             }
           },
           tooltip: textSaveContinue,
@@ -898,10 +875,10 @@ class ProfileUpdateBody extends StatelessWidget {
     return SingleChildScrollView(
       child: Container(
         margin: const EdgeInsets.only(left: 10.0, right: 10.0),
-        child: Column(
+        child: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
-          children: const <Widget>[
+          children: <Widget>[
             SizedBox(
               height: 20.0,
             ),

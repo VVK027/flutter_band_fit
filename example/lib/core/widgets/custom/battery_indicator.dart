@@ -1,57 +1,59 @@
 import 'package:flutter/material.dart';
 
-enum BatteryIndicatorStyle { flat, skeumorphism }
+/// Visual style for [BatteryIndicator].
+enum BatteryIndicatorStyle {
+  /// Flat outline with rounded body.
+  flat,
 
+  /// Skeuomorphic body with a separate positive terminal cap.
+  skeumorphism,
+}
+
+/// Custom-painted battery level indicator for the device settings UI.
 class BatteryIndicator extends StatefulWidget {
-  /// 指示器样式，[BatteryIndicatorStyle.flat]为简洁样式,[BatteryIndicatorStyle.skeumorphism]为拟物样式
-  /// indicator style，[BatteryIndicatorStyle.flat] and [BatteryIndicatorStyle.skeumorphism]
+  /// [BatteryIndicatorStyle.flat] is minimal; [BatteryIndicatorStyle.skeumorphism] draws a cap.
   final BatteryIndicatorStyle style;
 
-  /// 控制横宽比例，默认为2.5：1
-  /// widget`s width / height , default to 2.5：1
+  /// Width-to-height ratio of the widget (default 2.5).
   final double ratio;
 
-  /// 主体颜色，包括边框和单色模式下的填充色
-  /// color of borderline , and fill color when colorful is false
+  /// Border color and fill color when [colorful] is false.
   final Color mainColor;
 
-  /// 彩色模式，为true时自动根据电量绘制不同的颜色，为false时填充主体色
-  /// if colorful = true , then the fill color will automatic change depend on battery value
+  /// When true, fill color follows battery level (green / amber / red).
   final bool colorful;
 
-  /// 是否绘制百分比的电量填充
-  /// whether paint fill color
+  /// Whether to paint the filled portion for the current level.
   final bool showPercentSlide;
 
-  /// 是否绘制百分比数字，建议单色模式下不要开启显示百分比
-  /// whether show battery value , Recommended [NOT] set to True when colorful = false
+  /// Whether to show the numeric percentage. Prefer false when [colorful] is false.
   final bool showPercentNum;
 
-  /// 控制整体大小，默认14.0，建议不要太大，否则很难看
-  /// default to 14.0
+  /// Overall height in logical pixels (default 14.0).
   final double size;
 
-  /// battery value font size, default to null
+  /// Font size for the percentage label.
   final double percentNumSize;
 
-  ///boolean to choose from where to obtain the value of the battery
-  ///if it is true, the indicator will update in base of the phone battery,
-  ///if not, you can controll with a variable
+  /// When true, level is read from the host device (not used when [batteryLevel] is set externally).
   final bool batteryFromPhone;
 
+  /// Battery percentage (0–100) when not using the phone battery.
   final int batteryLevel;
 
-  const BatteryIndicator(
-      {super.key, this.batteryFromPhone = true,
-        this.batteryLevel = 25,
-        this.style = BatteryIndicatorStyle.flat,
-        this.ratio = 2.5,
-        this.mainColor = Colors.black,
-        this.colorful = true,
-        this.showPercentNum = true,
-        this.showPercentSlide = true,
-        required this.percentNumSize,
-        this.size = 14.0});
+  const BatteryIndicator({
+    super.key,
+    this.batteryFromPhone = true,
+    this.batteryLevel = 25,
+    this.style = BatteryIndicatorStyle.flat,
+    this.ratio = 2.5,
+    this.mainColor = Colors.black,
+    this.colorful = true,
+    this.showPercentNum = true,
+    this.showPercentSlide = true,
+    required this.percentNumSize,
+    this.size = 14.0,
+  });
 
   @override
   State<BatteryIndicator> createState() => _BatteryIndicatorState();
@@ -80,18 +82,29 @@ class _BatteryIndicatorState extends State<BatteryIndicator> {
       height: widget.size,
       width: widget.size * widget.ratio,
       child: CustomPaint(
-        painter: BatteryIndicatorPainter(batteryLv, widget.style,
-            widget.showPercentSlide, widget.colorful, widget.mainColor),
+        painter: BatteryIndicatorPainter(
+          batteryLv,
+          widget.style,
+          widget.showPercentSlide,
+          widget.colorful,
+          widget.mainColor,
+        ),
         child: Center(
           child: Padding(
             padding: EdgeInsets.only(
-                right: widget.style == BatteryIndicatorStyle.flat ? 0.0 : widget.size * widget.ratio * 0.04),
-            child: widget.showPercentNum
-                ? Text('$batteryLv%',
-              style: TextStyle(fontSize: widget.percentNumSize))
-                : Text('', style: TextStyle(
-                  fontSize: widget.percentNumSize),
+              right: widget.style == BatteryIndicatorStyle.flat
+                  ? 0.0
+                  : widget.size * widget.ratio * 0.04,
             ),
+            child: widget.showPercentNum
+                ? Text(
+                    '$batteryLv%',
+                    style: TextStyle(fontSize: widget.percentNumSize),
+                  )
+                : Text(
+                    '',
+                    style: TextStyle(fontSize: widget.percentNumSize),
+                  ),
           ),
         ),
       ),
@@ -99,97 +112,142 @@ class _BatteryIndicatorState extends State<BatteryIndicator> {
   }
 }
 
+/// Paints the battery outline and optional fill for [BatteryIndicator].
 class BatteryIndicatorPainter extends CustomPainter {
+  BatteryIndicatorPainter(
+    this.batteryLv,
+    this.style,
+    this.showPercentSlide,
+    this.colorful,
+    this.mainColor,
+  );
+
   int batteryLv;
   BatteryIndicatorStyle style;
   bool colorful;
   bool showPercentSlide;
   Color mainColor;
 
-  BatteryIndicatorPainter(this.batteryLv, this.style, this.showPercentSlide, this.colorful, this.mainColor);
-
   @override
   void paint(Canvas canvas, Size size) {
     if (style == BatteryIndicatorStyle.flat) {
-      /// 绘制轮廓
+      // Flat style: rounded rectangle outline.
       canvas.drawRRect(
-          RRect.fromLTRBR(0.0, size.height * 0.05, size.width,
-              size.height * 0.95, const Radius.circular(100.0)),
-          Paint()
-            ..color = mainColor
-            ..strokeWidth = 0.5
-            ..style = PaintingStyle.stroke);
+        RRect.fromLTRBR(
+          0.0,
+          size.height * 0.05,
+          size.width,
+          size.height * 0.95,
+          const Radius.circular(100.0),
+        ),
+        Paint()
+          ..color = mainColor
+          ..strokeWidth = 0.5
+          ..style = PaintingStyle.stroke,
+      );
 
       if (showPercentSlide) {
-        /// 制作绘制遮盖区域
-        canvas.clipRect(Rect.fromLTWH(0.0, size.height * 0.05,
-            size.width * fixedBatteryLv / 100, size.height * 0.95));
+        // Clip to the filled width for the current level.
+        canvas.clipRect(
+          Rect.fromLTWH(
+            0.0,
+            size.height * 0.05,
+            size.width * fixedBatteryLv / 100,
+            size.height * 0.95,
+          ),
+        );
 
-        double offset = size.height * 0.1;
+        final offset = size.height * 0.1;
 
-        /// 绘制填充
+        // Fill inside the clipped region.
         canvas.drawRRect(
-            RRect.fromLTRBR(
-                offset,
-                size.height * 0.05 + offset,
-                size.width - offset,
-                size.height * 0.95 - offset,
-                const Radius.circular(100.0)),
-            Paint()
-              ..color = colorful ? getBatteryLvColor : mainColor
-              ..style = PaintingStyle.fill);
+          RRect.fromLTRBR(
+            offset,
+            size.height * 0.05 + offset,
+            size.width - offset,
+            size.height * 0.95 - offset,
+            const Radius.circular(100.0),
+          ),
+          Paint()
+            ..color = colorful ? getBatteryLvColor : mainColor
+            ..style = PaintingStyle.fill,
+        );
       }
     } else {
-      /// 绘制拟物轮廓电池圆柱部分
+      // Skeuomorphic style: body plus positive terminal.
       canvas.drawRRect(
-          RRect.fromLTRBR(0.0, size.height * 0.05, size.width * 0.92,
-              size.height * 0.95, Radius.circular(size.height * 0.1)),
-          Paint()
-            ..color = mainColor
-            ..strokeWidth = 0.8
-            ..style = PaintingStyle.stroke);
+        RRect.fromLTRBR(
+          0.0,
+          size.height * 0.05,
+          size.width * 0.92,
+          size.height * 0.95,
+          Radius.circular(size.height * 0.1),
+        ),
+        Paint()
+          ..color = mainColor
+          ..strokeWidth = 0.8
+          ..style = PaintingStyle.stroke,
+      );
 
-      /// 绘制拟物轮廓电池头部
       canvas.drawRRect(
-          RRect.fromLTRBR(size.width * 0.92, size.height * 0.25, size.width,
-              size.height * 0.75, Radius.circular(size.height * 0.1)),
-          Paint()
-            ..color = mainColor
-            ..style = PaintingStyle.fill);
+        RRect.fromLTRBR(
+          size.width * 0.92,
+          size.height * 0.25,
+          size.width,
+          size.height * 0.75,
+          Radius.circular(size.height * 0.1),
+        ),
+        Paint()
+          ..color = mainColor
+          ..style = PaintingStyle.fill,
+      );
 
       if (showPercentSlide) {
-        /// 制作绘制遮盖区域
-        canvas.clipRect(Rect.fromLTWH(0.0, size.height * 0.05,
-            size.width * 0.92 * fixedBatteryLv / 100, size.height * 0.95));
+        canvas.clipRect(
+          Rect.fromLTWH(
+            0.0,
+            size.height * 0.05,
+            size.width * 0.92 * fixedBatteryLv / 100,
+            size.height * 0.95,
+          ),
+        );
 
-        double offset = size.height * 0.1;
+        final offset = size.height * 0.1;
 
-        /// 绘制填充
         canvas.drawRRect(
-            RRect.fromLTRBR(
-                offset,
-                size.height * 0.05 + offset,
-                size.width * 0.92 - offset,
-                size.height * 0.95 - offset,
-                Radius.circular(size.height * 0.1)),
-            Paint()
-              ..color = colorful ? getBatteryLvColor : mainColor
-              ..style = PaintingStyle.fill);
+          RRect.fromLTRBR(
+            offset,
+            size.height * 0.05 + offset,
+            size.width * 0.92 - offset,
+            size.height * 0.95 - offset,
+            Radius.circular(size.height * 0.1),
+          ),
+          Paint()
+            ..color = colorful ? getBatteryLvColor : mainColor
+            ..style = PaintingStyle.fill,
+        );
       }
     }
   }
 
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    final oldPainter = oldDelegate as BatteryIndicatorPainter;
-    return oldPainter.batteryLv != batteryLv || oldPainter.mainColor != mainColor;
+  double get fixedBatteryLv => batteryLv.clamp(0, 100).toDouble();
+
+  Color get getBatteryLvColor {
+    if (batteryLv >= 60) {
+      return Colors.green;
+    }
+    if (batteryLv >= 20) {
+      return Colors.orange;
+    }
+    return Colors.red;
   }
 
-  num get fixedBatteryLv => batteryLv < 10 ? 4 + batteryLv / 2 : batteryLv;
-
-  MaterialColor get getBatteryLvColor => batteryLv < 15
-      ? Colors.red
-      : batteryLv < 30
-      ? Colors.orange
-      : Colors.green;
+  @override
+  bool shouldRepaint(covariant BatteryIndicatorPainter oldDelegate) {
+    return oldDelegate.batteryLv != batteryLv ||
+        oldDelegate.style != style ||
+        oldDelegate.showPercentSlide != showPercentSlide ||
+        oldDelegate.colorful != colorful ||
+        oldDelegate.mainColor != mainColor;
+  }
 }

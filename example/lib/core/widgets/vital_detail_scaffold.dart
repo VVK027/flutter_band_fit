@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_band_fit_app/app/theme/app_colors.dart';
 import 'package:flutter_band_fit_app/core/widgets/app_ui_components.dart';
+import 'package:flutter_band_fit_app/core/widgets/settings_widgets.dart';
 import 'package:flutter_band_fit_app/core/widgets/detail_date_navigator.dart';
 import 'package:flutter_band_fit_app/core/widgets/dwm_tab_bar.dart';
 import 'package:flutter_band_fit_app/core/widgets/theme_toggle_button.dart';
@@ -81,34 +83,99 @@ class SettingsPageScaffold extends StatelessWidget {
     required this.body,
     this.onBack,
     this.floatingActionButton,
+    this.onSave,
+    this.accentColor,
   });
 
   final String title;
   final Widget body;
   final VoidCallback? onBack;
   final Widget? floatingActionButton;
+  final VoidCallback? onSave;
+  final Color? accentColor;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final accent = accentColor ?? AppColors.primaryTeal;
+    final onBar = VitalColoredAppBar.contrastOn(accent);
+    final fab = floatingActionButton ??
+        (onSave != null ? SettingsSaveFab(onPressed: onSave!) : null);
+
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(
-          title,
-          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-        ),
+        elevation: 0,
         centerTitle: true,
         automaticallyImplyLeading: false,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new_rounded, color: onBar, size: 20),
           onPressed: onBack ?? () => Navigator.of(context).pop(),
         ),
-        actions: const [ThemeToggleButton()],
+        title: Text(
+          title,
+          style: TextStyle(
+            color: onBar,
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+            letterSpacing: -0.2,
+          ),
+        ),
+        foregroundColor: onBar,
+        iconTheme: IconThemeData(color: onBar),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                accent,
+                Color.lerp(accent, Colors.black, 0.12)!,
+              ],
+            ),
+          ),
+        ),
+        backgroundColor: accent,
+        actions: [
+          IconTheme(
+            data: IconThemeData(color: onBar),
+            child: const ThemeToggleButton(),
+          ),
+        ],
       ),
       body: SafeArea(child: body),
-      floatingActionButton: floatingActionButton,
+      floatingActionButton: fab,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
+}
+
+/// Tabbed detail screen with gradient app bar (dial faces, etc.).
+class AccentTabDetailScaffold extends StatelessWidget {
+  const AccentTabDetailScaffold({
+    super.key,
+    required this.title,
+    required this.tabs,
+    required this.tabViews,
+    this.accentColor,
+    this.onBack,
+  });
+
+  final String title;
+  final List<Tab> tabs;
+  final List<Widget> tabViews;
+  final Color? accentColor;
+  final VoidCallback? onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return VitalTabDetailScaffold(
+      title: title,
+      accentColor: accentColor ?? AppColors.primaryTeal,
+      tabs: tabs,
+      tabViews: tabViews,
+      onBack: onBack,
+      centerTitle: true,
     );
   }
 }
@@ -164,7 +231,7 @@ class VitalDetailBody extends StatelessWidget {
   }
 }
 
-/// Tab bar under a colored app bar (activities, sleep, temperature).
+/// Tab bar under a colored app bar (activities, sleep, temperature, dial faces).
 class VitalTabDetailScaffold extends StatelessWidget {
   const VitalTabDetailScaffold({
     super.key,
@@ -173,6 +240,10 @@ class VitalTabDetailScaffold extends StatelessWidget {
     required this.tabs,
     required this.tabViews,
     this.onBack,
+    this.onTabTap,
+    this.header,
+    this.tabViewPhysics,
+    this.centerTitle = false,
   });
 
   final String title;
@@ -180,6 +251,10 @@ class VitalTabDetailScaffold extends StatelessWidget {
   final List<Tab> tabs;
   final List<Widget> tabViews;
   final VoidCallback? onBack;
+  final ValueChanged<int>? onTabTap;
+  final Widget? header;
+  final ScrollPhysics? tabViewPhysics;
+  final bool centerTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -192,13 +267,19 @@ class VitalTabDetailScaffold extends StatelessWidget {
         appBar: AppBar(
           elevation: 0,
           automaticallyImplyLeading: false,
+          centerTitle: centerTitle,
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios_new_rounded, color: onBar, size: 20),
             onPressed: onBack ?? () => Navigator.of(context).pop(),
           ),
           title: Text(
             title,
-            style: TextStyle(color: onBar, fontWeight: FontWeight.w700),
+            style: TextStyle(
+              color: onBar,
+              fontWeight: FontWeight.w700,
+              fontSize: 18,
+              letterSpacing: -0.2,
+            ),
           ),
           foregroundColor: onBar,
           iconTheme: IconThemeData(color: onBar),
@@ -209,7 +290,7 @@ class VitalTabDetailScaffold extends StatelessWidget {
                 end: Alignment.bottomRight,
                 colors: [
                   accentColor,
-                  Color.lerp(accentColor, Colors.black, 0.12)!,
+                  Color.lerp(accentColor, const Color(0xFF0F766E), 0.25)!,
                 ],
               ),
             ),
@@ -221,11 +302,26 @@ class VitalTabDetailScaffold extends StatelessWidget {
               child: const ThemeToggleButton(),
             ),
           ],
-          bottom: buildDwmTabBar(context, tabs: tabs),
+          bottom: buildDwmTabBar(
+            context,
+            tabs: tabs,
+            onTap: onTabTap,
+          ),
         ),
         body: SafeArea(
           top: false,
-          child: TabBarView(children: tabViews),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (header != null) header!,
+              Expanded(
+                child: TabBarView(
+                  physics: tabViewPhysics,
+                  children: tabViews,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

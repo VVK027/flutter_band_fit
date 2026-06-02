@@ -12,7 +12,7 @@ class StorageService extends GetxService {
   }
 
   T read<T>(String key) {
-    return _box.read(key);
+    return _box.read(key) as T;
   }
 
   void write(String key, dynamic value) async {

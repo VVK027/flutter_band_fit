@@ -13,17 +13,17 @@ class FirmwareUpgradeBody extends GetView<FirmwareUpgradeController> {
           Container(
             height: MediaQuery.of(context).size.height * 0.4,
             color: Colors.green,
-            child: Column(
+            child: const Column(
               children: [
-                const SizedBox(height: 44),
+                SizedBox(height: 44),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
                       onPressed: GlobalMethods.navigatePopBack,
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      icon: Icon(Icons.arrow_back, color: Colors.white),
                     ),
-                    const Text(
+                    Text(
                       'Firmware Upgrade',
                       style: TextStyle(
                         color: Colors.white,
@@ -31,7 +31,7 @@ class FirmwareUpgradeBody extends GetView<FirmwareUpgradeController> {
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    const SizedBox(width: 40),
+                    SizedBox(width: 40),
                   ],
                 ),
               ],

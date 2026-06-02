@@ -73,8 +73,8 @@ class AddDeviceAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 2.0,
       title: const Text(textAddDevice),
       automaticallyImplyLeading: false,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_outlined),
+      leading: const IconButton(
+        icon: Icon(Icons.arrow_back_ios_outlined),
         onPressed: GlobalMethods.navigatePopBack,
       ),
       actions: [

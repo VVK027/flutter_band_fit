@@ -44,7 +44,7 @@ mixin VitalMeasurementResultMixin on GetxController {
     await loadDay(now);
   }
 
-  bool mapAlreadyContainsReading(List data, Map<String, dynamic> reading) {
+  bool mapAlreadyContainsReading(List<dynamic> data, Map<String, dynamic> reading) {
     return data.any((entry) {
       if (entry is! Map) return false;
       final entryMap = Map<String, dynamic>.from(entry);

@@ -29,8 +29,8 @@ class OxygenDetailController extends GetxController
   final minOxygenValue = '--'.obs;
   final currentOxygen = '--'.obs;
 
-  var statusReconnected = false;
-  var oxyJsonData = <String, dynamic>{};
+  bool statusReconnected = false;
+  Map<String, dynamic> oxyJsonData = <String, dynamic>{};
 
   @override
   void onInit() {
@@ -73,7 +73,7 @@ class OxygenDetailController extends GetxController
     bleProvider.pauseEventListeners();
     bleProvider.receiveBPListeners(
       onDataUpdate: (data) async {
-        final eventData = jsonDecode(data);
+        final eventData = JsonUtils.asMap(jsonDecode(data as String));
         final result = eventData['result'].toString();
         final status = eventData['status'].toString();
         final jsonData = eventData['data'];
@@ -111,7 +111,7 @@ class OxygenDetailController extends GetxController
     _reloadStoredData();
     oxygenData ??= <dynamic>[];
 
-    if (!mapAlreadyContainsReading(oxygenData, reading)) {
+    if (!mapAlreadyContainsReading(JsonUtils.asList(oxygenData), reading)) {
       oxygenData.add(reading);
     }
 

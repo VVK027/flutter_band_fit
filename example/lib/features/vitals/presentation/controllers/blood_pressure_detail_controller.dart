@@ -24,8 +24,8 @@ class BloodPressureDetailController extends GetxController
   final highBPValue = '--'.obs;
   final lowBPValue = '--'.obs;
 
-  List overAllBPData = [];
-  var statusReconnected = false;
+  List<dynamic> overAllBPData = [];
+  bool statusReconnected = false;
 
   @override
   void onInit() {
@@ -67,7 +67,7 @@ class BloodPressureDetailController extends GetxController
     bleProvider.pauseEventListeners();
     bleProvider.receiveBPListeners(
       onDataUpdate: (data) async {
-        final eventData = jsonDecode(data);
+        final eventData = JsonUtils.asMap(jsonDecode(data as String));
         final result = eventData['result'].toString();
         final status = eventData['status'].toString();
         final jsonData = eventData['data'];

@@ -1,5 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_band_fit_app/core/exports/band_exports.dart';
+import 'package:flutter_band_fit_app/core/widgets/settings_widgets.dart';
+import 'package:flutter_band_fit_app/core/widgets/app_ui_components.dart';
 import 'package:flutter_band_fit_app/core/widgets/vital_detail_scaffold.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/activity_monitor_controller.dart';
 
@@ -11,116 +12,40 @@ class ActivityMonitorBody extends GetView<ActivityMonitorController> {
     return SettingsPageScaffold(
       title: textMonitoringOptions,
       onBack: GlobalMethods.navigatePopBack,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-              padding: const EdgeInsets.all(8),
-              child: const Center(
-                child: Text(textConfigureMonitoring, textAlign: TextAlign.center),
-              ),
-            ),
-            const SizedBox(height: 8),
-            _MonitorTile(
-              iconAsset: 'assets/fit/heart.png',
-              title: textHeartRateMonitoring,
-              subtitle: text24HrHeartRateTest,
-              value: controller.selectHrMonitor,
-              onToggle: (v) => controller.selectHrMonitor.value = v,
-              onRowTap: controller.toggleHr,
-            ),
-            const Divider(thickness: 1),
-            _MonitorTile(
-              iconAsset: 'assets/fit/temperature.png',
-              title: textBodyTemperatureMonitoring,
-              subtitle: text24HrTempTest,
-              value: controller.selectTempMonitor,
-              onToggle: (v) => controller.selectTempMonitor.value = v,
-              onRowTap: controller.toggleTemp,
-              iconHeight: 21,
-            ),
-            const Divider(thickness: 1),
-            _MonitorTile(
-              iconAsset: 'assets/fit/blood_oxygen.png',
-              title: textBodyOxygenMonitoring,
-              subtitle: text24HrOxygen,
-              value: controller.selectOxygenMonitor,
-              onToggle: (v) => controller.selectOxygenMonitor.value = v,
-              onRowTap: controller.toggleOxygen,
-              iconHeight: 21,
-            ),
-            const Divider(thickness: 1),
-            const SizedBox(height: 21),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        mini: true,
-        onPressed: controller.saveAndClose,
-        tooltip: textSaveContinue,
-        child: const Icon(Icons.done),
-      ),
-    );
-  }
-}
-
-class _MonitorTile extends StatelessWidget {
-  const _MonitorTile({
-    required this.iconAsset,
-    required this.title,
-    required this.subtitle,
-    required this.value,
-    required this.onToggle,
-    required this.onRowTap,
-    this.iconHeight = 20,
-  });
-
-  final String iconAsset;
-  final String title;
-  final String subtitle;
-  final RxBool value;
-  final ValueChanged<bool> onToggle;
-  final VoidCallback onRowTap;
-  final double iconHeight;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onRowTap,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      onSave: controller.saveAndClose,
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 88),
         children: [
-          Row(
+          const DetailInfoBanner(text: textConfigureMonitoring),
+          const SizedBox(height: 12),
+          SettingsSectionCard(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: Image.asset(
-                  iconAsset,
-                  width: iconHeight,
-                  height: iconHeight,
-                  fit: BoxFit.contain,
-                ),
+              SettingsSwitchTile(
+                iconAsset: 'assets/fit/heart.png',
+                title: textHeartRateMonitoring,
+                subtitle: text24HrHeartRateTest,
+                value: controller.selectHrMonitor,
+                onChanged: (v) => controller.selectHrMonitor.value = v,
+                onTap: controller.toggleHr,
               ),
-              Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                ),
+              SettingsSwitchTile(
+                iconAsset: 'assets/fit/temperature.png',
+                title: textBodyTemperatureMonitoring,
+                subtitle: text24HrTempTest,
+                value: controller.selectTempMonitor,
+                onChanged: (v) => controller.selectTempMonitor.value = v,
+                onTap: controller.toggleTemp,
               ),
-              Obx(
-                () => Transform.scale(
-                  scale: 0.8,
-                  child: CupertinoSwitch(
-                    value: value.value,
-                    onChanged: onToggle,
-                  ),
-                ),
+              SettingsSwitchTile(
+                iconAsset: 'assets/fit/blood_oxygen.png',
+                title: textBodyOxygenMonitoring,
+                subtitle: text24HrOxygen,
+                value: controller.selectOxygenMonitor,
+                onChanged: (v) => controller.selectOxygenMonitor.value = v,
+                onTap: controller.toggleOxygen,
               ),
             ],
           ),
-          Text(subtitle, style: const TextStyle(fontSize: 14)),
         ],
       ),
     );

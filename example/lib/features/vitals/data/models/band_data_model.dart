@@ -70,8 +70,8 @@ class StepsMainModel {
   factory StepsMainModel.fromJson(Map<String, dynamic> data) {
     final List<BandStepsModel> stepsList = [];
     if (data['data'] != null) {
-      for (var element in (data['data'] as List<dynamic>)) {
-        stepsList.add(BandStepsModel.fromJson(element));
+      for (final element in JsonUtils.asList(data['data'])) {
+        stepsList.add(BandStepsModel.fromJson(JsonUtils.asMap(element)));
       }
     }
 
@@ -132,8 +132,8 @@ class SleepMainModel {
   factory SleepMainModel.fromJson(Map<String, dynamic> data) {
     final List<BandSleepModel> sleepDataList = [];
     if (data['data'] != null) {
-      for (var element in (data['data'] as List<dynamic>)) {
-        sleepDataList.add(BandSleepModel.fromJson(element));
+      for (final element in JsonUtils.asList(data['data'])) {
+        sleepDataList.add(BandSleepModel.fromJson(JsonUtils.asMap(element)));
       }
     }
 

@@ -91,7 +91,7 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
       overAllStepsData = [];
       return;
     }
-    overAllStepsData = jsonDecode(stepsData.toString());
+    overAllStepsData = JsonUtils.asList(jsonDecode(stepsData.toString()));
   }
 
   Future<void> initializeData() async {
@@ -222,10 +222,10 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
         if(context.mounted) {
           dataList = await _vitalsDataRepository.getSelectedRangeStepsData(false, overAllStepsData, calenderList, context, totalTargetedSteps);
         }
-        List<WeekStepsData> weekDataList = dataList[0];
-        double totalSteps = dataList[1];
-        double totalDistance = dataList[2];
-        double totalCalories = dataList[3];
+        final weekDataList = List<WeekStepsData>.from(dataList[0] as List);
+        final totalSteps = dataList[1] as double;
+        final totalDistance = dataList[2] as double;
+        final totalCalories = dataList[3] as double;
 
         if (weekDataList.isNotEmpty) {
             weekStepsDataList = weekDataList;
@@ -315,10 +315,10 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
       }
       if (Platform.isIOS) {
         List<dynamic> dataList = await _vitalsDataRepository.getSelectedRangeStepsData(true, overAllStepsData, calenderList, context, totalTargetedSteps);
-        List<MonthStepsData> monthDataList = dataList[0];
-        double totalSteps = dataList[1];
-        double totalDistance = dataList[2];
-        double totalCalories = dataList[3];
+        final monthDataList = List<MonthStepsData>.from(dataList[0] as List);
+        final totalSteps = dataList[1] as double;
+        final totalDistance = dataList[2] as double;
+        final totalCalories = dataList[3] as double;
         if(monthDataList.isNotEmpty){
             monthStepsDataList = monthDataList;
             monthTotalSteps = totalSteps.toInt().toString();

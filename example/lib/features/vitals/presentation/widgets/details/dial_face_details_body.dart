@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_band_fit_app/common/common_imports.dart';
 import 'package:flutter_band_fit_app/core/services/activity_service_provider.dart';
 import 'package:flutter_band_fit_app/core/widgets/loading_overlay.dart';
-import 'package:flutter_band_fit_app/core/widgets/theme_toggle_button.dart';
+import 'package:flutter_band_fit_app/core/widgets/vital_detail_scaffold.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/dial_face_details_controller.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/dial/dial_face_catalog.dart';
 
@@ -11,58 +11,35 @@ class DialFaceDetailsBody extends GetView<DialFaceDetailsController> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return DefaultTabController(
-      length: 2,
-      child: Obx(
-        () => LoadingOverlay(
-          visible: controller.isInitializing.value,
-          message: textDialFaces,
-          subtitle: textDialFacesMsg,
-          child: Scaffold(
-            appBar: AppBar(
-              title: const Text(textDialFaces),
-              centerTitle: true,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_outlined),
-                onPressed: GlobalMethods.navigatePopBack,
-              ),
-              actions: const [ThemeToggleButton()],
-              bottom: TabBar(
-                labelColor: theme.colorScheme.primary,
-                unselectedLabelColor:
-                    theme.colorScheme.onSurface.withValues(alpha: 0.55),
-                indicatorColor: theme.colorScheme.primary,
-                indicatorWeight: 3,
-                labelStyle: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
-                tabs: const [
-                  Tab(text: textRecommendDialFace),
-                  Tab(text: textSearchDialOnline),
-                ],
+    return Obx(
+      () => LoadingOverlay(
+        visible: controller.isInitializing.value,
+        message: textDialFaces,
+        subtitle: textDialFacesMsg,
+        child: AccentTabDetailScaffold(
+          title: textDialFaces,
+          accentColor: Theme.of(context).colorScheme.primary,
+          onBack: GlobalMethods.navigatePopBack,
+          tabs: const [
+            Tab(text: textRecommendDialFace),
+            Tab(text: textSearchDialOnline),
+          ],
+          tabViews: [
+            _DialGrid(
+              items: recommendedDialFaces,
+              onTap: (item) => _showDialDialog(context, item),
+            ),
+            Obx(
+              () => _OnlineDialTab(
+                items: controller.onlineDials.toList(),
+                isLoading: controller.isLoadingOnline.value,
+                hasLoadedOnce: controller.hasLoadedOnlineOnce.value,
+                hasMore: controller.hasMoreOnline.value,
+                onTap: (item) => _showDialDialog(context, item),
+                onLoadMore: () => controller.loadOnlineDials(),
               ),
             ),
-            body: TabBarView(
-              children: [
-                _DialGrid(
-                  items: recommendedDialFaces,
-                  onTap: (item) => _showDialDialog(context, item),
-                ),
-                Obx(
-                  () => _OnlineDialTab(
-                    items: controller.onlineDials.toList(),
-                    isLoading: controller.isLoadingOnline.value,
-                    hasLoadedOnce: controller.hasLoadedOnlineOnce.value,
-                    hasMore: controller.hasMoreOnline.value,
-                    onTap: (item) => _showDialDialog(context, item),
-                    onLoadMore: () => controller.loadOnlineDials(),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          ],
         ),
       ),
     );
@@ -287,9 +264,9 @@ class _SyncButtonContent extends StatelessWidget {
         ],
       );
     }
-    return Text(
+    return const Text(
       textSynchronousDial,
-      style: const TextStyle(color: Colors.white, fontSize: 16),
+      style: TextStyle(color: Colors.white, fontSize: 16),
     );
   }
 }

@@ -9,6 +9,7 @@ class WeatherBandPayloadBuilder {
 
   static const int _bandForecastDays = 7;
 
+  /// Short city label sent to the band (max three characters).
   static String bandCityPrefix(String cityName) {
     if (cityName.isEmpty) {
       return '';
@@ -19,6 +20,7 @@ class WeatherBandPayloadBuilder {
     return cityName.substring(0, 3);
   }
 
+  /// Seven-day forecast map for [flutterBandFit.setWeatherInfoSevenDays], or null if incomplete.
   static Map<String, dynamic>? buildBandSevenDayPayload({
     required WeatherMainModel model,
     required String cityName,

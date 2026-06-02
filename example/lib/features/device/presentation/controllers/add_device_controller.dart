@@ -19,11 +19,11 @@ class AddDeviceController extends GetxController {
   final showMessage = ''.obs;
   final arrConDisConButton = <String>[].obs;
 
-  var selectedIndex = 0;
+  int selectedIndex = 0;
   late BandDeviceModel selectedDevice;
 
-  var syncFailCounter = 0;
-  var profileUpdatedBand = false;
+  int syncFailCounter = 0;
+  bool profileUpdatedBand = false;
   var _deviceSetupCompleted = false;
 
   @override
@@ -80,7 +80,7 @@ class AddDeviceController extends GetxController {
   Future<void> addDeviceListener() async {
     _deviceRepository.receiveEventsFrom(
       onDataUpdate: (data) async {
-        final eventData = jsonDecode(data);
+        final eventData = JsonUtils.asMap(jsonDecode(data as String));
         debugPrint('addDeviceListener>> $data');
         final result = eventData['result'].toString();
         final status = eventData['status'].toString();
@@ -94,7 +94,7 @@ class AddDeviceController extends GetxController {
           }
         } else if (result == BandFitConstants.SYNC_TIME_OK) {
           if (status == BandFitConstants.SC_SUCCESS) {
-            await Future.delayed(const Duration(milliseconds: 500));
+            await Future<void>.delayed(const Duration(milliseconds: 500));
             await _deviceRepository.updateUserParamsWatch(false);
             // Some bands never emit updateDeviceParams after profile sync on Android.
             if (Platform.isAndroid) {
@@ -186,7 +186,10 @@ class AddDeviceController extends GetxController {
         } else {
           final ctx = Get.context;
           if (ctx != null) {
-            await _deviceRepository.updateEventResult(eventData, ctx);
+            await _deviceRepository.updateEventResult(
+              Map<String, dynamic>.from(eventData),
+              ctx,
+            );
           }
         }
       },
@@ -216,7 +219,7 @@ class AddDeviceController extends GetxController {
     try {
     await _deviceRepository.fetchDeviceVersion();
     if (Platform.isAndroid) {
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
     }
     await _deviceRepository.fetchBatteryStatus();
     await _deviceRepository.updateUserDeviceConnection(
@@ -226,7 +229,7 @@ class AddDeviceController extends GetxController {
       selectedDevice.address,
     );
     if (Platform.isAndroid) {
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
     }
     await _deviceRepository.updateDeviceBandLanguage();
     GlobalMethods.navigatePopBack();
@@ -292,7 +295,7 @@ class AddDeviceController extends GetxController {
   }
 
   void openHealthBind() {
-    Get.to(
+    Get.to<void>(
       () => AppleGoogleBind(
         deviceTypeName: Platform.isIOS ? appleHealthKey : googleFitKey,
       ),
@@ -300,7 +303,7 @@ class AddDeviceController extends GetxController {
   }
 
   void goDashboardPage() {
-    Get.offAllNamed(AppRoutes.vitals);
+    Get.offAllNamed<void>(AppRoutes.vitals);
   }
 
   String actionLabel(int index) {
