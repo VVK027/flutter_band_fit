@@ -4,7 +4,7 @@ import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/detail
 import 'package:intl/intl.dart';
 
 class ActivitiesDetailsBody extends GetView<ActivitiesDetailsController> {
-  const ActivitiesDetailsBody({super.key});
+  ActivitiesDetailsBody({super.key});
 
   TextStyle _chartAxisLabelStyle(BuildContext context) => TextStyle(
         color: Theme.of(context).colorScheme.onSurface,
@@ -68,62 +68,34 @@ class ActivitiesDetailsBody extends GetView<ActivitiesDetailsController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              IconButton(
-                iconSize: 18,
-                onPressed: () async {
-                  // debugPrint('date time>> ${controller.currentMonthDateTime[0]}');
-                  // Utils.showWaiting(context, false);
-                  DateTime time = GlobalMethods.getOneDayBackward(controller.currentMonthDateTime[0]);
-                  List<DateTime> pastNextMonth = await GlobalMethods.getMonthyDatesListByTime(time);
-
-                  controller.monthNextDisable = false;
-                    controller.currentMonthDateTime = pastNextMonth;
-    controller.update();
-                  await controller.setMonthDateTitle(controller.currentMonthDateTime);
-                  // GlobalMethods.navigatePopBack();
-                },
-                icon: Icon(
-                  Icons.arrow_back_ios_outlined,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: Text(
-                    controller.monthlyDateTitle,
-                    style: Theme.of(context).textTheme.titleMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-              IconButton(
-                iconSize: 18,
-                onPressed: controller.monthNextDisable ? null : () async {
-                  //Utils.showWaiting(context, false);
-                  DateTime time = GlobalMethods.getOneDayForward(controller.currentMonthDateTime[controller.currentMonthDateTime.length-1]);
-                  List<DateTime> nextMonth = await GlobalMethods.getMonthyDatesListByTime(time);
-
+        DetailDateNavigator(
+          dateTitle: controller.monthlyDateTitle,
+          isNextDisabled: controller.monthNextDisable,
+          onPrevious: () async {
+            final time = GlobalMethods.getOneDayBackward(controller.currentMonthDateTime[0]);
+            final pastNextMonth = await GlobalMethods.getMonthyDatesListByTime(time);
+            controller.monthNextDisable = false;
+            controller.currentMonthDateTime = pastNextMonth;
+            controller.update();
+            await controller.setMonthDateTitle(controller.currentMonthDateTime);
+          },
+          onNext: controller.monthNextDisable
+              ? null
+              : () async {
+                  final time = GlobalMethods.getOneDayForward(
+                    controller.currentMonthDateTime[controller.currentMonthDateTime.length - 1],
+                  );
+                  final nextMonth = await GlobalMethods.getMonthyDatesListByTime(time);
                   controller.currentMonthDateTime = nextMonth;
-                    // if the today time is in the list then disable.
-                    if(controller.checkNextMonthAvailable(controller.todayTime, controller.currentMonthDateTime))
-                    {
-                      controller.monthNextDisable = true;
-                    }
-    controller.update();                  await controller.setMonthDateTitle(controller.currentMonthDateTime);
-                  //Navigator.pop(context);
+                  if (controller.checkNextMonthAvailable(
+                    controller.todayTime,
+                    controller.currentMonthDateTime,
+                  )) {
+                    controller.monthNextDisable = true;
+                  }
+                  controller.update();
+                  await controller.setMonthDateTitle(controller.currentMonthDateTime);
                 },
-                icon: Icon(
-                  Icons.arrow_forward_ios_outlined,
-                  color: controller.monthNextDisable
-                      ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.35)
-                      : Theme.of(context).colorScheme.onSurface,
-                ),
-              )
-            ],
         ),
         Container(
           margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
@@ -139,7 +111,7 @@ class ActivitiesDetailsBody extends GetView<ActivitiesDetailsController> {
             onSelectionChanged: (selectionArgs) {
               debugPrint('selectionArgs>> $selectionArgs');
             },
-            primaryXAxis: CategoryAxis(
+            primaryXAxis: NumericAxis(
               majorGridLines: const MajorGridLines(width: 0),
               majorTickLines: const MajorTickLines(size: 4),
               interval: 2,
@@ -230,63 +202,34 @@ class ActivitiesDetailsBody extends GetView<ActivitiesDetailsController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              IconButton(
-                iconSize: 18,
-                onPressed: () async {
-                  // debugPrint('date time>> ${controller.currentWeekDateTime[0]}');
-                  //Utils.showWaiting(context, false);
-                  DateTime time = GlobalMethods.getOneDayBackward(controller.currentWeekDateTime[0]);
-                  List<DateTime> pastNextWeek = await GlobalMethods.getWeekDatesListByTime(time);
-
-                  controller.weekNextDisable = false;
-                  controller.currentWeekDateTime = pastNextWeek;
+        DetailDateNavigator(
+          dateTitle: controller.weekDateTitle,
+          isNextDisabled: controller.weekNextDisable,
+          onPrevious: () async {
+            final time = GlobalMethods.getOneDayBackward(controller.currentWeekDateTime[0]);
+            final pastNextWeek = await GlobalMethods.getWeekDatesListByTime(time);
+            controller.weekNextDisable = false;
+            controller.currentWeekDateTime = pastNextWeek;
+            controller.update();
+            await controller.setWeekDateTitle(controller.currentWeekDateTime);
+          },
+          onNext: controller.weekNextDisable
+              ? null
+              : () async {
+                  final time = GlobalMethods.getOneDayForward(
+                    controller.currentWeekDateTime[controller.currentWeekDateTime.length - 1],
+                  );
+                  final nextWeek = await GlobalMethods.getWeekDatesListByTime(time);
+                  controller.currentWeekDateTime = nextWeek;
+                  if (controller.checkNextWeekAvailable(
+                    controller.todayTime,
+                    controller.currentWeekDateTime,
+                  )) {
+                    controller.weekNextDisable = true;
+                  }
                   controller.update();
                   await controller.setWeekDateTitle(controller.currentWeekDateTime);
-                  // GlobalMethods.navigatePopBack();
                 },
-                icon: Icon(
-                  Icons.arrow_back_ios_outlined,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: Text(
-                    controller.weekDateTitle,
-                    style: Theme.of(context).textTheme.titleMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-              IconButton(
-                iconSize: 18,
-                onPressed: controller.weekNextDisable ? null : () async {
-
-                  //Utils.showWaiting(context, false);
-                  DateTime time = GlobalMethods.getOneDayForward(controller.currentWeekDateTime[controller.currentWeekDateTime.length-1]);
-                  List<DateTime> nextWeek = await GlobalMethods.getWeekDatesListByTime(time);
-
-                  controller.currentWeekDateTime = nextWeek;
-                    // if the today time is in the list then disable.
-                    if(controller.checkNextWeekAvailable(controller.todayTime, controller.currentWeekDateTime))
-                    {
-                      controller.weekNextDisable = true;
-                    }
-    controller.update();                  await controller.setWeekDateTitle(controller.currentWeekDateTime);
-                  // GlobalMethods.navigatePopBack();
-                },
-                icon: Icon(
-                  Icons.arrow_forward_ios_outlined,
-                  color: controller.weekNextDisable
-                      ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.35)
-                      : Theme.of(context).colorScheme.onSurface,
-                ),
-              )
-            ],
         ),
         Container(
           margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
@@ -360,14 +303,9 @@ class ActivitiesDetailsBody extends GetView<ActivitiesDetailsController> {
               IconButton(
                 iconSize: 18,
                 onPressed: () async {
-                  // debugPrint('date time>> ${currentDayDateTime[0]}');
-                  //Utils.showWaiting(context, false);
-                  DateTime time = GlobalMethods.getOneDayBackward(controller.currentDateTime);
-                  controller.dayNextDisable = false;
-                  controller.currentDateTime = time;
-                  await controller.setCurrentDateTitle(controller.currentDateTime);
-                  controller.update();
-                  // GlobalMethods.navigatePopBack();
+                  final time =
+                      GlobalMethods.getOneDayBackward(controller.currentDateTime);
+                  await controller.setCurrentDateTitle(time);
                 },
                 icon: Icon(
                   Icons.arrow_back_ios_outlined,
@@ -388,16 +326,10 @@ class ActivitiesDetailsBody extends GetView<ActivitiesDetailsController> {
                 onPressed: controller.dayNextDisable
                     ? null
                     : () async {
-                  //Utils.showWaiting(context, false);
-                  DateTime nextDate =
-                  GlobalMethods.getOneDayForward(controller.currentDateTime);
-                  if (controller.checkNextDayAvailable(controller.todayTime, nextDate)) {
-                      controller.dayNextDisable = true;
-                    }
-                  controller.currentDateTime = nextDate;
-                  await controller.setCurrentDateTitle(controller.currentDateTime);
-                  controller.update();
-                  // GlobalMethods.navigatePopBack();
+                  final nextDate = GlobalMethods.getOneDayForward(
+                    controller.currentDateTime,
+                  );
+                  await controller.setCurrentDateTitle(nextDate);
                 },
                 icon: Icon(
                   Icons.arrow_forward_ios_outlined,
@@ -527,7 +459,7 @@ class ActivitiesDetailsBody extends GetView<ActivitiesDetailsController> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(2.0),
-                    child: Text('${controller.dayTotalDistance} km',
+                    child: Text('${controller.dayTotalDistance} $textKm',
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                             fontWeight: FontWeight.w400, fontSize: 14.0)),
@@ -555,7 +487,7 @@ class ActivitiesDetailsBody extends GetView<ActivitiesDetailsController> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(2.0),
-                    child: Text('${controller.dayTotalCalories} kCal',
+                    child: Text('${controller.dayTotalCalories} $textKcal',
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                             fontWeight: FontWeight.w400, fontSize: 14.0)),
@@ -570,7 +502,7 @@ class ActivitiesDetailsBody extends GetView<ActivitiesDetailsController> {
         ),
         /*Padding(
           padding: const EdgeInsets.all(4.0),
-          child: Text('Total Data (${controller.stepsDayDataList.length})'),
+          child: Text('${textTodayData} (${controller.stepsDayDataList.length})'),
         ),
         SizedBox(
           height: 2.0,

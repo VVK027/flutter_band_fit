@@ -134,9 +134,8 @@ class DeviceSettingsOptionsSection extends StatelessWidget {
             if (connected)
               SettingsNavigationTile(
                 iconAsset: 'assets/fit/reminders.png',
-                title: 'Smart Reminders',
-                subtitle:
-                    'Get notified on your band for activity, SMS, and calls.',
+                title: textSmartReminders,
+                subtitle: textSmartRemindersSubtitle,
                 onTap: () => GlobalMethods.navigateTo(const BandReminders()),
               ),
             if (connected)
@@ -159,7 +158,7 @@ class DeviceSettingsOptionsSection extends StatelessWidget {
             if (connected)
             SettingsNavigationTile(
               iconAsset: 'assets/fit/goal_right.png',
-              title: 'Firmware upgrade',
+              title: textFirmwareUpgrade,
               onTap: () => GlobalMethods.navigateTo(const FirmwareUpgrade()),
             ),
           ],

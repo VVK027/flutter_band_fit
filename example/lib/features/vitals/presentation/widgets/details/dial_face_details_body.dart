@@ -166,7 +166,7 @@ class _OnlineDialTab extends StatelessWidget {
           child: _DialGrid(
             items: items,
             onTap: onTap,
-            emptyMessage: 'No online dial faces found for your device',
+            emptyMessage: textNoOnlineDialFaces,
           ),
         ),
         if (isLoading)
@@ -183,7 +183,7 @@ class _OnlineDialTab extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 8),
             child: TextButton(
               onPressed: onLoadMore,
-              child: const Text('Load more'),
+              child: const Text(textLoadMore),
             ),
           ),
       ],
@@ -275,7 +275,7 @@ class _DialGrid extends StatelessWidget {
   const _DialGrid({
     required this.items,
     required this.onTap,
-    this.emptyMessage = 'No dial faces available',
+    this.emptyMessage = textNoDialFacesAvailable,
   });
 
   final List<BandDialModel> items;

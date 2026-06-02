@@ -64,7 +64,11 @@ class AddDeviceController extends GetxController {
     final result = initResult.toString();
     if (result == BandFitConstants.BLE_NOT_SUPPORTED) {
       if(ctx.mounted) {
-        GlobalMethods.showAlertDialog(ctx, '$textBluetooth 4.0', '$bleNotSupported v4.0');
+        GlobalMethods.showAlertDialog(
+          ctx,
+          textBluetoothRequired,
+          bleNotSupported,
+        );
       }
     } else if (result == BandFitConstants.BLE_NOT_ENABLED ||
         result == BandFitConstants.SC_CANCELED) {
@@ -110,7 +114,7 @@ class AddDeviceController extends GetxController {
             }
             if (deviceList.isNotEmpty) {
               arrConDisConButton.assignAll(
-                List.filled(deviceList.length, 'Connect'),
+                List.filled(deviceList.length, textConnect),
               );
               smartDevicesList.assignAll(deviceList);
               showProgress.value = false;
@@ -234,7 +238,7 @@ class AddDeviceController extends GetxController {
     await _deviceRepository.updateDeviceBandLanguage();
     GlobalMethods.navigatePopBack();
     if (selectedIndex < arrConDisConButton.length) {
-      arrConDisConButton[selectedIndex] = 'Disconnect';
+      arrConDisConButton[selectedIndex] = textDisconnect;
       arrConDisConButton.refresh();
     }
     goDashboardPage();
@@ -248,7 +252,7 @@ class AddDeviceController extends GetxController {
     if (resultDeviceList.isNotEmpty) {
       final devices = resultDeviceList.map(_applyDisplayName).toList();
       arrConDisConButton.assignAll(
-        List.filled(devices.length, 'Connect'),
+        List.filled(devices.length, textConnect),
       );
       smartDevicesList.assignAll(devices);
       showProgress.value = false;
@@ -270,7 +274,7 @@ class AddDeviceController extends GetxController {
 
     if (index >= arrConDisConButton.length) return;
 
-    if (arrConDisConButton[index] == 'Connect') {
+    if (arrConDisConButton[index] == textConnect) {
       _deviceSetupCompleted = false;
       isConnecting.value = true;
       final connected = await _deviceRepository.connectSmartDevice(device);
@@ -289,7 +293,7 @@ class AddDeviceController extends GetxController {
       _stopConnecting();
       await _deviceRepository.disconnectDevice();
       GlobalMethods.navigatePopBack();
-      arrConDisConButton[index] = 'Connect';
+      arrConDisConButton[index] = textConnect;
       arrConDisConButton.refresh();
     }
   }
@@ -310,7 +314,7 @@ class AddDeviceController extends GetxController {
     if (index < arrConDisConButton.length) {
       return arrConDisConButton[index];
     }
-    return 'Connect';
+    return textConnect;
   }
 
   /// Maps vendor BLE names (e.g. Docty-M variants) to the display name shown in UI.

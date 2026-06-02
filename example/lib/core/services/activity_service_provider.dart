@@ -18,6 +18,9 @@ class ActivityServiceProvider extends GetxController {
   /// True after [fetchLocalDataAssign] finishes loading persisted vitals.
   final isLocalDataLoaded = false.obs;
 
+  /// Incremented whenever stored sleep JSON is refreshed from sync or DB fetch.
+  final sleepDataRevision = 0.obs;
+
   String targetedSteps = defaultTargetedSteps;
   String get getTargetedSteps => targetedSteps.obs.string;
 
@@ -928,11 +931,11 @@ class ActivityServiceProvider extends GetxController {
       case BandFitConstants.SYNC_SLEEP_FINISH:
         if (status == BandFitConstants.SC_SUCCESS) {
           await syncHeartRate();
-          if (jsonData != null) {
-            final sleepData = JsonUtils.asList(jsonData);
-            if (sleepData.isNotEmpty) {
-              await updateSleepSyncSDKData(sleepData);
-            }
+          var sleepData = jsonData != null ? JsonUtils.asList(jsonData) : <dynamic>[];
+          if (sleepData.isEmpty && Platform.isAndroid) {
+            await fetchAllSleepDataSync();
+          } else if (sleepData.isNotEmpty) {
+            await updateSleepSyncSDKData(sleepData);
           }
         }
         break;
@@ -1238,8 +1241,8 @@ class ActivityServiceProvider extends GetxController {
     if (result == BandFitConstants.BLE_NOT_SUPPORTED) {
       GlobalMethods.showAlertDialog(
         context,
-        '$textBluetooth 4.0',
-        '$bleNotSupported v4.0',
+        textBluetoothRequired,
+        bleNotSupported,
       );
       return false;
     }
@@ -1753,6 +1756,7 @@ class ActivityServiceProvider extends GetxController {
   Future<void> updateSleepSyncSDKData(List<dynamic> sleepData) async {
     await _applySleepToDashboard(sleepData);
     overAllSleepData = jsonEncode(sleepData);
+    sleepDataRevision.value++;
     update();
     await sharedService.setOverAllSleep(getOverAllSleepData);
   }
@@ -1783,6 +1787,22 @@ class ActivityServiceProvider extends GetxController {
     overAllOxygenData = jsonEncode(oxygenData);
     update();
     await sharedService.setOverAllOxygenData(getOverAllOxygenData);
+  }
+
+  /// Reads all persisted sleep rows from the Android SDK database into [overAllSleepData].
+  Future<void> fetchAllSleepDataSync() async {
+    if (!Platform.isAndroid) return;
+    try {
+      final result = await flutterBandFit.fetchAllSleepData();
+      debugPrint('fetchAllSleepData>> $result');
+      if (result['status']?.toString() != BandFitConstants.SC_SUCCESS) return;
+      final sleepData = JsonUtils.asList(result['data']);
+      if (sleepData.isNotEmpty) {
+        await updateSleepSyncSDKData(sleepData);
+      }
+    } catch (e) {
+      debugPrint('fetchAllSleepDataSyncExp: $e');
+    }
   }
 
   /// Android bulk fetch: applies each vital type then saves JSON to [SharedService].
@@ -1927,8 +1947,8 @@ class ActivityServiceProvider extends GetxController {
       double kCal = 0.0;
       double distance = 0.0;
 
-      DateTime? dateTime = DateTime.tryParse(calender);
-      String week = calWeeks[dateTime!.weekday - 1];
+      final dateTime = GlobalMethods.parseBandReadableCalender(calender);
+      final week = calWeeks[dateTime.weekday - 1];
 
       overAllStepsData.where((element) => element['calender'].toString().trim() == calender).toList().forEach((element) {
         steps = steps + int.parse(element['step'].toString());
@@ -2084,8 +2104,8 @@ class ActivityServiceProvider extends GetxController {
     int totalDeepNum = 0;
 
     for (var calender in calenderWeekList) {
-      DateTime? dateTime = DateTime.tryParse(calender);
-      String week = calWeeks[dateTime!.weekday - 1];
+      final dateTime = GlobalMethods.parseBandReadableCalender(calender);
+      final week = calWeeks[dateTime.weekday - 1];
 
       final sleepDataList = JsonUtils.asList(overAllSleepData)
           .where((element) =>

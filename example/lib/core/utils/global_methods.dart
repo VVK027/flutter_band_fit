@@ -54,44 +54,46 @@ class GlobalMethods {
     );
   }
 
-  static void showSnackBar(){
-    Get.snackbar('GetX Snackbar', 'Yay! Awesome GetX Snackbar',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.tealAccent);
+  static void showSnackBar() {
+    Get.snackbar(
+      textBandFit,
+      textSyncingDataMsg,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.tealAccent,
+    );
   }
-  static void showDefaultDialog(){
-    Get.defaultDialog<void>(title: 'GetX Alert',
-        middleText: 'Simple GetX alert', textConfirm: 'Okay', confirmTextColor: Colors.white,
-        textCancel: 'Cancel');
+
+  static void showDefaultDialog() {
+    Get.defaultDialog<void>(
+      title: textBandFit,
+      middleText: textPleaseWaitMsg,
+      textConfirm: okText,
+      confirmTextColor: Colors.white,
+      textCancel: cancelText,
+    );
   }
-  static void showMaterialBanner(BuildContext context){
-    ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
-        content: const Text('Hello, I am a Material Banner'),
-        leading: const Icon(Icons.error),
+
+  static void showMaterialBanner(BuildContext context) {
+    ScaffoldMessenger.of(context).showMaterialBanner(
+      MaterialBanner(
+        content: const Text(textNoWeatherData),
+        leading: const Icon(Icons.info_outline),
         padding: const EdgeInsets.all(15),
         backgroundColor: Colors.lightGreenAccent,
-        contentTextStyle: const TextStyle(
-            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.indigo),
         actions: [
           TextButton(
             onPressed: () {},
-            child: const Text(
-              'Agree',
-              style: TextStyle(color: Colors.purple),
-            ),
+            child: const Text(okText),
           ),
           TextButton(
             onPressed: () {
-              // ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
               ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
             },
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: Colors.purple),
-            ),
+            child: const Text(cancelText),
           ),
-        ]
-    ));
+        ],
+      ),
+    );
   }
 
   //Related to GFit
@@ -137,9 +139,9 @@ class GlobalMethods {
     debugPrint('_myDia>>> $diastolic');
     String myBPCondition = '';
     if ((systolic < 110 || systolic > 140) || (diastolic < 70 || diastolic > 90)) {
-      myBPCondition = 'Need Doctor Advice';
+      myBPCondition = healthStatusConsultDoctor;
     } else {
-      myBPCondition = 'Normal';
+      myBPCondition = healthStatusNormal;
     }
     return myBPCondition;
   }
@@ -148,9 +150,9 @@ class GlobalMethods {
     debugPrint('todayTotalNoBpm>>> $todayTotalNoBpm');
     String myHRCondition = '';
     if((todayTotalNoBpm < 60 || todayTotalNoBpm > 85)) {
-      myHRCondition = 'Need Doctor Advice';
-    }else{
-      myHRCondition = 'Normal';
+      myHRCondition = healthStatusConsultDoctor;
+    } else {
+      myHRCondition = healthStatusNormal;
     }
     return myHRCondition;
   }
@@ -159,9 +161,9 @@ class GlobalMethods {
     debugPrint('sleepingHr>>> $sleepingHr');
     String myCondition = '';
     if((sleepingHr < 4)) {
-      myCondition = 'Need Doctor Advice';
-    }else{
-      myCondition = 'Normal';
+      myCondition = healthStatusConsultDoctor;
+    } else {
+      myCondition = healthStatusNormal;
     }
     return myCondition;
   }
@@ -170,9 +172,9 @@ class GlobalMethods {
     debugPrint('spo2Value>>> $spo2Value');
     String myCondition = '';
     if((spo2Value < 88)) {
-      myCondition = 'Need Doctor Advice';
-    }else{
-      myCondition = 'Normal';
+      myCondition = healthStatusConsultDoctor;
+    } else {
+      myCondition = healthStatusNormal;
     }
     return myCondition;
   }
@@ -181,18 +183,18 @@ class GlobalMethods {
     debugPrint('myBodyTemp>>> $myBodyTemp');
     String myHRCondition = '';
     if((myBodyTemp < 36 || myBodyTemp > 38)) {
-      myHRCondition = 'Need Doctor Advice';
-    }else{
-      myHRCondition = 'Normal';
+      myHRCondition = healthStatusConsultDoctor;
+    } else {
+      myHRCondition = healthStatusNormal;
     }
     return myHRCondition;
   }
 
   static MaterialColor getConditionColor(String status) {
     debugPrint('status>>> $status');
-    if (status.trim() == 'Need Doctor Advice') {
+    if (status.trim() == healthStatusConsultDoctor) {
       return Colors.red;
-    } else if (status.trim() == 'Normal') {
+    } else if (status.trim() == healthStatusNormal) {
       return Colors.green;
     }
     return Colors.green;
@@ -490,6 +492,51 @@ class GlobalMethods {
     return calenderDate;
   }
 
+  /// Parses band calendar strings produced by [convertBandReadableCalender].
+  static DateTime parseBandReadableCalender(String calender) {
+    return DateFormat('yyyyMMdd').parse(calender.trim());
+  }
+
+  /// Week range label for detail screens, e.g. "1 June ~ 7 June".
+  static String formatWeekTitleFromDate(DateTime dateTime) {
+    final weekList = _weekDatesFromTime(dateTime);
+    if (weekList.isEmpty) return '';
+    return _formatWeekTitleLabel(weekList);
+  }
+
+  static List<DateTime> _weekDatesFromTime(DateTime dateTime) {
+    final firstDate = findFirstDateOfTheWeek(dateTime);
+    final lastDate = findLastDateOfTheWeek(dateTime);
+    final weekDays = <DateTime>[];
+    if (firstDate.day > lastDate.day) {
+      for (var i = 0; i < 7; i++) {
+        weekDays.add(
+          DateTime(firstDate.year, firstDate.month, firstDate.day + i),
+        );
+      }
+    } else {
+      for (var i = firstDate.day; i <= lastDate.day; i++) {
+        weekDays.add(DateTime(firstDate.year, firstDate.month, i));
+      }
+    }
+    return weekDays;
+  }
+
+  static String _formatWeekTitleLabel(List<DateTime> weekList) {
+    try {
+      final firstDay = weekList.first.day.toString();
+      final lastDay = weekList.last.day.toString();
+      final firstMonth = weekList.first.month;
+      final lastMonth = weekList.last.month;
+      final prevMonth = firstMonth == lastMonth ? '' : calMonths[firstMonth - 1];
+      final nextMonth = calMonths[lastMonth - 1];
+      return '$firstDay $prevMonth ~ $lastDay $nextMonth'.trim();
+    } catch (e) {
+      debugPrint('formatWeekTitleLabelExp: $e');
+      return '';
+    }
+  }
+
   static String formatNumber(int number) {
     var f = NumberFormat("#,###", "en_US");
     return f.format(number);
@@ -615,27 +662,7 @@ class GlobalMethods {
   }
 
   static Future<String> getWeekTitleLabel(BuildContext context, List<DateTime> weekList) async {
-    String weekTitleLabel ='';
-    try{
-      String firstDay = weekList[0].day.toString();
-      String lastDay = weekList[weekList.length - 1].day.toString();
-      //String month = tempCalenderMonth[weekList[0].month - 1];
-      String nextMonth = '';
-      String prevMonth = '';
-      int firstMonth =  weekList[0].month;
-      int lastMonth =  weekList[weekList.length - 1].month;
-      if (firstMonth == lastMonth) {
-        prevMonth = '';
-        nextMonth = calMonths[lastMonth - 1];
-      }else{
-        prevMonth = calMonths[firstMonth - 1];
-        nextMonth = calMonths[lastMonth - 1];
-      }
-      weekTitleLabel = '$firstDay $prevMonth ~ $lastDay $nextMonth';
-    }catch(e){
-      debugPrint('getWeekTitleLabelExp: $e');
-    }
-    return weekTitleLabel;
+    return _formatWeekTitleLabel(weekList);
   }
 
 /* static String getTimeByIntegerMin(int minutes) {

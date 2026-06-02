@@ -27,7 +27,7 @@ class WeatherMainModel {
       stUVIStatus = 'High';
     } else if (uvi > 7 && uvi < 10) {
       stUVIStatus = 'Very high';
-    } else if (uvi > 10) {
+    } else if (uvi >= 10) {
       stUVIStatus = 'Extreme';
     } else {
       stUVIStatus = '';
