@@ -13,7 +13,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
   int selectedPage = 0;
 
   final VitalsDataRepository _vitalsDataRepository = Get.find<VitalsDataRepository>();
-  List overAllSleepData = [];
+  List<dynamic> overAllSleepData = [];
 
   //current day
   DateTime todayTime = DateTime.now();
@@ -92,7 +92,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
       overAllSleepData = [];
       return;
     }
-    overAllSleepData = jsonDecode(sleepData.toString());
+    overAllSleepData = JsonUtils.asList(jsonDecode(sleepData.toString()));
   }
 
   Future<void> initializeData() async {
@@ -239,11 +239,11 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
         if(context.mounted) {
           sleepDataList = await _vitalsDataRepository.getSleepDataSelectedRange(false, overAllSleepData, calenderList, context);
         }
-        List<WeeklySleepData> weekDataSleepList = sleepDataList[0];
-        int totalHours = sleepDataList[1]; // total
-        int totalDeep = sleepDataList[2]; //deep
-        int totalAwake = sleepDataList[3]; //awake
-        int totalLight = sleepDataList[3]; //light
+        final weekDataSleepList = List<WeeklySleepData>.from(sleepDataList[0] as List);
+        final totalHours = sleepDataList[1] as int;
+        final totalDeep = sleepDataList[2] as int;
+        final totalAwake = sleepDataList[3] as int;
+        final totalLight = sleepDataList[3] as int;
 
         if (weekDataSleepList.isNotEmpty) {
 
@@ -386,11 +386,11 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
       if (Platform.isIOS) {
         List<dynamic> sleepDataList = await _vitalsDataRepository.getSleepDataSelectedRange(true, overAllSleepData, calenderList, context);
 
-        List<MonthlySleepData> monthDataList = sleepDataList[0];
-        int totalHours = sleepDataList[1]; // total
-        int totalDeep = sleepDataList[2]; //deep
-        int totalAwake = sleepDataList[3]; //awake
-        int totalLight = sleepDataList[3]; //light
+        final monthDataList = List<MonthlySleepData>.from(sleepDataList[0] as List);
+        final totalHours = sleepDataList[1] as int;
+        final totalDeep = sleepDataList[2] as int;
+        final totalAwake = sleepDataList[3] as int;
+        final totalLight = sleepDataList[3] as int;
 
         if (monthDataList.isNotEmpty) {
           List<String> total = GlobalMethods.getTimeByIntegerMin(totalHours).split(':');
@@ -520,10 +520,10 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
     return SingleChildScrollView(
       child: Container(
         margin: const EdgeInsets.only(left: 10.0, right: 10.0),
-        child: Column(
+        child: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
-          children: const <Widget>[
+          children: <Widget>[
             SizedBox(
               height: 20.0,
             ),

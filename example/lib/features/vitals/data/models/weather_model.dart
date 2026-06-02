@@ -1,89 +1,92 @@
+import 'package:flutter_band_fit_app/core/utils/json_utils.dart';
+
 class WeatherMainModel {
   late DateTime date;
   late num temperature;
   late int currentWeatherCode;
   late int humidity;
   late num windSpeed;
-  late  double uvIndex;
+  late double uvIndex;
 
-  late  String currentMainTitle, currentDescription, currentIconUrl, stUVIStatus;
+  late String currentMainTitle, currentDescription, currentIconUrl, stUVIStatus;
 
   List<WeatherDailyData> weatherDailyList = [];
 
   WeatherMainModel(Map<String, dynamic> currentData, List<dynamic> dailyList) {
     date = _unpackWeatherDate(currentData['dt'])!;
-    temperature = currentData['temp'];
-    humidity = currentData['humidity'];
-    windSpeed = currentData['wind_speed'];
-    if(currentData['uvi'] > 0 && currentData['uvi'] < 2){
+    temperature = JsonUtils.asDouble(currentData['temp']);
+    humidity = JsonUtils.asInt(currentData['humidity']);
+    windSpeed = JsonUtils.asDouble(currentData['wind_speed']);
+    final uvi = JsonUtils.asDouble(currentData['uvi']);
+    uvIndex = uvi;
+    if (uvi > 0 && uvi < 2) {
       stUVIStatus = 'Low';
-    }else if(currentData['uvi'] > 2 && currentData['uvi'] < 5){
+    } else if (uvi > 2 && uvi < 5) {
       stUVIStatus = 'Moderate';
-    }else if(currentData['uvi'] > 5 && currentData['uvi'] < 7){
+    } else if (uvi > 5 && uvi < 7) {
       stUVIStatus = 'High';
-    }else if(currentData['uvi'] > 7 && currentData['uvi'] < 10){
+    } else if (uvi > 7 && uvi < 10) {
       stUVIStatus = 'Very high';
-    }else if(currentData['uvi'] > 10){
+    } else if (uvi > 10) {
       stUVIStatus = 'Extreme';
-    }else{
+    } else {
       stUVIStatus = '';
     }
     if (currentData['weather'] != null) {
-      var weather = currentData['weather'];
-      WeatherData weatherData = WeatherData(weather[0]);
-      currentWeatherCode = weatherData.weatherCode;
-      currentMainTitle = weatherData.mainTitle;
-      currentDescription = weatherData.description;
-      currentIconUrl = weatherData.iconUrl;
-      //debugPrint('iconUrl>> ' + this.currentIconUrl);
+      final weather = JsonUtils.asList(currentData['weather']);
+      if (weather.isNotEmpty) {
+        final weatherData = WeatherData(JsonUtils.asMap(weather[0]));
+        currentWeatherCode = weatherData.weatherCode;
+        currentMainTitle = weatherData.mainTitle;
+        currentDescription = weatherData.description;
+        currentIconUrl = weatherData.iconUrl;
+      }
     }
     weatherDailyList = convertDataToList(dailyList);
   }
 
   List<WeatherDailyData> convertDataToList(List<dynamic> json) {
-    List<WeatherDailyData> dailyList = [];
+    final dailyList = <WeatherDailyData>[];
     if (json.isNotEmpty) {
-      for (var element in json) {
-        dailyList.add(WeatherDailyData(element));
+      for (final element in json) {
+        dailyList.add(WeatherDailyData(JsonUtils.asMap(element)));
       }
     }
     return dailyList;
   }
-
-
 }
 
-
 class WeatherDailyData {
-  late  DateTime date;
+  late DateTime date;
   late TemperatureData temperatureData;
   late double windSpeed;
-  late  double uvIndex;
-  late  int humidity;
+  late double uvIndex;
+  late int humidity;
   late int weatherCode;
-  late  String mainTitle, description, iconUrl;
+  late String mainTitle, description, iconUrl;
 
-  WeatherDailyData(Map<String, dynamic> data){
+  WeatherDailyData(Map<String, dynamic> data) {
     date = _unpackWeatherDate(data['dt'])!;
-    temperatureData= TemperatureData(data['temp']);
+    temperatureData = TemperatureData(JsonUtils.asMap(data['temp']));
     if (data['weather'] != null) {
-      var weather = data['weather'];
-      WeatherData weatherData = WeatherData(weather[0]);
-      weatherCode = weatherData.weatherCode;
-      mainTitle = weatherData.mainTitle;
-      description = weatherData.description;
-      iconUrl = weatherData.iconUrl;
-      //debugPrint('iconUrl>> ' + this.iconUrl);
+      final weather = JsonUtils.asList(data['weather']);
+      if (weather.isNotEmpty) {
+        final weatherData = WeatherData(JsonUtils.asMap(weather[0]));
+        weatherCode = weatherData.weatherCode;
+        mainTitle = weatherData.mainTitle;
+        description = weatherData.description;
+        iconUrl = weatherData.iconUrl;
+      }
     }
   }
 }
 
 class WeatherData {
-  late  int weatherCode;
-  late  String mainTitle, description, iconUrl;
+  late int weatherCode;
+  late String mainTitle, description, iconUrl;
 
   WeatherData(Map<String, dynamic> data) {
-    weatherCode = data['id'];
+    weatherCode = JsonUtils.asInt(data['id']);
     mainTitle = data['main'].toString();
     description = data['description'].toString();
     iconUrl = _getWeatherIconUrl(data['icon'].toString());
@@ -91,10 +94,9 @@ class WeatherData {
 }
 
 class TemperatureData {
-  late  double day, min, max;
+  late double day, min, max;
 
   TemperatureData(Map<String, dynamic> data) {
-   // debugPrint('TemperatureData>> $data');
     day = double.tryParse(data['day'].toString())!;
     min = double.tryParse(data['min'].toString())!;
     max = double.tryParse(data['max'].toString())!;
@@ -103,14 +105,12 @@ class TemperatureData {
 
 DateTime? _unpackWeatherDate(dynamic dt) {
   if (dt != null) {
-    int millis = dt * 1000;
+    final millis = JsonUtils.asInt(dt) * 1000;
     return DateTime.fromMillisecondsSinceEpoch(millis);
   }
   return null;
 }
 
 String _getWeatherIconUrl(String iconName) {
-  // for example  http://openweathermap.org/img/wn/10d@2x.png
   return 'http://openweathermap.org/img/wn/$iconName@2x.png';
 }
-

@@ -2,6 +2,7 @@
 import 'package:flutter_band_fit_app/app/theme/theme_controller.dart';
 import 'package:flutter_band_fit_app/common/common_imports.dart';
 import 'package:flutter_band_fit_app/core/services/activity_service_provider.dart';
+import 'package:flutter_band_fit_app/core/services/dial_face_prefetch_service.dart';
 import 'package:flutter_band_fit_app/core/utils/shared_service.dart';
 import 'package:flutter_band_fit_app/features/vitals/domain/usecases/check_vitals_device_connection_usecase.dart';
 import 'package:flutter_band_fit_app/features/vitals/domain/usecases/reconnect_vitals_device_usecase.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_band_fit_app/features/vitals/domain/usecases/should_sync
 import 'package:flutter_band_fit_app/features/vitals/domain/usecases/sync_overall_vitals_usecase.dart';
 
 
+/// Home / vitals dashboard: connection checks, pull-to-sync, and band event handling.
 class VitalMainController extends GetxController
     with GetTickerProviderStateMixin, WidgetsBindingObserver {
 
@@ -45,12 +47,7 @@ class VitalMainController extends GetxController
     WidgetsBinding.instance.addObserver(this);
     reConnectMacAddress = _activityServiceProvider.getDeviceMacAddress;
     initializeProgressController();
-    // Add the observer.
-    //WidgetsBinding.instance.addObserver(this);
-    if (_activityServiceProvider.getHealthConnected) {
-      // gfit or apple fit
-    } else {
-      //_activityServiceProvider.startListeningCallBacks(context);
+    if (!_activityServiceProvider.getHealthConnected) {
       listenFitBandUpdates();
       progressUpdate();
     }
@@ -66,12 +63,15 @@ class VitalMainController extends GetxController
       debugPrint("receiveEventsFromOnDone::>> ");
     });
     Map<Permission, PermissionStatus> statuses;
-    if(Platform.isAndroid) {
-      //AndroidDeviceInfo androidInfo  = await DeviceInfoPlugin().androidInfo;
-      int sdkInt = await _activityServiceProvider.getAndroidSDKInt();
-      if(sdkInt >= 31) {
-        statuses = await [Permission.bluetoothConnect, Permission.bluetoothScan, Permission.locationWhenInUse, Permission.location].request();
-        // Permission.bluetoothAdvertise,
+    if (Platform.isAndroid) {
+      final sdkInt = await _activityServiceProvider.getAndroidSDKInt();
+      if (sdkInt >= 31) {
+        statuses = await [
+          Permission.bluetoothConnect,
+          Permission.bluetoothScan,
+          Permission.locationWhenInUse,
+          Permission.location,
+        ].request();
       } else {
         statuses = await [Permission.bluetooth, Permission.location].request();
       }
@@ -199,14 +199,14 @@ class VitalMainController extends GetxController
   }
 
   Future<void> onDataUpdated(dynamic data) async {
-    var eventData = jsonDecode(data);
-    String result = eventData['result'].toString();
-    String status = eventData['status'].toString();
+    final eventData = JsonUtils.asMap(jsonDecode(data as String));
+    final result = JsonUtils.asString(eventData['result']);
+    final status = JsonUtils.asString(eventData['status']);
     // var jsonData = eventData['data'];
 
     if (result == BandFitConstants.UPDATE_DEVICE_LIST){
       if (status == BandFitConstants.SC_SUCCESS) {
-        List<dynamic> deviceDataList = eventData["data"];
+        final deviceDataList = JsonUtils.asList(eventData['data']);
         BandDeviceModel? deviceModel;
         String swName = _activityServiceProvider.getDeviceSWName;
         String macAddress = _activityServiceProvider.getDeviceMacAddress;
@@ -224,7 +224,7 @@ class VitalMainController extends GetxController
         for (var data in deviceDataList) {
           if (swName.isNotEmpty) {
             if (data['name'].toString() == swName && data['address'].toString() == macAddress) {
-              deviceModel = BandDeviceModel.fromJson(data);
+              deviceModel = BandDeviceModel.fromJson(JsonUtils.asMap(data));
               break;
             }
           }
@@ -259,7 +259,7 @@ class VitalMainController extends GetxController
     } else if (result == BandFitConstants.SYNC_TIME_OK) {
       //debugPrint("addDeviceListener>> SYNC_TIME_OK");
       if (status == BandFitConstants.SC_SUCCESS) {
-        await Future.delayed(const Duration(milliseconds: 500));
+        await Future<void>.delayed(const Duration(milliseconds: 500));
         await _activityServiceProvider.updateUserParamsWatch(false);
 
         isDeviceConnected = true;
@@ -276,39 +276,20 @@ class VitalMainController extends GetxController
     }
     else if (result == BandFitConstants.UPDATE_DEVICE_PARAMS) {
       if (status == BandFitConstants.SC_SUCCESS) {
-        //updateDeviceConnection(true);
-        //if(_activityServiceProvider.getJsonWeatherData!=null && _activityServiceProvider.getJsonWeatherData.isNotEmpty){
-        //await Future.delayed(const Duration(milliseconds: 500));
-        //  await _activityServiceProvider.setWeatherInfoSevenDays();
-        /*if (deviceConnectedBleWriteStatus) {
-            debugPrint('deviceConnectedBleWriteStatus>>');
-            updateDeviceConnection(true);
-          }*/
-        // }else{
         await updateDeviceConnection();
-        //}
       }
-    }else if (result == BandFitConstants.SYNC_BLE_WRITE_SUCCESS) {
+    } else if (result == BandFitConstants.SYNC_BLE_WRITE_SUCCESS) {
       if (status == BandFitConstants.SC_SUCCESS) {
-        // bool deviceConnected = await _activityServiceProvider.checkIsDeviceConnected();
-        //if (deviceConnected) {
-        //if (Get.context != null) {
-    deviceConnectedBleWriteStatus = true;
-          if (syncFailureTimeOut > 0) {
-            syncFailureTimeOut--;
-          }
-    update();
-        //}
-        //}
+        deviceConnectedBleWriteStatus = true;
+        if (syncFailureTimeOut > 0) {
+          syncFailureTimeOut--;
+        }
+        update();
       }
     } else if (result == BandFitConstants.SYNC_BLE_WRITE_FAIL) {
       if (status == BandFitConstants.SC_SUCCESS) {
-        // connect successfully and data sync failed. Sync again after some time.
-        //syncFailureTimeOut++;
-        //if (Get.context != null) {
-    syncFailureTimeOut++;
-    update();
-        /// }
+        syncFailureTimeOut++;
+        update();
         debugPrint('syncFailureTimeOut>> $syncFailureTimeOut');
         if (syncFailureTimeOut == 3) {
           if (deviceConnectedBleWriteStatus) {
@@ -322,7 +303,6 @@ class VitalMainController extends GetxController
           if(deviceConnectedBleWriteStatus){
             if (isDeviceConnected) {
               await updateDeviceConnection();
-              //Navigator.of(context).pop();
             }
           }
         }
@@ -335,13 +315,13 @@ class VitalMainController extends GetxController
         debugPrint('isReConnectStatus>> $isReConnectStatus');
         debugPrint('_activityServiceProvider.isSyncProgress>> ${_activityServiceProvider.isSyncProgress}');
         if (_activityServiceProvider.isSyncProgress) {
-          // update syncing false
           _activityServiceProvider.updateSyncingView(false);
           if (Get.context != null) {
             retryConnection(Get.context!);
           }
         }else{
           if (!deviceConnected) {
+            Get.find<DialFacePrefetchService>().invalidate();
     notifiedDisconnected = true;
     update();
             if(isReConnectStatus){
@@ -358,11 +338,9 @@ class VitalMainController extends GetxController
                   retryConnection(Get.context!);
                 }
               }
-            }else{
+            } else {
               debugPrint('isReConnectStatus_else $isReConnectStatus');
-              //if(!Platform.isIOS){
-              //}
-              if(_activityServiceProvider.getDeviceConnected){
+              if (_activityServiceProvider.getDeviceConnected) {
                 if (Get.context != null) {
                   retryConnection(Get.context!);
                 }
@@ -410,6 +388,7 @@ class VitalMainController extends GetxController
     // Utils.showToastMessage(context, deviceConnected);
     refreshPage();
     validateTimeAndSync();
+    unawaited(Get.find<DialFacePrefetchService>().prefetchIfNeeded());
   }
 
   void refreshPage() => update();

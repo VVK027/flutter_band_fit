@@ -18,7 +18,7 @@ class WeatherApiClient {
     required bool useMetricUnits,
     required String lang,
   }) async {
-    final apiKey = WeatherConfig.openWeatherApiKey;
+    const apiKey = WeatherConfig.openWeatherApiKey;
     if (apiKey.isEmpty) {
       debugPrint(
         'WeatherApiClient: set OPEN_WEATHER_API_KEY via --dart-define=OPEN_WEATHER_API_KEY=...',

@@ -151,7 +151,7 @@ class AppleGoogleBindController extends GetxController {
     if (_isBoundToDeviceUseCase(deviceTypeName)) {
       debugPrint('goDashboard_inside_if');
     } else {
-      Get.back();
+      Get.back<void>();
     }
   }
 }

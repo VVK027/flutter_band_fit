@@ -9,6 +9,11 @@ import 'package:flutter_band_fit_app/features/vitals/data/models/band_data_model
 import 'package:flutter_band_fit_app/features/vitals/data/models/weather_model.dart';
 import 'package:intl/intl.dart';
 
+/// Central GetX service for the example app: BLE band I/O, persisted vitals,
+/// dashboard state, weather fetch, and dial-face sync.
+///
+/// UI controllers should prefer feature repositories/use cases where they exist;
+/// this class remains the integration point for [FlutterBandFit] events and storage.
 class ActivityServiceProvider extends GetxController {
   /// True after [fetchLocalDataAssign] finishes loading persisted vitals.
   final isLocalDataLoaded = false.obs;
@@ -17,7 +22,8 @@ class ActivityServiceProvider extends GetxController {
   String get getTargetedSteps => targetedSteps.obs.string;
 
   final FlutterBandFit flutterBandFit = FlutterBandFit();
-  // user profile related variables (defaults match SharedService fallbacks)
+
+  // --- User profile (defaults match [SharedService]) ---
 
   String userHeight = heightMin.toString();
   String get getUserHeight => userHeight;
@@ -37,11 +43,12 @@ class ActivityServiceProvider extends GetxController {
   String get getScreenOffTime => screenOffTime;
 
 
-  //device related variables
+  // --- Device connection and band settings ---
   bool deviceConnected = false;
   bool get getDeviceConnected => deviceConnected;
 
-  bool healthConnected = false; // for g-fit and apple fit
+  /// True when vitals are sourced from Apple Health or Google Fit instead of the band.
+  bool healthConnected = false;
   bool get getHealthConnected => healthConnected;
 
   double deviceLatitude = 0.0;
@@ -173,7 +180,7 @@ class ActivityServiceProvider extends GetxController {
   String weatherSyncDateTime = '';
   String get getWeatherSyncDateTime => weatherSyncDateTime;
 
-  //dial related flags
+  // --- Watch face (dial) download / transfer ---
   int _syncDialProgress = 0;
   int get getSyncDialProgress => _syncDialProgress;
 
@@ -189,7 +196,7 @@ class ActivityServiceProvider extends GetxController {
   bool dialSyncDone = false;
   bool get isDialSyncDone => dialSyncDone;
 
-  //recent sync data from watch
+  // --- Raw SDK payloads persisted as JSON strings ---
   String overAllStepsData = '';
   String get getOverAllStepsData => overAllStepsData;
 
@@ -211,6 +218,7 @@ class ActivityServiceProvider extends GetxController {
   String jsonWeatherData = '';
   String get getJsonWeatherData => jsonWeatherData;
 
+  // --- OpenWeather in-memory cache (see [callWeatherForecast]) ---
   Future<void>? _weatherFetchInFlight;
   double? _lastWeatherFetchLat;
   double? _lastWeatherFetchLon;
@@ -224,13 +232,14 @@ class ActivityServiceProvider extends GetxController {
     });
   }
 
-  // initializeMethods
+  /// Loads profile, device flags, and cached vitals from [SharedService], then hydrates the dashboard.
   Future<void> initializeProvider() async {
     await fetchLocalDataAssign();
     debugPrint("inside initializeProvider");
     update();
   }
 
+  /// Reads all persisted keys and populates in-memory dashboard fields.
   Future<void> fetchLocalDataAssign() async {
     isLocalDataLoaded.value = false;
     targetedSteps = sharedService.getTargetedSteps();
@@ -244,7 +253,6 @@ class ActivityServiceProvider extends GetxController {
     userBMI = sharedService.getBMIValue();
     userBMIStatus = sharedService.getBMIStatus();
 
-    //device related
     deviceConnected = sharedService.isSmartMConnected();
     healthConnected = sharedService.isHealthConnected();
     oxygenAvailable = sharedService.isOxygenAvailable();
@@ -263,12 +271,10 @@ class ActivityServiceProvider extends GetxController {
     deviceVersion = sharedService.getDeviceVersionId();
     batteryPercentage = int.parse(sharedService.getBatteryStatus());
 
-    //get temperature unit.
     tempCelsius = sharedService.getIsTempCelsius();
     debugPrint('123>>tempCelsius>> $tempCelsius');
     raiseHandWakeUp = sharedService.getRaiseWakeUp();
 
-    //overall device data
     overAllStepsData = sharedService.getOverAllSteps();
     overAllSleepData = sharedService.getOverAllSleep();
     overAllHrData = sharedService.getOverAllHeartRate();
@@ -286,7 +292,6 @@ class ActivityServiceProvider extends GetxController {
     debugPrint('deviceSWNameLast>>$deviceSWName');
     debugPrint('deviceMacAddressLast>>$deviceMacAddress');
 
-    // device city Name & lat & long
     String weatherResponse = '';
     if (sharedService.getDeviceCityName() != null && sharedService.getLatitude() != null) {
       deviceCityName = sharedService.getDeviceCityName()!;
@@ -303,108 +308,137 @@ class ActivityServiceProvider extends GetxController {
     isLocalDataLoaded.value = true;
   }
 
+  /// Restores dashboard vitals and weather from persisted JSON after app start.
   Future<void> addRecentDataUI(String weatherResponse) async {
     try {
-      //String calenderDateTime = GlobalMethods.convertBandReadableCalender(DateTime.now());
-      //steps data
-      if (overAllStepsData.isNotEmpty) {
-        List<dynamic> recentStepsData = jsonDecode(overAllStepsData);
-        //List<StepsMainModel> stepsTodayList = await getCurrentDaySteps(recentStepsData);
-        List<StepsMainModel> stepsTodayList = [];
-        if (Platform.isIOS) {
-          stepsTodayList = await getSelectedDayStepsData(recentStepsData);
-        } else {
-          stepsTodayList = await getCurrentDaySteps(recentStepsData);
-        }
-        if (stepsTodayList.isNotEmpty) {
-          StepsMainModel stepsMainModel = stepsTodayList[stepsTodayList.length - 1];
-          updateDeviceStats(stepsMainModel.steps, stepsMainModel.distance, stepsMainModel.calories);
-        }
-      }
-
-      if (overAllSleepData.isNotEmpty) {
-        List recentSleepData = jsonDecode(overAllSleepData);
-        List<SleepMainModel> sleepTodayList = [];
-        if (Platform.isIOS) {
-          sleepTodayList = await getSelectedDaySleepData(recentSleepData);
-        } else {
-          sleepTodayList = await getCurrentDaySleepData(recentSleepData);
-        }
-
-        if (sleepTodayList.isNotEmpty) {
-          SleepMainModel sleepMainModel = sleepTodayList[sleepTodayList.length - 1];
-          updateDeviceSleep(sleepMainModel.total, sleepMainModel.calender);
-        }
-      }
-      if (overAllHrData.isNotEmpty) {
-        List recentHrData = jsonDecode(overAllHrData);
-        List<BandHRModel> smartHr24List = await getCurrentDayHRData(recentHrData);
-        if (smartHr24List.isNotEmpty) {
-          String hr24Value = smartHr24List[smartHr24List.length - 1].rate;
-          String calender = smartHr24List[smartHr24List.length - 1].calender;
-          String time = smartHr24List[smartHr24List.length - 1].time;
-          String dateTime = getTimeByCalenderTime(calender, time);
-          updateHearRate(hr24Value, dateTime);
-        }
-      }
-      if (overAllBPData.isNotEmpty) {
-        List recentBPData = jsonDecode(overAllBPData);
-        List<BandBPModel> smartBpDataList = await getCurrentDayBPData(recentBPData);
-        if (smartBpDataList.isNotEmpty) {
-          String high = smartBpDataList[smartBpDataList.length - 1].high;
-          String low = smartBpDataList[smartBpDataList.length - 1].low;
-          String calender = smartBpDataList[smartBpDataList.length - 1].calender;
-          String time = smartBpDataList[smartBpDataList.length - 1].time;
-          String dateTime = getTimeByCalenderTime(calender, time);
-          debugPrint('bp value $high /$low - $dateTime');
-          updateBloodPressure('$high /$low', dateTime);
-        }
-      }
-      if (overAllTempData.isNotEmpty) {
-        List recentTempData = jsonDecode(overAllTempData);
-        List<BandTempModel> smartTempData = await getCurrentDayTemperatureData(recentTempData);
-        if (smartTempData.isNotEmpty) {
-          String inFahrenheit = smartTempData[smartTempData.length - 1].inFahrenheit;
-          String inCelsius = smartTempData[smartTempData.length - 1].inCelsius;
-          String calender = smartTempData[smartTempData.length - 1].calender;
-          String time = smartTempData[smartTempData.length - 1].time;
-          //String startDate = smartTempData[smartTempData.length-1].startDate??'';
-          String dateTime = getTimeByCalenderTime(calender, time);
-          // debugPrint('inFahrenheit>> $inFahrenheit - $dateTime');
-          updateTemperature(inCelsius, inFahrenheit, dateTime);
-        }
-      }
-      //for oxygen
-      if (overAllOxygenData.isNotEmpty) {
-        List recentOxyData = jsonDecode(overAllOxygenData);
-        List<BandOxygenModel> smartOxygenData = await getCurrentDayOxygenData(recentOxyData);
-        if (smartOxygenData.isNotEmpty) {
-          String oxygenValue = smartOxygenData[smartOxygenData.length - 1].value;
-          String calender = smartOxygenData[smartOxygenData.length - 1].calender;
-          String time = smartOxygenData[smartOxygenData.length - 1].time;
-          String dateTime = getTimeByCalenderTime(calender, time);
-          updateOxygenSaturation(oxygenValue, dateTime);
-        }
-      }
-
-      if (weatherResponse.isNotEmpty) {
-        final weatherMainModel = _parseWeatherResponse(weatherResponse);
-        if (weatherMainModel != null) {
-          _weatherModelData = weatherMainModel;
-          currentTemperature = (double.tryParse(
-                weatherMainModel.temperature.toString(),
-              ) ??
-              0)
-              .toStringAsFixed(2);
-          currentWeatherUrl = weatherMainModel.currentIconUrl;
-          update();
-        }
-      }
+      await _hydrateDashboardFromStoredVitals();
+      await _applyStoredWeatherResponse(weatherResponse);
     } catch (e) {
       debugPrint('addRecentDataUIException: $e');
     }
   }
 
+  /// Maps cached band payloads to today's summary fields on the home screen.
+  Future<void> _hydrateDashboardFromStoredVitals() async {
+    if (overAllStepsData.isNotEmpty) {
+      await _applyStepsToDashboard(JsonUtils.asList(jsonDecode(overAllStepsData)));
+    }
+    if (overAllSleepData.isNotEmpty) {
+      await _applySleepToDashboard(JsonUtils.asList(jsonDecode(overAllSleepData)));
+    }
+    if (overAllHrData.isNotEmpty) {
+      await _applyHeartRateToDashboard(JsonUtils.asList(jsonDecode(overAllHrData)));
+    }
+    if (overAllBPData.isNotEmpty) {
+      await _applyBloodPressureToDashboard(JsonUtils.asList(jsonDecode(overAllBPData)));
+    }
+    if (overAllTempData.isNotEmpty) {
+      await _applyTemperatureToDashboard(JsonUtils.asList(jsonDecode(overAllTempData)));
+    }
+    if (overAllOxygenData.isNotEmpty) {
+      await _applyOxygenToDashboard(JsonUtils.asList(jsonDecode(overAllOxygenData)));
+    }
+  }
+
+  Future<void> _applyStoredWeatherResponse(String weatherResponse) async {
+    if (weatherResponse.isEmpty) {
+      return;
+    }
+    final weatherMainModel = _parseWeatherResponse(weatherResponse);
+    if (weatherMainModel == null) {
+      return;
+    }
+    _weatherModelData = weatherMainModel;
+    currentTemperature = (double.tryParse(
+              weatherMainModel.temperature.toString(),
+            ) ??
+            0)
+        .toStringAsFixed(2);
+    currentWeatherUrl = weatherMainModel.currentIconUrl;
+    update();
+  }
+
+  /// iOS aggregates per-minute rows; Android uses pre-aggregated day records.
+  Future<List<StepsMainModel>> _todayStepsModels(List<dynamic> stepsData) {
+    return Platform.isIOS
+        ? getSelectedDayStepsData(stepsData)
+        : getCurrentDaySteps(stepsData);
+  }
+
+  Future<List<SleepMainModel>> _todaySleepModels(dynamic sleepData) {
+    return Platform.isIOS
+        ? getSelectedDaySleepData(sleepData)
+        : getCurrentDaySleepData(sleepData);
+  }
+
+  Future<void> _applyStepsToDashboard(List<dynamic> stepsData) async {
+    final stepsTodayList = await _todayStepsModels(stepsData);
+    if (stepsTodayList.isEmpty) {
+      return;
+    }
+    final latest = stepsTodayList.last;
+    updateDeviceStats(latest.steps, latest.distance, latest.calories);
+  }
+
+  Future<void> _applySleepToDashboard(dynamic sleepData) async {
+    final sleepTodayList = await _todaySleepModels(sleepData);
+    if (sleepTodayList.isEmpty) {
+      return;
+    }
+    final latest = sleepTodayList.last;
+    updateDeviceSleep(latest.total, latest.calender);
+  }
+
+  Future<void> _applyHeartRateToDashboard(dynamic hrData) async {
+    final hrList = await getCurrentDayHRData(hrData);
+    if (hrList.isEmpty) {
+      return;
+    }
+    final latest = hrList.last;
+    updateHearRate(
+      latest.rate,
+      getTimeByCalenderTime(latest.calender, latest.time),
+    );
+  }
+
+  Future<void> _applyBloodPressureToDashboard(dynamic bpData) async {
+    final bpList = await getCurrentDayBPData(bpData);
+    if (bpList.isEmpty) {
+      return;
+    }
+    final latest = bpList.last;
+    updateBloodPressure(
+      '${latest.high} /${latest.low}',
+      getTimeByCalenderTime(latest.calender, latest.time),
+    );
+  }
+
+  Future<void> _applyTemperatureToDashboard(dynamic temperatureData) async {
+    final tempList = await getCurrentDayTemperatureData(temperatureData);
+    if (tempList.isEmpty) {
+      return;
+    }
+    final latest = tempList.last;
+    updateTemperature(
+      latest.inCelsius,
+      latest.inFahrenheit,
+      getTimeByCalenderTime(latest.calender, latest.time),
+    );
+  }
+
+  Future<void> _applyOxygenToDashboard(dynamic oxygenData) async {
+    final oxyList = await getCurrentDayOxygenData(oxygenData);
+    if (oxyList.isEmpty) {
+      return;
+    }
+    final latest = oxyList.last;
+    updateOxygenSaturation(
+      latest.value,
+      getTimeByCalenderTime(latest.calender, latest.time),
+    );
+  }
+
+  /// Returns cached weather for detail screens, loading from storage if needed.
   WeatherMainModel? weatherReportForDetails() {
     if (_weatherModelData != null) {
       return _weatherModelData;
@@ -472,21 +506,15 @@ class ActivityServiceProvider extends GetxController {
     userDOB = dob;
     userAge = GlobalMethods.getAgeFromDOB(dob).toString();
     update();
-    // await fetchLocalDataAssign(uId);
     await sharedService.setInitialParams(userGender, userAge, userDOB);
-    // update();
     debugPrint("updated setWatchProfile");
   }
 
   Future<void> setDefaultHeightWeight(int height, int weight) async {
-    //debugPrint("inside setWatchProfile");
     userHeight = height.toString();
     userWeight = weight.toString();
     update();
-    //sharedService.setInitialHeightWeight(userHeight,userWeight);
-    sharedService.setInitialHeightWeight(getUserHeight, getUserWeight);
-    // update();
-    //debugPrint("updated setWatchProfile");
+    await sharedService.setInitialHeightWeight(getUserHeight, getUserWeight);
   }
 
   Future<void> updateWatchProfile(String height, String weight, String gender, String dob) async {
@@ -497,9 +525,7 @@ class ActivityServiceProvider extends GetxController {
     userAge = GlobalMethods.getAgeFromDOB(dob).toString();
     update();
     await sharedService.setInitialParams(userGender, userAge, userDOB);
-    // sharedService.setInitialHeightWeight(userHeight,userWeight);
-    sharedService.setInitialHeightWeight(getUserHeight, getUserWeight);
-    // update();
+    await sharedService.setInitialHeightWeight(getUserHeight, getUserWeight);
     debugPrint("updated updateWatchProfile");
   }
 
@@ -508,9 +534,7 @@ class ActivityServiceProvider extends GetxController {
     userBMI = bmiValue;
     userBMIStatus = bmiStatus;
     update();
-    //sharedService.updateBMIStatus(userBMI,userBMIStatus);
     sharedService.updateBMIStatus(getUserBMI, getUserBMIStatus);
-    // update();
     debugPrint("updated updateBMIStatus");
   }
 
@@ -518,7 +542,6 @@ class ActivityServiceProvider extends GetxController {
     targetedSteps = updatedSteps;
     update();
     await sharedService.setTargetedSteps(targetedSteps);
-    //update();
     debugPrint("updated updateTargetedSteps2");
   }
 
@@ -532,7 +555,6 @@ class ActivityServiceProvider extends GetxController {
       this.screenOffTime = screenOffTime;
       update();
     }
-    //update();
   }
 
   Future<void> setTemperatureUnits(String units) async {
@@ -586,26 +608,20 @@ class ActivityServiceProvider extends GetxController {
       update();
       await sharedService.setDeviceVersionId(version);
     } else {
-      String oldVersion = sharedService.getDeviceVersionId();
-      //String oldVersion = await this.userSharedPref.getString(DEVICE_VERSION_ID) ?? '';
-      deviceVersion = oldVersion;
+      deviceVersion = sharedService.getDeviceVersionId();
       update();
     }
   }
 
   Future<void> setBatteryPercentage(String batteryStat, bool callAPISync) async {
     if (batteryStat.isNotEmpty) {
-      //this.userSharedPref.setString(BATTERY_STATUS, batteryStat);
       batteryPercentage = int.parse(batteryStat);
       update();
       await sharedService.setBatteryStatus(batteryStat);
     } else {
-      String oldPercentage = sharedService.getBatteryStatus();
-      // String oldPercentage = this.userSharedPref.getString(BATTERY_STATUS) ?? '0';
-      batteryPercentage = int.parse(oldPercentage);
+      batteryPercentage = int.parse(sharedService.getBatteryStatus());
       update();
     }
-    //update();
   }
 
   Future<void> updateHeartRate24Enabled(String isEnabled) async {
@@ -679,11 +695,10 @@ class ActivityServiceProvider extends GetxController {
     }else{
       bpDateTime = dateTime;
     }
-    // bpDateTime = dateTime;
     update();
   }
 
-  Future<void> updateBPressureData(String high, String low, String calender, String time, var bpData) async {
+  Future<void> updateBPressureData(String high, String low, String calender, String time, dynamic bpData) async {
     debugPrint('calender12>>$calender');
     debugPrint('time12>>$time');
     String dateTime = getTimeByCalenderTime(calender, time);
@@ -699,37 +714,30 @@ class ActivityServiceProvider extends GetxController {
     }else{
       bpDateTime = dateTime;
     }
-    // bpDateTime = dateTime;
     overAllBPData = jsonEncode(bpData);
     update();
     await sharedService.setOverAllBP(getOverAllBPData);
   }
 
   void updateDeviceSleep(String totalHours, String calenderDate) {
-    // this.stepsValue = int.parse(steps);
-    List<String> list = totalHours.split(':');
-    //this.sleepHrsValue = totalHours;
+    final list = totalHours.split(':');
     sleepHrsValue = list[0];
     sleepMinutesValue = list[1];
-    //String dateTime = getTimeByCalenderTime(calenderDate, '').trim();
 
-    DateTime parseDate = DateTime.parse(calenderDate);
+    final parseDate = DateTime.parse(calenderDate);
     var outputFormat = DateFormat(defaultDateFormat);
     String outputDate = outputFormat.format(parseDate);
 
     sleepHrsDateTime = outputDate;
-    // this.distanceValue = distance;
     update();
   }
 
   void updateTemperature(String inCelsius, String inFahrenheit, String dateTime) {
-    // check is it in fahrenheit or celsius from SP, and assign it
     if (getIsCelsius) {
       temperatureValue = inCelsius;
     } else {
       temperatureValue = inFahrenheit;
     }
-    // temperatureDateTime = dateTime;
     if (dateTime.isNotEmpty) {
       var outputFormat = DateFormat(defaultDateTimeParseFormat);
       String outputDate = outputFormat.format(DateTime.parse(dateTime));
@@ -742,7 +750,6 @@ class ActivityServiceProvider extends GetxController {
 
   void updateOxygenSaturation(String oxyValue, String dateTime) {
     oxygenValue = oxyValue;
-    //oxygenDateTime = dateTime;
     if (dateTime.isNotEmpty) {
       var outputFormat = DateFormat(defaultDateTimeParseFormat);
       String outputDate = outputFormat.format(DateTime.parse(dateTime));
@@ -778,20 +785,20 @@ class ActivityServiceProvider extends GetxController {
     await sharedService.setOverAllTemperature(overAllTempData);
   }
 
+  /// Dispatches native band events (version, battery, sync finishes, DND, etc.).
   Future<void> updateEventResult(dynamic eventData, BuildContext buildContext) async {
-    String result = eventData['result'].toString();
-    String status = eventData['status'].toString();
-    var jsonData = eventData['data'];
+    final event = JsonUtils.asMap(eventData);
+    final result = JsonUtils.asString(event['result']);
+    final status = JsonUtils.asString(event['status']);
+    final jsonData = event['data'];
     switch (result) {
       case BandFitConstants.DEVICE_VERSION:
-      // data contains only "deviceVersion" returns as String
         String deviceID = jsonData['deviceVersion'].toString();
         debugPrint('deviceVersion>>$deviceID');
         setDeviceVersion(deviceID);
         break;
 
       case BandFitConstants.BATTERY_STATUS:
-      // data contains only "deviceVersion"," batteryStatus" returns as String
         String batteryStat = jsonData['batteryStatus'].toString();
         debugPrint('batteryStatus>>$batteryStat');
         setBatteryPercentage(batteryStat, true);
@@ -807,27 +814,22 @@ class ActivityServiceProvider extends GetxController {
               if (Platform.isIOS) {
                 if (resultValue.isNotEmpty) {
                   if(resultValue == "70"){
-                    // DND OFF
                     await updateDoNotDisturbEnable(false, getMotorVibrateEnabled, getMessagesOnEnabled);
                   }else if(resultValue == "78"){
-                    // DND ON
                     await updateDoNotDisturbEnable(true, getMotorVibrateEnabled, getMessagesOnEnabled);
                   }else{
 
                   }
                 }
               }else{
-                if (jsonData['decimal'] != null &&
-                    jsonData['decimal'].length > 0) {
-                  List<dynamic> decimalData = jsonData['decimal'] as List<dynamic>;
+                final decimalData = JsonUtils.asList(jsonData['decimal']);
+                if (decimalData.isNotEmpty) {
                   debugPrint('decimalData>> $decimalData');
                   String result = decimalData[0].toString();
                   debugPrint('result>> $result');
                   if (result == "66" || result == "2") {
-                    // dnd is not enabled (turned off) -- false
                     await updateDoNotDisturbEnable(false, getMotorVibrateEnabled, getMessagesOnEnabled);
                   } else if (result == "74" || result == "10") {
-                    // dnd is enabled (turned on) -- true
                     await updateDoNotDisturbEnable(true, getMotorVibrateEnabled, getMessagesOnEnabled);
                   } else {
                     debugPrint('resultNothingToDo>> $result');
@@ -845,7 +847,6 @@ class ActivityServiceProvider extends GetxController {
           String resultStatus = jsonData['result'].toString();
           if (resultStatus.isNotEmpty) {
             if (resultStatus == "85") {
-              // dnd closed
               String resultValue = jsonData['value'].toString();
               debugPrint('resultValue>> $resultValue');
               List<dynamic> hexList = jsonData['hex'] as List<dynamic>;
@@ -860,13 +861,10 @@ class ActivityServiceProvider extends GetxController {
                   String dndValue = hexList[1].toString();
                   debugPrint('dndValue>> $dndValue');
                   if (dndValue == "0A") {
-                    // only vibration off = true
                     await updateDoNotDisturbEnable(getDndEnabled, true, getMessagesOnEnabled);
                   } else if (dndValue == "08") {
-                    // only vibration off = false
                     await updateDoNotDisturbEnable(getDndEnabled, false, getMessagesOnEnabled);
                   } else if (dndValue == "0C") {
-                    // only message reminder off == true
                     await updateDoNotDisturbEnable(getDndEnabled, getMotorVibrateEnabled, true);
                   } else {
 
@@ -884,7 +882,6 @@ class ActivityServiceProvider extends GetxController {
           String resultStatus = jsonData['result'].toString();
           if (resultStatus.isNotEmpty) {
             if (resultStatus == "84") {
-              // dnd opened
               String resultValue = jsonData['value'].toString();
               debugPrint('resultValue>> $resultValue');
               List<dynamic> hexList = jsonData['hex'] as List<dynamic>;
@@ -899,74 +896,29 @@ class ActivityServiceProvider extends GetxController {
                   String dndValue = hexList[1].toString();
                   debugPrint('dndValue>> $dndValue');
                   if (dndValue == "08") {
-                    // only dnd turned on = true
                     await updateDoNotDisturbEnable(true, getMotorVibrateEnabled, getMessagesOnEnabled);
                   } else if (dndValue == "0C") {
-                    // dnd && message reminder off == true
                     await updateDoNotDisturbEnable(true, getMotorVibrateEnabled, true);
                   } else if (dndValue == "0A") {
-                    // dnd && vibration off == true
                     await updateDoNotDisturbEnable(true, true, getMessagesOnEnabled);
                   } else if (dndValue == "0E") {
-                    // dnd, msg && vibration off == true
                     await updateDoNotDisturbEnable(true, true, true);
                   } else {
                     debugPrint('dndNothingValue>> $dndValue');
                   }
                 }
               }
-              /* if(jsonData['decimal'] !=null && jsonData['decimal'].length >0){
-                List<dynamic> decimalData = jsonData['decimal'] as List<dynamic>;
-                debugPrint('decimalData>> $decimalData');
-                String result = decimalData[0].toString();
-                debugPrint('result>> $result');
-                if(result =="66"){
-                  await updateDoNotDisturbEnable(false, false, false);
-                }else if(result =="74"){
-                  // dnd is turned on from band - vibration off, msg off
-                  await updateDoNotDisturbEnable(true, getMotorVibrateEnabled, getMessagesOnEnabled);
-                }else {
-
-                }
-              }*/
             }
           }
         }
         break;
 
-    /* case BandFitConstants.WATCH_DIAL_PROGRESS_STATUS:
-        if (status == BandFitConstants.SC_SUCCESS) {
-          int syncProcess = jsonData['progress'] ?? 0;
-          debugPrint('syncProcess>> $syncProcess');
-          if (_syncDialProgress != syncProcess) {
-            _syncDialProgress = syncProcess;
-            update();
-            if (syncProcess > 0 && syncProcess == 100) {
-              await updateDialSyncUI(false, false, true);
-            }
-          }
-        }
-        break;*/
-    /* case BandFitConstants.DEVICE_DISCONNECTED:
-      // data object will be empty always
-        if (status == BandFitConstants.SC_SUCCESS) {
-          //Global.showAlertDialog(context, "Invalid Device", "The device trying to connect is not a valid device or unsupported to connect the data or fetch the data");
-          if (getDeviceConnected) {
-            */ /* GlobalMethods.showAlertDialogWithFunction(buildContext, "Device Disconnected", "Your device has been disconnected", "Retry", (){
-              debugPrint("pressed_ok: inside_callback");
-              Navigator.of(buildContext).pop();
-              retryConnection(buildContext);
-            });*/ /*
-          }
-        }
-        break;*/
-
+      // Vitals sync chain: steps → sleep → HR → BP → temperature → SpO₂.
       case BandFitConstants.SYNC_STEPS_FINISH:
         if (status == BandFitConstants.SC_SUCCESS) {
-          //await syncHeartRate();
           await syncSleepData();
           if (jsonData != null) {
-            List<dynamic> stepsData = jsonData;
+            final stepsData = JsonUtils.asList(jsonData);
             if (stepsData.isNotEmpty) {
               await updateStepsSyncSDKData(stepsData);
             }
@@ -975,12 +927,9 @@ class ActivityServiceProvider extends GetxController {
         break;
       case BandFitConstants.SYNC_SLEEP_FINISH:
         if (status == BandFitConstants.SC_SUCCESS) {
-          //await syncTemperature();
-          // await syncBloodPressure();
           await syncHeartRate();
           if (jsonData != null) {
-            //jsonData.toString().isNotEmpty != "{}";
-            List<dynamic> sleepData = jsonData;
+            final sleepData = JsonUtils.asList(jsonData);
             if (sleepData.isNotEmpty) {
               await updateSleepSyncSDKData(sleepData);
             }
@@ -990,10 +939,8 @@ class ActivityServiceProvider extends GetxController {
       case BandFitConstants.SYNC_24_HOUR_RATE_FINISH:
         if (status == BandFitConstants.SC_SUCCESS) {
           await syncBloodPressure();
-          //await syncSleepData();
-          //await syncTemperature();
           if (jsonData != null) {
-            List<dynamic> hrData = jsonData;
+            final hrData = JsonUtils.asList(jsonData);
             if (hrData.isNotEmpty) {
               await updateHR24SyncSDKData(hrData);
             }
@@ -1003,10 +950,8 @@ class ActivityServiceProvider extends GetxController {
       case BandFitConstants.SYNC_BP_FINISH:
         if (status == BandFitConstants.SC_SUCCESS) {
           await syncTemperature();
-          //await syncSleepData();
-          // Data Sync With UI
           if (jsonData != null) {
-            List<dynamic> bpData = jsonData;
+            final bpData = JsonUtils.asList(jsonData);
             if (bpData.isNotEmpty) {
               await updateBloodPressureSyncSDKData(bpData);
             }
@@ -1019,7 +964,7 @@ class ActivityServiceProvider extends GetxController {
           if (getDeviceSWName.isNotEmpty && getDeviceSWName.contains("KMO4")) {
             if (Platform.isIOS) {
               if (jsonData != null) {
-                List<dynamic> tempData = jsonData;
+                final tempData = JsonUtils.asList(jsonData);
                 if (tempData.isNotEmpty) {
                   await updateTemperatureSyncSDKData(tempData);
                 }
@@ -1032,7 +977,7 @@ class ActivityServiceProvider extends GetxController {
           } else {
             await syncOxygen();
             if (jsonData != null) {
-              List<dynamic> tempData = jsonData;
+              final tempData = JsonUtils.asList(jsonData);
               if (tempData.isNotEmpty) {
                 await updateTemperatureSyncSDKData(tempData);
               }
@@ -1048,7 +993,7 @@ class ActivityServiceProvider extends GetxController {
           //await fetchOverAllDeviceData();
           if (Platform.isIOS) {
             if (jsonData != null) {
-              List<dynamic> oxyData = jsonData;
+              final oxyData = JsonUtils.asList(jsonData);
               debugPrint("oxyData>>> $oxyData");
               if (oxyData.isNotEmpty) {
                 await updateOxygenSyncSDKData(oxyData);
@@ -1135,7 +1080,8 @@ class ActivityServiceProvider extends GetxController {
     }
   }
 
-  void receiveEventsFrom({required Function(dynamic) onDataUpdate, required Function(dynamic) onError, required Function() onDone}) {
+  /// Subscribes to the plugin event stream (typically forwarded to [updateEventResult]).
+  void receiveEventsFrom({required void Function(dynamic) onDataUpdate, required void Function(dynamic) onError, required void Function() onDone}) {
     flutterBandFit.receiveEventListeners(onData: onDataUpdate, onError: onError, onDone: onDone);
   }
 
@@ -1167,7 +1113,11 @@ class ActivityServiceProvider extends GetxController {
     _mobileSmartWatch.cancelOxygenListeners();
   }*/
 
-  void receiveBPListeners({required Function(dynamic) onDataUpdate,required Function(dynamic) onError,required Function() onDone}) {
+  void receiveBPListeners({
+    required void Function(dynamic) onDataUpdate,
+    required void Function(dynamic) onError,
+    required void Function() onDone,
+  }) {
     flutterBandFit.receiveBPListeners(onData: onDataUpdate, onError: onError, onDone: onDone);
   }
 
@@ -1371,22 +1321,6 @@ class ActivityServiceProvider extends GetxController {
   Future<bool> connectSmartDevice(BandDeviceModel deviceModel) async {
     bool resultConnected = await flutterBandFit.connectDevice(deviceModel);
     debugPrint("resultConnected: $resultConnected");
-
-    /*if(resultConnected){
-      deviceConnected = true;
-      healthConnected = false;
-      deviceSWName = deviceModel.name;
-      deviceMacAddress = deviceModel.address;
-      this.update();
-      sharedService.setSmartMConnected(deviceConnected);
-      sharedService.setDeviceName(deviceSWName);
-      sharedService.setDeviceMacAddress(deviceMacAddress);
-      sharedService.setHealthConnected(healthConnected);
-    //  await updateUserParamsWatch();
-      //await fetchBatteryStatus();
-     // await fetchAllJudgement();
-    }*/
-    // update();
     return resultConnected;
   }
 
@@ -1395,20 +1329,6 @@ class ActivityServiceProvider extends GetxController {
     debugPrint('disconnectStatus>> $disconnectStatus');
     await updateUserDeviceConnection(false, false, '', '');
     await clearResetLocalData();
-    /*if(disConnect){
-      deviceConnected = false;
-      deviceSWName = "";
-      deviceMacAddress = "";
-      healthConnected = false;
-      oxygenAvailable = false;
-      this.update();
-      sharedService.setSmartMConnected(deviceConnected);
-      sharedService.setDeviceName(deviceSWName);
-      sharedService.setDeviceMacAddress(deviceMacAddress);
-      sharedService.setHealthConnected(healthConnected);
-      sharedService.setOxygenAvailable(oxygenAvailable);
-    }*/
-    // update();
     return disconnectStatus;
   }
 
@@ -1449,7 +1369,6 @@ class ActivityServiceProvider extends GetxController {
   }
 
   Future<bool> checkIsDeviceConnected() async {
-    //await Future.delayed(const Duration(milliseconds: 500));
     return await flutterBandFit.checkConectionStatus();
   }
 
@@ -1796,6 +1715,7 @@ class ActivityServiceProvider extends GetxController {
     update();
   }
 
+  /// Hides sync UI and records last successful sync timestamp.
   Future<void> updateSyncIsDone() async {
     showSyncProgress = false;
     await syncPairedDeviceFromBle();
@@ -1814,100 +1734,58 @@ class ActivityServiceProvider extends GetxController {
 
 
 
+  /// Starts the sequential BLE vitals sync (steps first; further types chain via events).
   Future<void> syncOverAllData() async {
     debugPrint('initiated_syncing');
     showSyncProgress = true;
     update();
-    //sync started with steps data.
     await syncStepsData();
   }
 
-
-
-
-
-
+  /// Persists steps payload and updates today's step summary on the dashboard.
   Future<void> updateStepsSyncSDKData(List<dynamic> stepsData) async {
-    final stepsTodayList = Platform.isIOS
-        ? await getSelectedDayStepsData(stepsData)
-        : await getCurrentDaySteps(stepsData);
-    if (stepsTodayList.isNotEmpty) {
-      final latest = stepsTodayList.last;
-      updateDeviceStats(latest.steps, latest.distance, latest.calories);
-    }
-
+    await _applyStepsToDashboard(stepsData);
     overAllStepsData = jsonEncode(stepsData);
     update();
     await sharedService.setOverAllSteps(getOverAllStepsData);
   }
 
   Future<void> updateSleepSyncSDKData(List<dynamic> sleepData) async {
-    final sleepTodayList = Platform.isIOS
-        ? await getSelectedDaySleepData(sleepData)
-        : await getCurrentDaySleepData(sleepData);
-    if (sleepTodayList.isNotEmpty) {
-      final latest = sleepTodayList.last;
-      updateDeviceSleep(latest.total, latest.calender);
-    }
-
+    await _applySleepToDashboard(sleepData);
     overAllSleepData = jsonEncode(sleepData);
     update();
     await sharedService.setOverAllSleep(getOverAllSleepData);
   }
 
   Future<void> updateHR24SyncSDKData(dynamic hr24Data) async {
-    final smartHr24List = await getCurrentDayHRData(hr24Data);
-    if (smartHr24List.isNotEmpty) {
-      final latest = smartHr24List.last;
-      final dateTime = getTimeByCalenderTime(latest.calender, latest.time);
-      updateHearRate(latest.rate, dateTime);
-    }
-
+    await _applyHeartRateToDashboard(hr24Data);
     overAllHrData = jsonEncode(hr24Data);
     update();
     await sharedService.setOverAllHeartRate(getOverAllHrData);
   }
 
   Future<void> updateBloodPressureSyncSDKData(dynamic bloodPressureData) async {
-    final smartBpDataList = await getCurrentDayBPData(bloodPressureData);
-    if (smartBpDataList.isNotEmpty) {
-      final latest = smartBpDataList.last;
-      final dateTime = getTimeByCalenderTime(latest.calender, latest.time);
-      updateBloodPressure('${latest.high} /${latest.low}', dateTime);
-    }
-
+    await _applyBloodPressureToDashboard(bloodPressureData);
     overAllBPData = jsonEncode(bloodPressureData);
     update();
     await sharedService.setOverAllBP(getOverAllBPData);
   }
 
   Future<void> updateTemperatureSyncSDKData(dynamic temperatureData) async {
-    final smartTempDataList =
-        await getCurrentDayTemperatureData(temperatureData);
-    if (smartTempDataList.isNotEmpty) {
-      final latest = smartTempDataList.last;
-      final dateTime = getTimeByCalenderTime(latest.calender, latest.time);
-      updateTemperature(latest.inCelsius, latest.inFahrenheit, dateTime);
-    }
-
+    await _applyTemperatureToDashboard(temperatureData);
     overAllTempData = jsonEncode(temperatureData);
     update();
     await sharedService.setOverAllTemperature(getOverAllTempData);
   }
 
   Future<void> updateOxygenSyncSDKData(dynamic oxygenData) async {
-    final smartOxygenDataList = await getCurrentDayOxygenData(oxygenData);
-    if (smartOxygenDataList.isNotEmpty) {
-      final latest = smartOxygenDataList.last;
-      final dateTime = getTimeByCalenderTime(latest.calender, latest.time);
-      updateOxygenSaturation(latest.value, dateTime);
-    }
-
+    await _applyOxygenToDashboard(oxygenData);
     overAllOxygenData = jsonEncode(oxygenData);
     update();
     await sharedService.setOverAllOxygenData(getOverAllOxygenData);
   }
 
+  /// Android bulk fetch: applies each vital type then saves JSON to [SharedService].
   Future<void> fetchOverAllDeviceDataSync() async {
     try {
       final resultOverAllDeviceData =
@@ -1949,7 +1827,7 @@ class ActivityServiceProvider extends GetxController {
     }
   }
 
-  Future<List<StepsMainModel>> getSelectedDayStepsData(List<dynamic> overAllStepsData, [String? calenderTime]) async {
+  Future<List<StepsMainModel>> getSelectedDayStepsData(dynamic overAllStepsData, [String? calenderTime]) async {
     String findCalenderTime = '';
     if (calenderTime != null && calenderTime.isNotEmpty) {
       findCalenderTime = calenderTime;
@@ -1968,9 +1846,9 @@ class ActivityServiceProvider extends GetxController {
     double totalCal = 0.0;
     double totalDistance = 0.0;
 
-    for (var data in overAllStepsData) {
+    for (final data in JsonUtils.asList(overAllStepsData)) {
       if (data['calender'].toString().trim() == findCalenderTime) {
-        BandStepsDataModel stepsDataModel = BandStepsDataModel.fromJson(data);
+        BandStepsDataModel stepsDataModel = BandStepsDataModel.fromJson(JsonUtils.asMap(data));
         dataList.add(BandStepsModel(step: stepsDataModel.step, time: stepsDataModel.time));
 
         totalStepsValue = totalStepsValue + int.parse(stepsDataModel.step);
@@ -2021,14 +1899,14 @@ class ActivityServiceProvider extends GetxController {
     }
 
     List<StepsMainModel> stepsList = [];
-    for (var data in overAllStepsData) {
+    for (final data in JsonUtils.asList(overAllStepsData)) {
       //debugPrint('step_data>> $data');
       if (data['calender'].toString().trim() == findCalenderTime) {
 
         debugPrint('stepsDataModel.calories>> ${data['calories']}');
         debugPrint('stepsDataModel.distance>> ${data['distance']}');
 
-        stepsList.add(StepsMainModel.fromJson(data));
+        stepsList.add(StepsMainModel.fromJson(JsonUtils.asMap(data)));
       }
     }
     //  debugPrint('return_stepsList>>$stepsList');
@@ -2090,7 +1968,7 @@ class ActivityServiceProvider extends GetxController {
     // for(var data in overAllStepsData){
     //   if(weekList.contains(data['calender'].toString().trim())){
     //     //verification all the list of week data
-    //     stepsList.add(BandStepsDataModel.fromJson(data));
+    //     stepsList.add(BandStepsDataModel.fromJson(JsonUtils.asMap(data)));
     //   }
     // }
     if (isMonthly) {
@@ -2102,10 +1980,10 @@ class ActivityServiceProvider extends GetxController {
 
   Future<List<StepsMainModel>> getStepsBySelectedWeek(dynamic overAllStepsData, List<String> weekList) async {
     List<StepsMainModel> stepsList = [];
-    for (var data in overAllStepsData) {
+    for (final data in JsonUtils.asList(overAllStepsData)) {
       //debugPrint('step_data>> $data');
       if (weekList.contains(data['calender'].toString().trim())) {
-        stepsList.add(StepsMainModel.fromJson(data));
+        stepsList.add(StepsMainModel.fromJson(JsonUtils.asMap(data)));
       }
     }
     //debugPrint('return_weekList>>$stepsList');
@@ -2130,11 +2008,11 @@ class ActivityServiceProvider extends GetxController {
     int totalAwakeNum = 0;
     int totalNum = 0;
 
-    for (var data in overAllSleepData) {
+    for (final data in JsonUtils.asList(overAllSleepData)) {
       if (data['calender'].toString().trim() == findCalenderTime) {
         // deep sleep: 0, Light sleep: 1,  awake: 2
         debugPrint('sleepData>> $data');
-        BandSleepModel sleepModel = BandSleepModel.fromJson(data);
+        BandSleepModel sleepModel = BandSleepModel.fromJson(JsonUtils.asMap(data));
 
         DateTime startDateTime = DateTime.parse(sleepModel.startDateTime);
         DateTime endDateTime = DateTime.parse(sleepModel.endDateTime);
@@ -2195,7 +2073,7 @@ class ActivityServiceProvider extends GetxController {
     return sleepMainList;
   }
 
-  Future<List<dynamic>> getSleepDataSelectedRange(bool isMonthly, var overAllSleepData, List<String> calenderWeekList, BuildContext context) async {
+  Future<List<dynamic>> getSleepDataSelectedRange(bool isMonthly, dynamic overAllSleepData, List<String> calenderWeekList, BuildContext context) async {
 
     List<WeeklySleepData> weeklyDataList = [];
     List<MonthlySleepData> monthlyDataList = [];
@@ -2209,7 +2087,11 @@ class ActivityServiceProvider extends GetxController {
       DateTime? dateTime = DateTime.tryParse(calender);
       String week = calWeeks[dateTime!.weekday - 1];
 
-      List<dynamic> sleepDataList = overAllSleepData.where((element) => element['calender'].toString().trim() == calender).toList();
+      final sleepDataList = JsonUtils.asList(overAllSleepData)
+          .where((element) =>
+              JsonUtils.asString(JsonUtils.asMap(element)['calender']).trim() ==
+              calender)
+          .toList();
 
       if (sleepDataList.isNotEmpty) {
         for (var element in sleepDataList) {
@@ -2310,10 +2192,10 @@ class ActivityServiceProvider extends GetxController {
       findCalenderTime = currentCalTime;
     }
     List<SleepMainModel> sleepList = [];
-    for (var data in overAllSleepData) {
+    for (final data in JsonUtils.asList(overAllSleepData)) {
       //debugPrint('sleep_data >> $data');
       if (data['calender'].toString().trim() == findCalenderTime) {
-        sleepList.add(SleepMainModel.fromJson(data));
+        sleepList.add(SleepMainModel.fromJson(JsonUtils.asMap(data)));
       }
     }
     return sleepList;
@@ -2321,10 +2203,10 @@ class ActivityServiceProvider extends GetxController {
 
   Future<List<SleepMainModel>> getSleepBySelectedWeek(dynamic overAllSleepData, List<String> weekList) async {
     List<SleepMainModel> sleepList = [];
-    for (var data in overAllSleepData) {
+    for (final data in JsonUtils.asList(overAllSleepData)) {
       //debugPrint('step_data>> $data');
       if (weekList.contains(data['calender'].toString().trim())) {
-        sleepList.add(SleepMainModel.fromJson(data));
+        sleepList.add(SleepMainModel.fromJson(JsonUtils.asMap(data)));
       }
     }
     //debugPrint('return_weekList>>$stepsList');
@@ -2342,10 +2224,10 @@ class ActivityServiceProvider extends GetxController {
     }
     List<BandHRModel> hrList = [];
     try {
-      for (var data in overAllHrData) {
+      for (final data in JsonUtils.asList(overAllHrData)) {
         //debugPrint('hr_data >> $data');
         if (data['calender'].toString().trim() == findCalenderTime) {
-          hrList.add(BandHRModel.fromJson(data));
+          hrList.add(BandHRModel.fromJson(JsonUtils.asMap(data)));
         }
       }
     } catch (e) {
@@ -2365,10 +2247,10 @@ class ActivityServiceProvider extends GetxController {
     }
     debugPrint('findCalenderTime>> $findCalenderTime');
     List<BandBPModel> bpList = [];
-    for (var data in overAllBPData) {
+    for (final data in JsonUtils.asList(overAllBPData)) {
       // debugPrint('bp_data >> $data');
       if (data['calender'].toString().trim() == findCalenderTime) {
-        bpList.add(BandBPModel.fromJson(data));
+        bpList.add(BandBPModel.fromJson(JsonUtils.asMap(data)));
       }
     }
     return bpList;
@@ -2385,9 +2267,9 @@ class ActivityServiceProvider extends GetxController {
     }
     debugPrint('findCalenderTime>> $findCalenderTime');
     List<BandOxygenModel> oxyList = [];
-    for (var data in oxyData) {
+    for (final data in JsonUtils.asList(oxyData)) {
       if (data['calender'].toString().trim() == findCalenderTime) {
-        oxyList.add(BandOxygenModel.fromJson(data));
+        oxyList.add(BandOxygenModel.fromJson(JsonUtils.asMap(data)));
       }
     }
     return oxyList;
@@ -2404,11 +2286,11 @@ class ActivityServiceProvider extends GetxController {
     }
     debugPrint('findCalenderTime>> $findCalenderTime');
     List<BandTempModel> tempList = [];
-    for (var data in temperatureData) {
+    for (final data in JsonUtils.asList(temperatureData)) {
       //debugPrint('temp_data >> $data');
       if (data['calender'].toString().trim() == findCalenderTime) {
         // debugPrint('todayTempData>> $data');
-        tempList.add(BandTempModel.fromJson(data));
+        tempList.add(BandTempModel.fromJson(JsonUtils.asMap(data)));
       }
     }
     return tempList;
@@ -2684,18 +2566,18 @@ class ActivityServiceProvider extends GetxController {
     debugPrint('fetchAllJudgementResultJudgeData>>$resultJudgeData');
     String status = resultJudgeData['status'].toString();
     if (status == BandFitConstants.SC_SUCCESS) {
-      var resultData = resultJudgeData['data'];
-      bool rkPlatform = resultData['rkPlatform'];
-      bool isSupportNewParams = resultData['isSupportNewParams'];
-      bool isBandLostFunction = resultData['isBandLostFunction'];
-      bool isBraceletLangSwitch = resultData['isBraceletLangSwitch'];
-      bool isTempUnitSwitch = resultData['isTempUnitSwitch'];
-      bool isMinHRAlarm = resultData['isMinHRAlarm'];
-      bool isTempTest = resultData['isTempTest'];
-      bool isTempCalibration = resultData['isTempCalibration'];
-      bool isSupportHorVer = resultData['isSupportHorVer'];
-      bool isSupport24HrRate = resultData['isSupport24HrRate'];
-      bool isSupportOxygen = resultData['isSupportOxygen'];
+      final resultData = JsonUtils.asMap(resultJudgeData['data']);
+      final rkPlatform = JsonUtils.asBool(resultData['rkPlatform']);
+      final isSupportNewParams = JsonUtils.asBool(resultData['isSupportNewParams']);
+      final isBandLostFunction = JsonUtils.asBool(resultData['isBandLostFunction']);
+      final isBraceletLangSwitch = JsonUtils.asBool(resultData['isBraceletLangSwitch']);
+      final isTempUnitSwitch = JsonUtils.asBool(resultData['isTempUnitSwitch']);
+      final isMinHRAlarm = JsonUtils.asBool(resultData['isMinHRAlarm']);
+      final isTempTest = JsonUtils.asBool(resultData['isTempTest']);
+      final isTempCalibration = JsonUtils.asBool(resultData['isTempCalibration']);
+      final isSupportHorVer = JsonUtils.asBool(resultData['isSupportHorVer']);
+      final isSupport24HrRate = JsonUtils.asBool(resultData['isSupport24HrRate']);
+      final isSupportOxygen = JsonUtils.asBool(resultData['isSupportOxygen']);
       debugPrint('rkPlatform>>>$rkPlatform');
       debugPrint('isSupportNewParams>>>$isSupportNewParams');
       debugPrint('isBandLostFunction>>>$isBandLostFunction');

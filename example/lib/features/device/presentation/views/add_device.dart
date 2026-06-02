@@ -22,15 +22,15 @@ class AddDevice extends GetView<AddDeviceController> {
             top: false,
             child: AddDeviceHealthBar(),
           ),
-          body: SafeArea(
+          body: const SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const _AddDeviceHeader(),
-                  const SizedBox(height: 8.0),
-                  const Padding(
+                  _AddDeviceHeader(),
+                  SizedBox(height: 8.0),
+                  Padding(
                     padding: EdgeInsets.all(8.0),
                     child: AddDeviceScanList(),
                   ),

@@ -26,7 +26,7 @@ class SplashController extends GetxController
 
   void _goToVitals() {
     if (Get.currentRoute != AppRoutes.vitals) {
-      Get.offNamed(AppRoutes.vitals);
+      Get.offNamed<void>(AppRoutes.vitals);
     }
   }
 

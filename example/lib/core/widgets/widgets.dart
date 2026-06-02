@@ -12,6 +12,7 @@ export 'package:flutter_band_fit_app/core/widgets/icon_text_widget.dart';
 export 'package:flutter_band_fit_app/core/widgets/loading_overlay.dart';
 export 'package:flutter_band_fit_app/core/widgets/popover.dart';
 export 'package:flutter_band_fit_app/core/widgets/section_header.dart';
+export 'package:flutter_band_fit_app/core/widgets/settings_widgets.dart';
 export 'package:flutter_band_fit_app/core/widgets/theme_toggle_button.dart';
 export 'package:flutter_band_fit_app/core/widgets/vertical_radio_tile.dart';
 export 'package:flutter_band_fit_app/core/widgets/vital_data_widget.dart';

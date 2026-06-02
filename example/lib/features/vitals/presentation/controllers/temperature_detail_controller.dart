@@ -22,7 +22,7 @@ class TemperatureDetailController extends GetxController
 
   late final TooltipBehavior tooltipBehavior;
 
-  List temperatureData = [];
+  List<dynamic> temperatureData = [];
   final chartPoints = <CommonDataResult>[].obs;
 
   final avgTemperature = '--'.obs;
@@ -31,8 +31,8 @@ class TemperatureDetailController extends GetxController
   final recentTemperature = '--'.obs;
 
   final tempUnits = ''.obs;
-  var isTempCelsius = false;
-  var statusReconnected = false;
+  bool isTempCelsius = false;
+  bool statusReconnected = false;
 
   @override
   void onInit() {
@@ -77,7 +77,7 @@ class TemperatureDetailController extends GetxController
     bleProvider.pauseEventListeners();
     bleProvider.receiveBPListeners(
       onDataUpdate: (data) async {
-        final eventData = jsonDecode(data);
+        final eventData = JsonUtils.asMap(jsonDecode(data as String));
         final result = eventData['result'].toString();
         final status = eventData['status'].toString();
         final jsonData = eventData['data'];

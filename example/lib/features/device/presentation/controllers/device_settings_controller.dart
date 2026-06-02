@@ -2,6 +2,7 @@ import 'package:flutter_band_fit_app/app/routes/app_routes.dart';
 import 'package:flutter_band_fit_app/common/common_imports.dart';
 import 'package:flutter_band_fit_app/core/utils/shared_service.dart';
 import 'package:flutter_band_fit_app/core/services/activity_service_provider.dart';
+import 'package:flutter_band_fit_app/core/services/dial_face_prefetch_service.dart';
 import 'package:flutter_band_fit_app/features/device/domain/repositories/device_presentation_repository.dart';
 import 'package:flutter_band_fit_app/features/device/domain/usecases/check_device_connection_usecase.dart';
 import 'package:flutter_band_fit_app/features/device/domain/usecases/reconnect_saved_device_usecase.dart';
@@ -32,10 +33,11 @@ class DeviceSettingsController extends GetxController {
     debugPrint('fetchDeviceData>>isConnected>> $isConnected');
     if (isConnected || _deviceRepository.getDeviceConnected()) {
       if (Platform.isAndroid) {
-        await Future.delayed(const Duration(milliseconds: 100));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
       }
       await _deviceRepository.fetchBatteryStatus();
       await _deviceRepository.fetchDeviceVersion();
+      unawaited(Get.find<DialFacePrefetchService>().prefetchIfNeeded());
     }
   }
 
@@ -62,7 +64,7 @@ class DeviceSettingsController extends GetxController {
   void goDashboardPage() {
     if (!_deviceRepository.getHealthConnected() &&
         !_deviceRepository.getDeviceConnected()) {
-      Get.offAllNamed(AppRoutes.vitals);
+      Get.offAllNamed<void>(AppRoutes.vitals);
     } else {
       GlobalMethods.navigatePopBack();
     }

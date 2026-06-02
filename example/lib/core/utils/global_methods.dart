@@ -11,30 +11,27 @@ import 'package:flutter_band_fit_app/features/profile/presentation/views/profile
 import 'package:flutter_band_fit_app/features/vitals/presentation/views/details/activities_details.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/views/details/weather_in_details.dart';
 import 'package:intl/intl.dart';
-// import 'package:geocoding/geocoding.dart';
-// import 'package:path_provider/path_provider.dart';
-
 class GlobalMethods {
 
   static void navigateTo(dynamic page) {
     if (page is DeviceSettings) {
-      Get.toNamed(AppRoutes.deviceSettings);
+      Get.toNamed<void>(AppRoutes.deviceSettings);
       return;
     }
     if (page is AddDevice) {
-      Get.toNamed(AppRoutes.addDevice);
+      Get.toNamed<void>(AppRoutes.addDevice);
       return;
     }
-    Get.to(page);
+    Get.to<dynamic>(page);
   }
 
   static void navigatePopBack(){
-    Get.back();
+    Get.back<void>();
   }
 
   static Future<void> openProfileUpdate({bool fromSettings = true}) async {
     final provider = Get.find<ActivityServiceProvider>();
-    await Get.to(
+    await Get.to<void>(
       () => ProfileUpdate(
         userFullName: 'User',
         gender: provider.getUserGender,
@@ -50,7 +47,7 @@ class GlobalMethods {
   }
 
   static void openHealthBind() {
-    Get.to(
+    Get.to<void>(
       () => AppleGoogleBind(
         deviceTypeName: Platform.isIOS ? appleHealthKey : googleFitKey,
       ),
@@ -63,7 +60,7 @@ class GlobalMethods {
         backgroundColor: Colors.tealAccent);
   }
   static void showDefaultDialog(){
-    Get.defaultDialog(title: 'GetX Alert',
+    Get.defaultDialog<void>(title: 'GetX Alert',
         middleText: 'Simple GetX alert', textConfirm: 'Okay', confirmTextColor: Colors.white,
         textCancel: 'Cancel');
   }
@@ -498,53 +495,8 @@ class GlobalMethods {
     return f.format(number);
   }
 
-  static Future<List<String>> getDatesListByLastDateTime(DateTime lastDateTime) async {
-    DateTime todayDateTime  = DateTime.now();
-    List<String> listOfCalenderDays = [];
-    for (int i = lastDateTime.day; i <= todayDateTime.day; i++) {
-      listOfCalenderDays.add(convertBandReadableCalender(DateTime(lastDateTime.year, lastDateTime.month, i)));
-    }
-    //debugPrint('listOfCalenderDays>> $listOfCalenderDays');
-    return listOfCalenderDays;
-  }
-
-
-  /*static Future<Position> fetchDeviceCurrentLocation(BuildContext context) async {
-    Position currentLocation = await locateUser(context);
-    if (currentLocation == null) {
-      return null;
-    }
-    return currentLocation;
-  }
-
-  static Future<Position> locateUser(BuildContext context) async {
-    if (await Permissions.locationPermissionsGranted()) {
-      try {
-        return await Geolocator.getCurrentPosition();
-      } catch (e) {
-        Toast.show(e.toString(), context, duration: 3);
-        GlobalMethods.navigatePopBack();
-      }
-    }
-    return null;
-  }
-
-  static Future<Placemark> getLocationAddress(double lat, double long) async {
-    List<Placemark> placeMarkList = await placemarkFromCoordinates(lat,long);
-    if (placeMarkList !=null && placeMarkList.isNotEmpty) {
-      debugPrint('placemarkList.length>> ${placeMarkList.length}');
-      return placeMarkList.first;
-    } else{
-      return null;
-    }
-   // debugPrint('placemarkList>> ${placeMarkList}');
-    *//*placeMarkList.forEach((element) {
-      debugPrint('element>> $element');
-    });*//*
-  }*/
-
   static void showAlertDialog(BuildContext context, String title, String message) {
-    showDialog(
+    showDialog<void>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(

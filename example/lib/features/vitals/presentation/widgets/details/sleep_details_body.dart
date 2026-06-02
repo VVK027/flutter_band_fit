@@ -1,14 +1,13 @@
 import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/sleep_details_controller.dart';
-import 'package:flutter_band_fit_app/core/widgets/dwm_tab_bar.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/details/sleep_detail_ui.dart';
 
+/// Sleep detail screen with day / week / month tabs and stage breakdown charts.
 class SleepDetailsBody extends GetView<SleepDetailsController> {
   const SleepDetailsBody({super.key});
 
   @override
-Widget build(BuildContext context) {
-    // TODO: implement build
+  Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -33,7 +32,7 @@ Widget build(BuildContext context) {
           backgroundColor: sleepLightColor,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-            onPressed: () => Get.back(),
+            onPressed: () => Get.back<void>(),
           ),
           title: Text(
             controller.displayTitle,
@@ -83,8 +82,6 @@ Widget build(BuildContext context) {
               height: 2.0,
             ),
 
-            //loadBottomView(controller.selectedPage)
-            //loadBottomView(controller.selectedPage)
           ],
         ),
         ),
@@ -359,24 +356,11 @@ Widget build(BuildContext context) {
                   children: [
                     const Padding(
                       padding: EdgeInsets.all(2.0),
-                      child: Text(textBegin,//'Begin',
+                      child: Text(textBegin,
                           textAlign: TextAlign.center,
                           style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14.0)),
                     ),
-                    /* Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(2.0),
-                              child: Text('Begin',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14.0)),
-                            ),
-                          ],
-                        ),
-                      ),*/
+                    
                     Padding(
                       padding: const EdgeInsets.all(2.0),
                       child: Row(
@@ -385,12 +369,7 @@ Widget build(BuildContext context) {
                         children: [
                           Text('${controller.dayBeginHours}:${controller.dayBeginMin}', textAlign: TextAlign.center,
                               style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 16.0)),
-                          /*  Text('h', textAlign: TextAlign.center,
-                                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14.0)),
-                            Text('${controller.dayBeginMin} ', textAlign: TextAlign.center,
-                                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.0)),
-                            Text('m', textAlign: TextAlign.center,
-                                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14.0)),*/
+                          
                         ],
                       ),
                     ),
@@ -406,37 +385,10 @@ Widget build(BuildContext context) {
                   children: [
                     const Padding(
                       padding: EdgeInsets.all(2.0),
-                      child: Text(textEnd,//'End',
+                      child: Text(textEnd,
                           textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14.0)),
                     ),
-                    /* Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(2.0),
-                              child: Container(
-                                //margin:  const EdgeInsets.all(2.0),
-                                //padding: const EdgeInsets.all(2.0),
-                                decoration: BoxDecoration(
-                                    color: awakeColor,
-                                    shape: BoxShape.rectangle
-                                ),
-                                height: 12,
-                                width: 12,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(2.0),
-                              child: Text('End',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w500, fontSize: 14.0)),
-                            ),
-                          ],
-                        ),
-                      ),*/
+                    
                     Padding(
                       padding: const EdgeInsets.all(2.0),
                       child: Row(
@@ -445,12 +397,7 @@ Widget build(BuildContext context) {
                         children: [
                           Text('${controller.dayEndHours}:${controller.dayEndMin}', textAlign: TextAlign.center,
                               style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 16.0)),
-                          /*Text('h', textAlign: TextAlign.center,
-                                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14.0)),
-                            Text('${controller.dayEndMin} ', textAlign: TextAlign.center,
-                                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.0)),
-                            Text('m', textAlign: TextAlign.center,
-                                style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14.0)),*/
+                          
                         ],
                       ),
                     ),
@@ -462,7 +409,6 @@ Widget build(BuildContext context) {
         ),
         Container(
           margin: const EdgeInsets.only(left: 16.0, right: 16.0),
-          //padding: EdgeInsets.all(4.0),
           child: Divider(
             color: Colors.grey[500],
             height: 3.0,
@@ -493,8 +439,6 @@ Widget build(BuildContext context) {
                           Padding(
                             padding: const EdgeInsets.all(2.0),
                             child: Container(
-                              //margin:  const EdgeInsets.all(2.0),
-                              //padding: const EdgeInsets.all(2.0),
                               decoration: const BoxDecoration(
                                   color: deepColor,
                                   shape: BoxShape.rectangle
@@ -505,7 +449,7 @@ Widget build(BuildContext context) {
                           ),
                           const Padding(
                             padding: EdgeInsets.all(2.0),
-                            child: Text(textDeep,//'Deep',
+                            child: Text(textDeep,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14.0)),
                           ),
@@ -526,11 +470,7 @@ Widget build(BuildContext context) {
                               style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16.0)),
                           const Text('m', textAlign: TextAlign.center,
                               style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14.0)),
-                          /* Text(
-                              '${controller.dayDeepHours} H ${controller.dayDeepMin} m',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14.0),
-                            ),*/
+                          
                         ],
                       ),
                     ),
@@ -558,8 +498,6 @@ Widget build(BuildContext context) {
                           Padding(
                             padding: const EdgeInsets.all(2.0),
                             child: Container(
-                              //margin:  const EdgeInsets.all(2.0),
-                              //padding: const EdgeInsets.all(2.0),
                               decoration: const BoxDecoration(
                                   color: lightColor,
                                   shape: BoxShape.rectangle
@@ -570,7 +508,7 @@ Widget build(BuildContext context) {
                           ),
                           const Padding(
                             padding: EdgeInsets.all(2.0),
-                            child: Text(textLight,//'Light',
+                            child: Text(textLight,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14.0)),
                           ),
@@ -591,10 +529,7 @@ Widget build(BuildContext context) {
                               style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16.0)),
                           const Text('m', textAlign: TextAlign.center,
                               style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14.0)),
-                          /*Text('${controller.dayLightHours} H $controller.dayLightMin m',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w400, fontSize: 14.0)),*/
+                          
                         ],
                       ),
                     ),
@@ -622,8 +557,6 @@ Widget build(BuildContext context) {
                           Padding(
                             padding: const EdgeInsets.all(2.0),
                             child: Container(
-                              //margin:  const EdgeInsets.all(2.0),
-                              //padding: const EdgeInsets.all(2.0),
                               decoration: const BoxDecoration(
                                   color: awakeColor,
                                   shape: BoxShape.rectangle
@@ -634,7 +567,7 @@ Widget build(BuildContext context) {
                           ),
                           const Padding(
                             padding: EdgeInsets.all(2.0),
-                            child: Text(textAwake,//'Awake',
+                            child: Text(textAwake,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     fontWeight: FontWeight.w500, fontSize: 14.0)),
@@ -656,10 +589,7 @@ Widget build(BuildContext context) {
                               style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16.0)),
                           const Text('m', textAlign: TextAlign.center,
                               style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14.0)),
-                          /* Text('${controller.dayAwakeHours} H $controller.dayAwakeMin m',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w400, fontSize: 14.0)),*/
+                          
                         ],
                       ),
                     ),
@@ -673,7 +603,7 @@ Widget build(BuildContext context) {
           height: 21.0,
         ),
         const Center(
-          child: Text(textSleepQualityAnalysis,//'Sleep Quality Analysis',
+          child: Text(textSleepQualityAnalysis,
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18
@@ -686,8 +616,6 @@ Widget build(BuildContext context) {
         const Padding(
           padding: EdgeInsets.only(left: 8.0),
           child: Text(textSleepNotLate,
-            // 'Sleep too late',
-            //'Don’t sleep too late',
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16
@@ -709,7 +637,7 @@ Widget build(BuildContext context) {
         ),
         const Padding(
           padding: EdgeInsets.only(left: 8.0),
-          child: Text(textSleepLake,//'Lack of sleep',
+          child: Text(textSleepLake,
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16
@@ -731,7 +659,7 @@ Widget build(BuildContext context) {
         ),
         const Padding(
           padding: EdgeInsets.only(left: 8.0),
-          child: Text(textSleepWakeEarly,//'Wake up early',
+          child: Text(textSleepWakeEarly,
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16
@@ -748,81 +676,7 @@ Widget build(BuildContext context) {
             ),
           ),
         ),
-        /* Visibility(
-            visible: sleepDayDataList.length >0,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8.0, top: 4.0, bottom: 4.0),
-              child: Text('Source Data',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.0)),
-            ),
-          ),
-          SizedBox(
-            height: 4.0,
-          ),
-          Expanded(
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: sleepDayDataList.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(color: Colors.white70, width: 1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        child: ListTile(
-                          leading: Image.asset(
-                            'assets/fit/sleep_time.png',
-                            width: 35.0,
-                            height: 35.0,
-                            fit: BoxFit.fill,
-                          ),
-                          title: Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: Text(getTextBySleepState(sleepDayDataList[index].state),
-                              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                            ),
-                          ),
-                          subtitle: Container(
-                            padding: const EdgeInsets.all(2.0),
-                            child: Row(
-                              children: [
-                                Visibility(
-                                  child: Text('${sleepDayDataList[index].diffHour} ', textAlign: TextAlign.center,
-                                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.0)),
-                                  visible: (sleepDayDataList[index].diffHour.trim() =='00')?false :true,
-                                ),
-                                Visibility(
-                                  visible: (sleepDayDataList[index].diffHour.trim() =='00')?false :true,
-                                  child: Text('h', textAlign: TextAlign.center,
-                                      style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14.0)),
-                                ),
-                                Text('${sleepDayDataList[index].diffMin} ', textAlign: TextAlign.center,
-                                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16.0)),
-                                Text('m', textAlign: TextAlign.center,
-                                    style: TextStyle(fontWeight: FontWeight.w400, fontSize: 14.0)),
-                                *//*Text(
-                                    sleepDayDataList[index].diffHour.toString() +
-                                        ' H ' +
-                                        sleepDayDataList[index].diffMin.toString() +
-                                        ' m',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.normal, fontSize: 12)),*//*
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),*/
+        
         SizedBox(height: MediaQuery.paddingOf(Get.context!).bottom + 12),
       ],
     );
@@ -832,34 +686,14 @@ Widget build(BuildContext context) {
     return <RangeColumnSeries<WeeklySleepData, String>>[
       RangeColumnSeries<WeeklySleepData, String>(
         dataSource: controller.weekSleepDataList,
-        //name: currentDateTime.toString().substring(0,10),
         xValueMapper: (WeeklySleepData sales, _) => sales.weekName,
         lowValueMapper: (WeeklySleepData sales, _) => sales.startTimeNum,
         highValueMapper: (WeeklySleepData sales, _) => sales.endTimeNum,
-        //isTrackVisible: true,
-        //trackColor: inCompletedColor,
         borderRadius: BorderRadius.circular(8.0),
-        // color: inCompletedColor,
         color: sleepLightColor,
         width: controller.weekSleepDataList.length <= 4 ? 0.2 : 0.5,
-        //dataLabelMapper: (datum, index) => datum.dateTime.toString().substring(0,10),
-        // trackBorderColor: Colors.grey[500],
-        /*dataLabelSettings: DataLabelSettings(
-          isVisible: true,
-          labelAlignment: ChartDataLabelAlignment.top,
-        )*/
-        // yValueMapper:(WeeklySleepData sales, _) => sales.dataPoint,
-        //  dataLabelMapper: (datum, index) => datum.dateTime.toString().substring(0,10),
-        /*onCreateShader: (ShaderDetails details) {
-          return ui.Gradient.linear(
-              details.rect.topCenter,
-              details.rect.bottomCenter,
-              const <Color>[Colors.red, Colors.orange, Colors.yellow],
-              <double>[0.3, 0.6, 0.9]);
-        },*/
-        //width: controller.weekSleepDataList.length <= 4 ? 0.2 : 0.5,
-        //color: inCompletedColor,
-        //dataLabelSettings: DataLabelSettings(isVisible: true, offset: const Offset(0, -5)),
+        
+        
       )
     ];
   }
@@ -868,15 +702,12 @@ Widget build(BuildContext context) {
     return <RangeColumnSeries<MonthlySleepData, num>>[
       RangeColumnSeries<MonthlySleepData, num>(
           dataSource: controller.monthSleepDataList,
-          // name: tempCalenderMonth[controller.currentMonthDateTime[0].month - 1].toString().substring(0, 3),
           xValueMapper: (MonthlySleepData sales, _) => sales.dayNumber,
           lowValueMapper: (MonthlySleepData sales, _) => sales.startTimeNum,
           highValueMapper: (MonthlySleepData sales, _) => sales.endTimeNum,
-          // color: inCompletedColor,
           borderRadius: BorderRadius.circular(8.0),
           pointColorMapper: (MonthlySleepData datum, _) => datum.color,
           width: 0.5
-        // markerSettings: const MarkerSettings(isVisible: true),
       )
     ];
   }

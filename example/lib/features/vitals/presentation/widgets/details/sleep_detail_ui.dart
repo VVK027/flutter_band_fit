@@ -6,6 +6,7 @@ import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/vitals
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+/// One sleep stage row in the day/week/month summary grid (deep, light, awake, total).
 class SleepDurationStat {
   const SleepDurationStat({
     required this.label,
@@ -20,6 +21,7 @@ class SleepDurationStat {
   final String iconAsset;
 }
 
+/// Two-column grid of [SleepDurationStat] cards for the sleep detail screen.
 Widget buildSleepStatSummaryGrid(BuildContext context, List<SleepDurationStat> stats) {
   return Expanded(
     child: GridView.count(
@@ -98,6 +100,7 @@ Widget sleepDurationValueRow(BuildContext context, String hours, String minutes)
   );
 }
 
+/// Range bar chart for weekly or monthly sleep segments (minutes on Y axis).
 Widget buildSleepRangeChart(
   BuildContext context, {
   required List<CartesianSeries<dynamic, dynamic>> series,

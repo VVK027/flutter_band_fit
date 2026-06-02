@@ -1,6 +1,5 @@
 import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/activities_details_controller.dart';
-import 'package:flutter_band_fit_app/core/widgets/dwm_tab_bar.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/details/activities_detail_ui.dart';
 import 'package:intl/intl.dart';
 
@@ -38,88 +37,23 @@ class ActivitiesDetailsBody extends GetView<ActivitiesDetailsController> {
       const TextStyle(fontWeight: FontWeight.w400, fontSize: 16);
 
   @override
-Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        appBar: AppBar(
-          elevation: 0,
-          foregroundColor: Colors.white,
-          automaticallyImplyLeading: false,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  darkStepsColor,
-                  Color.lerp(darkStepsColor, const Color(0xFF0F766E), 0.25)!,
-                ],
-              ),
-            ),
-          ),
-          backgroundColor: darkStepsColor,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-            onPressed: () => Get.back(),
-          ),
-          title: const Text(
-            textPhysicalActivities,
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
-          ),
-          actions: const [
-            IconTheme(
-              data: IconThemeData(color: Colors.white),
-              child: ThemeToggleButton(),
-            ),
-          ],
-          bottom: buildDwmTabBar(
-            context,
-            tabs: buildDWMTabs(),
-            onTap: (value) {
-              controller.selectedPage = value;
-              controller.update();
-            },
-          ),
-        ),
-        body: SafeArea(
-          top: false,
-          child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              margin: const EdgeInsets.only(left: 4.0, right: 4.0, top: 8.0),
-              //margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
-              padding: const EdgeInsets.all(4.0),
-              child: Center(
-                  child: Text(controller.activityLabel, textAlign: TextAlign.center)),
-            ),
-            Flexible(
-              fit: FlexFit.tight,
-              flex: 1,
-              child: GetBuilder<ActivitiesDetailsController>(
-                builder: (_) => TabBarView(
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    dayChartView(context),
-                    weekChartView(context),
-                    monthlyChartView(context),
-                  ],
-                ),
-              ),
-            ),
-            /* SizedBox(
-              height: 2.0,
-            ),*/
-            //loadBottomView(controller.selectedPage)
-            //loadBottomView(controller.selectedPage)
-          ],
-        ),
-        ),
-      ),
+  Widget build(BuildContext context) {
+    return VitalTabDetailScaffold(
+      title: textPhysicalActivities,
+      accentColor: darkStepsColor,
+      onBack: () => Get.back<void>(),
+      onTabTap: (index) {
+        controller.selectedPage = index;
+        controller.update();
+      },
+      tabs: buildDWMTabs(),
+      tabViewPhysics: const NeverScrollableScrollPhysics(),
+      header: DetailActivityHeader(label: controller.activityLabel),
+      tabViews: [
+        dayChartView(context),
+        weekChartView(context),
+        monthlyChartView(context),
+      ],
     );
   }
 

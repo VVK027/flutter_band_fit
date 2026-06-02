@@ -17,9 +17,9 @@ class DevicePresentationRepositoryImpl implements DevicePresentationRepository {
 
   @override
   void receiveEventsFrom({
-    required Function(dynamic data) onDataUpdate,
-    required Function(dynamic error) onError,
-    required Function() onDone,
+    required void Function(dynamic data) onDataUpdate,
+    required void Function(dynamic error) onError,
+    required void Function() onDone,
   }) {
     _provider.receiveEventsFrom(
       onDataUpdate: onDataUpdate,

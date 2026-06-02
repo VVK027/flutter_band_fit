@@ -11,7 +11,7 @@ import 'package:get/get.dart';
 class AppPages {
   AppPages._();
 
-  static final pages = <GetPage>[
+  static final List<GetPage<dynamic>> pages = <GetPage<dynamic>>[
     GetPage(
       name: AppRoutes.splash,
       page: () => const Splash(),

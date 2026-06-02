@@ -3,11 +3,13 @@ import 'package:flutter_band_fit_app/core/constants/storage_keys.dart';
 import 'package:get_storage/get_storage.dart';
 
 final sharedService = SharedService();
+
+/// Typed read/write helpers for [GetStorage] keys used by the example app.
 class SharedService {
   final _storageBox = GetStorage(sharedStorageKey);
 
   T read<T>(String key) {
-    return _storageBox.read(key);
+    return _storageBox.read(key) as T;
   }
   void writeIfNull(String key, dynamic value) async {
     await _storageBox.writeIfNull(key, value);
@@ -18,20 +20,12 @@ class SharedService {
   }
 
   Future<void> setInitialParams(String userGender, String userAge, String dob) async {
-    // await setUserHeight(userHeight);
-    // await setUserWeight(userWeight);
-    //if (userSharedPref == null) {
-    //  userSharedPref = await SharedPreferences.getInstance();
-    //}
     await setUserGender(userGender);
     await setUserDOB(dob);
     await setUserAge(userAge);
   }
 
   Future<void> setInitialHeightWeight(String userHeight, String userWeight) async {
-    // if (userSharedPref == null) {
-    //   userSharedPref = await SharedPreferences.getInstance();
-    // }
     await setUserHeight(userHeight);
     await setUserWeight(userWeight);
   }
@@ -106,11 +100,6 @@ class SharedService {
   Future<void>  setProfileUpdate(bool isUpdated) async {
     return await _storageBox.write(isProfileUpdated, isUpdated);
   }
-
-  //
-  // static Future<void> setProfileUpdate(bool isProfileUpdated) async {
-  //   await await SharedPref().setBool('isProfileUpdated', isProfileUpdated);
-  // }
 
   // device related preferences
   Future<void>  setSmartMConnected(bool isConnected) async {
