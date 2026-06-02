@@ -132,6 +132,12 @@ public class FlutterBandFitPlugin implements FlutterPlugin, MethodCallHandler, A
 
     private final String BAND_FACE_PROGRESS = "band_dial_progress";
 
+    /** User tapped disconnect; do not auto-reconnect on the next GATT drop. */
+    private static volatile boolean userRequestedDisconnect = false;
+    private static final long AUTO_RECONNECT_DELAY_MS = 2000L;
+    private static final int MAX_AUTO_RECONNECT_ATTEMPTS = 3;
+    private int autoReconnectAttempts = 0;
+
 
     private Context getApplicationContext() {
         return this.mContext.getApplicationContext();
@@ -428,8 +434,8 @@ public class FlutterBandFitPlugin implements FlutterPlugin, MethodCallHandler, A
                     pushJsonEventArrayCallBack(WatchConstants.SYNC_STEPS_FINISH, new JSONArray(), WatchConstants.SC_SUCCESS);
                     break;
                 case ICallbackStatus.OFFLINE_SLEEP_SYNC_OK: // 6
-                    //sleep sync done
-                    pushJsonEventArrayCallBack(WatchConstants.SYNC_SLEEP_FINISH, new JSONArray(), WatchConstants.SC_SUCCESS);
+                    //sleep sync done — read persisted records and send to Flutter
+                    pushJsonEventArrayCallBack(WatchConstants.SYNC_SLEEP_FINISH, buildAllSleepJsonArray(), WatchConstants.SC_SUCCESS);
                     break;
                 case ICallbackStatus.OFFLINE_STEP_SYNC_TIMEOUT: // 93
                     //sleep sync done
@@ -498,16 +504,10 @@ public class FlutterBandFitPlugin implements FlutterPlugin, MethodCallHandler, A
                     pushJsonEventObjCallBack(WatchConstants.HR_TEST_FINISHED, new JSONObject(), WatchConstants.SC_SUCCESS);
                     break;
                 case ICallbackStatus.CONNECTED_STATUS: // 20
-                    // connected successfully
-                    //runOnUIThread(new JSONObject(), WatchConstants.DEVICE_CONNECTED, WatchConstants.SC_SUCCESS);
-                    //flutterResultBluConnect.success(connectionStatus);
-                    // updateConnectionStatus(true);
-                    //updateConnectionStatus2(true);
-                    //updateConnectionStatus3(true);
-                    // mobileConnect.getBluetoothLeService().setRssiHandler(mHandlerMessage);
+                    userRequestedDisconnect = false;
+                    autoReconnectAttempts = 0;
                     updateReadRSSIThread();
                     updatePasswordStatus();
-                    // runOnUIThread(WatchConstants.DEVICE_CONNECTED, new JSONObject(), WatchConstants.SMART_CALLBACK, WatchConstants.SC_SUCCESS);
                     pushJsonEventObjCallBack(WatchConstants.DEVICE_CONNECTED, new JSONObject(), WatchConstants.SC_SUCCESS);
                     break;
 
@@ -724,15 +724,8 @@ public class FlutterBandFitPlugin implements FlutterPlugin, MethodCallHandler, A
 
 
                         case ICallbackStatus.DISCONNECT_STATUS: // 19
-                            String lastConnectAddress = SPUtil.getInstance(mContext).getLastConnectDeviceAddress();
-                            //  boolean connectResult = mobileConnect.getBLEServiceOperate().connect(lastConnectAddress);
-                            // jsonObject.put("status", connectResult);
-                            // disconnected successfully
-                            // mobileConnect.disconnectDevice();
-                            // updateConnectionStatus(false);
-                            // runOnUIThread(WatchConstants.DEVICE_DISCONNECTED, new JSONObject(), WatchConstants.SMART_CALLBACK, WatchConstants.SC_SUCCESS);
                             pushJsonEventObjCallBack(WatchConstants.DEVICE_DISCONNECTED, jsonObject, WatchConstants.SC_SUCCESS);
-                            // runOnUIThread(new JSONObject(), WatchConstants.DEVICE_DISCONNECTED, WatchConstants.SC_SUCCESS);
+                            scheduleAutoReconnectIfNeeded();
                             break;
                     }
                 } catch (Exception exp) {
@@ -1058,9 +1051,9 @@ public class FlutterBandFitPlugin implements FlutterPlugin, MethodCallHandler, A
                 result.success(dialSupport);
                 break;
 
-//            case WatchConstants.GET_DEVICE_DATA_INFO:
-//                fetchDeviceDataInfo(result);
-//                break;
+            case WatchConstants.GET_DEVICE_DATA_INFO:
+                fetchDeviceDataInfo(result);
+                break;
 
             case WatchConstants.READ_ONLINE_DIAL_CONFIG:
                 readOnlineDialConfig(result);
@@ -1089,6 +1082,9 @@ public class FlutterBandFitPlugin implements FlutterPlugin, MethodCallHandler, A
 
             case WatchConstants.BIND_DEVICE:
                 connectBluDevice(call, result);
+                break;
+            case WatchConstants.RE_BIND_DEVICE:
+                reconnectBluDevice(call, result);
                 break;
             case WatchConstants.UNBIND_DEVICE:
                 disconnectBluDevice(result);
@@ -1537,8 +1533,62 @@ public class FlutterBandFitPlugin implements FlutterPlugin, MethodCallHandler, A
         }).start();
     }
 
+    private void scheduleAutoReconnectIfNeeded() {
+        if (userRequestedDisconnect || mobileConnect == null || mContext == null) {
+            return;
+        }
+        final String lastConnectAddress = SPUtil.getInstance(mContext).getLastConnectDeviceAddress();
+        if (lastConnectAddress == null || lastConnectAddress.trim().isEmpty()) {
+            return;
+        }
+        if (autoReconnectAttempts >= MAX_AUTO_RECONNECT_ATTEMPTS) {
+            Log.w("FlutterBandFitPlugin", "autoReconnect skipped: max attempts reached");
+            return;
+        }
+        autoReconnectAttempts++;
+        uiThreadHandler.postDelayed(() -> {
+            try {
+                if (userRequestedDisconnect) {
+                    return;
+                }
+                BluetoothLeService.ClearGattForDisConnect();
+                boolean connectResult = mobileConnect.getBLEServiceOperate().connect(lastConnectAddress);
+                Log.i("FlutterBandFitPlugin", "autoReconnect attempt "
+                        + autoReconnectAttempts + " result=" + connectResult);
+            } catch (Exception e) {
+                Log.e("FlutterBandFitPlugin", "autoReconnect failed", e);
+            }
+        }, AUTO_RECONNECT_DELAY_MS);
+    }
+
+    private void reconnectBluDevice(MethodCall call, Result result) {
+        try {
+            userRequestedDisconnect = false;
+            autoReconnectAttempts = 0;
+            String address = call.argument("address");
+            if (address == null || address.trim().isEmpty()) {
+                address = SPUtil.getInstance(mContext).getLastConnectDeviceAddress();
+            }
+            if (address == null || address.trim().isEmpty()) {
+                result.success(false);
+                return;
+            }
+            final String mac = address.trim();
+            BluetoothLeService.ClearGattForDisConnect();
+            uiThreadHandler.postDelayed(() -> {
+                boolean status = mobileConnect.connectDevice(mac);
+                result.success(status);
+            }, RETURN_DELAY_MS);
+        } catch (Exception exp) {
+            Log.e("reconnectBluDeviceExp:", exp.getMessage());
+            result.success(false);
+        }
+    }
+
     private void disconnectBluDevice(Result result) {
         try {
+            userRequestedDisconnect = true;
+            autoReconnectAttempts = 0;
             boolean status = mobileConnect.disconnectDevice();
             result.success(status);
 //            int value = 9;
@@ -2499,7 +2549,7 @@ public class FlutterBandFitPlugin implements FlutterPlugin, MethodCallHandler, A
     }
 
 
-    /*private void fetchDeviceDataInfo(Result result) {
+    private void fetchDeviceDataInfo(Result result) {
         try {
             JSONObject jsonObject = new JSONObject();
 
@@ -2521,13 +2571,12 @@ public class FlutterBandFitPlugin implements FlutterPlugin, MethodCallHandler, A
             jsonObject.put("shape", "" + shape);
             jsonObject.put("compatible", "" + compatibleLevel);
 
-            //result.success(jsonObject.toString());
-            uiThreadHandler.postDelayed(() -> result.success(jsonObject.toString()), 100);
+            uiThreadHandler.postDelayed(() -> result.success(jsonObject.toString()), RETURN_DELAY_MS);
         } catch (Exception exp) {
             Log.e("fetchDeviceDInfoExp::", exp.getMessage());
-            //  result.success(WatchConstants.SC_FAILURE);
+            uiThreadHandler.postDelayed(() -> result.success(WatchConstants.SC_FAILURE), RETURN_DELAY_MS);
         }
-    }*/
+    }
 
     private void getDeviceVersion(Result result) {
         try {
@@ -3368,59 +3417,67 @@ public class FlutterBandFitPlugin implements FlutterPlugin, MethodCallHandler, A
         }
     }
 
+    private JSONArray buildAllSleepJsonArray() {
+        JSONArray jsonArray = new JSONArray();
+        try {
+            if (mUTESQLOperate == null) {
+                return jsonArray;
+            }
+            List<SleepTimeInfo> sleepTimeInfoList = mUTESQLOperate.queryAllSleepInfo();
+            if (sleepTimeInfoList == null) {
+                return jsonArray;
+            }
+            Log.e("list", "list: " + sleepTimeInfoList.size());
+            for (SleepTimeInfo sleepTimeInfo : sleepTimeInfoList) {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("calender", sleepTimeInfo.getCalendar());
+                jsonObject.put("total", GlobalMethods.getTimeByIntegerMin(sleepTimeInfo.getSleepTotalTime()));
+                jsonObject.put("light", GlobalMethods.getTimeByIntegerMin(sleepTimeInfo.getLightTime()));
+                jsonObject.put("deep", GlobalMethods.getTimeByIntegerMin(sleepTimeInfo.getDeepTime()));
+                jsonObject.put("awake", GlobalMethods.getTimeByIntegerMin(sleepTimeInfo.getAwakeTime()));
+                jsonObject.put("beginTime", GlobalMethods.getTimeByIntegerMin(sleepTimeInfo.getBeginTime()));
+                jsonObject.put("endTime", GlobalMethods.getTimeByIntegerMin(sleepTimeInfo.getEndTime()));
+
+                jsonObject.put("totalNum", "" + sleepTimeInfo.getSleepTotalTime());
+                jsonObject.put("lightNum", "" + sleepTimeInfo.getLightTime());
+                jsonObject.put("deepNum", "" + sleepTimeInfo.getDeepTime());
+                jsonObject.put("awakeNum", "" + sleepTimeInfo.getAwakeTime());
+                jsonObject.put("beginTimeNum", "" + sleepTimeInfo.getBeginTime());
+                jsonObject.put("endTimeNum", "" + sleepTimeInfo.getEndTime());
+
+                List<SleepInfo> sleepInfoList = sleepTimeInfo.getSleepInfoList();
+                Log.e("sleepInfoList", "sleepInfoList: " + sleepInfoList.size());
+
+                JSONArray sleepDataArray = new JSONArray();
+                for (SleepInfo sleepInfo : sleepInfoList) {
+                    JSONObject object = new JSONObject();
+                    object.put("state", sleepInfo.getColorIndex()); // deep sleep: 0, Light sleep: 1,  awake: 2
+                    object.put("startTime", GlobalMethods.getTimeByIntegerMin(sleepInfo.getStartTime()));
+                    object.put("endTime", GlobalMethods.getTimeByIntegerMin(sleepInfo.getEndTime()));
+                    object.put("startTimeNum", "" + sleepInfo.getStartTime());
+                    object.put("endTimeNum", "" + sleepInfo.getEndTime());
+                    sleepDataArray.put(object);
+                }
+
+                jsonObject.put("data", sleepDataArray);
+                jsonArray.put(jsonObject);
+            }
+        } catch (Exception exp) {
+            Log.e("buildAllSleepJsonArrayExp::", exp.getMessage());
+        }
+        return jsonArray;
+    }
+
     private void fetchAllSleepData(Result result) {
         // providing proper list of the data on basis of the result.
         try {
             JSONObject resultObject = new JSONObject();
-            if (mUTESQLOperate != null) {
-                List<SleepTimeInfo> sleepTimeInfoList = mUTESQLOperate.queryAllSleepInfo();
-                if (sleepTimeInfoList != null) {
-                    Log.e("list", "list: " + sleepTimeInfoList.size());
-                    resultObject.put("status", WatchConstants.SC_SUCCESS);
-                    JSONArray jsonArray = new JSONArray();
-                    for (SleepTimeInfo sleepTimeInfo : sleepTimeInfoList) {
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("calender", sleepTimeInfo.getCalendar());
-                        jsonObject.put("total", GlobalMethods.getTimeByIntegerMin(sleepTimeInfo.getSleepTotalTime()));
-                        jsonObject.put("light", GlobalMethods.getTimeByIntegerMin(sleepTimeInfo.getLightTime()));
-                        jsonObject.put("deep", GlobalMethods.getTimeByIntegerMin(sleepTimeInfo.getDeepTime()));
-                        jsonObject.put("awake", GlobalMethods.getTimeByIntegerMin(sleepTimeInfo.getAwakeTime()));
-                        jsonObject.put("beginTime", GlobalMethods.getTimeByIntegerMin(sleepTimeInfo.getBeginTime()));
-                        jsonObject.put("endTime", GlobalMethods.getTimeByIntegerMin(sleepTimeInfo.getEndTime()));
-
-                        jsonObject.put("totalNum", "" + sleepTimeInfo.getSleepTotalTime());
-                        jsonObject.put("lightNum", "" + sleepTimeInfo.getLightTime());
-                        jsonObject.put("deepNum", "" + sleepTimeInfo.getDeepTime());
-                        jsonObject.put("awakeNum", "" + sleepTimeInfo.getAwakeTime());
-                        jsonObject.put("beginTimeNum", "" + sleepTimeInfo.getBeginTime());
-                        jsonObject.put("endTimeNum", "" + sleepTimeInfo.getEndTime());
-
-
-                        List<SleepInfo> sleepInfoList = sleepTimeInfo.getSleepInfoList();
-                        Log.e("sleepInfoList", "sleepInfoList: " + sleepInfoList.size());
-
-                        JSONArray sleepDataArray = new JSONArray();
-                        for (SleepInfo sleepInfo : sleepInfoList) {
-                            JSONObject object = new JSONObject();
-                            object.put("state", sleepInfo.getColorIndex()); // deep sleep: 0, Light sleep: 1,  awake: 2
-                            object.put("startTime", GlobalMethods.getTimeByIntegerMin(sleepInfo.getStartTime()));
-                            object.put("endTime", GlobalMethods.getTimeByIntegerMin(sleepInfo.getEndTime()));
-                            // object.put("diffTime", GlobalMethods.getTimeByIntegerMin(sleepInfo.getDiffTime()));
-
-                            object.put("startTimeNum", "" + sleepInfo.getStartTime());
-                            object.put("endTimeNum", "" + sleepInfo.getEndTime());
-                            // object.put("diffTimeNum", "" + sleepInfo.getDiffTime());
-                            sleepDataArray.put(object);
-                        }
-
-                        jsonObject.put("data", sleepDataArray);
-
-                        jsonArray.put(jsonObject);
-                    }
-                    resultObject.put("data", jsonArray);
-                } else {
-                    resultObject.put("status", WatchConstants.SC_FAILURE);
-                }
+            JSONArray jsonArray = buildAllSleepJsonArray();
+            if (jsonArray.length() > 0) {
+                resultObject.put("status", WatchConstants.SC_SUCCESS);
+                resultObject.put("data", jsonArray);
+            } else {
+                resultObject.put("status", WatchConstants.SC_FAILURE);
             }
             result.success(resultObject.toString());
         } catch (Exception exp) {
