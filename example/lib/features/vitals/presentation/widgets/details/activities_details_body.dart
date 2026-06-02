@@ -4,7 +4,7 @@ import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/detail
 import 'package:intl/intl.dart';
 
 class ActivitiesDetailsBody extends GetView<ActivitiesDetailsController> {
-  ActivitiesDetailsBody({super.key});
+  const ActivitiesDetailsBody({super.key});
 
   TextStyle _chartAxisLabelStyle(BuildContext context) => TextStyle(
         color: Theme.of(context).colorScheme.onSurface,
@@ -38,22 +38,24 @@ class ActivitiesDetailsBody extends GetView<ActivitiesDetailsController> {
 
   @override
   Widget build(BuildContext context) {
-    return VitalTabDetailScaffold(
-      title: textPhysicalActivities,
-      accentColor: darkStepsColor,
-      onBack: () => Get.back<void>(),
-      onTabTap: (index) {
-        controller.selectedPage = index;
-        controller.update();
-      },
-      tabs: buildDWMTabs(),
-      tabViewPhysics: const NeverScrollableScrollPhysics(),
-      header: DetailActivityHeader(label: controller.activityLabel),
-      tabViews: [
-        dayChartView(context),
-        weekChartView(context),
-        monthlyChartView(context),
-      ],
+    return GetBuilder<ActivitiesDetailsController>(
+      builder: (_) => VitalTabDetailScaffold(
+        title: textPhysicalActivities,
+        accentColor: darkStepsColor,
+        onBack: () => Get.back<void>(),
+        onTabTap: (index) {
+          controller.selectedPage = index;
+          controller.update();
+        },
+        tabs: buildDWMTabs(),
+        tabViewPhysics: const NeverScrollableScrollPhysics(),
+        header: DetailActivityHeader(label: controller.activityLabel),
+        tabViews: [
+          dayChartView(context),
+          weekChartView(context),
+          monthlyChartView(context),
+        ],
+      ),
     );
   }
 
@@ -293,53 +295,27 @@ class ActivitiesDetailsBody extends GetView<ActivitiesDetailsController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          //margin: EdgeInsets.symmetric(vertical: 1.0, horizontal: 2.0),
-          padding: const EdgeInsets.all(2.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              IconButton(
-                iconSize: 18,
-                onPressed: () async {
-                  final time =
-                      GlobalMethods.getOneDayBackward(controller.currentDateTime);
-                  await controller.setCurrentDateTitle(time);
+        DetailDateNavigator(
+          dateTitle: controller.dayDateTitle,
+          isNextDisabled: controller.dayNextDisable,
+          onPrevious: () async {
+            final time = GlobalMethods.getOneDayBackward(controller.currentDateTime);
+            controller.dayNextDisable = false;
+            controller.currentDateTime = time;
+            controller.update();
+            await controller.setCurrentDateTitle(controller.currentDateTime);
+          },
+          onNext: controller.dayNextDisable
+              ? null
+              : () async {
+                  final nextDate = GlobalMethods.getOneDayForward(controller.currentDateTime);
+                  if (controller.checkNextDayAvailable(controller.todayTime, nextDate)) {
+                    controller.dayNextDisable = true;
+                  }
+                  controller.currentDateTime = nextDate;
+                  controller.update();
+                  await controller.setCurrentDateTitle(controller.currentDateTime);
                 },
-                icon: Icon(
-                  Icons.arrow_back_ios_outlined,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: Text(
-                    controller.dayDateTitle,
-                    style: Theme.of(context).textTheme.titleMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-              IconButton(
-                iconSize: 18,
-                onPressed: controller.dayNextDisable
-                    ? null
-                    : () async {
-                  final nextDate = GlobalMethods.getOneDayForward(
-                    controller.currentDateTime,
-                  );
-                  await controller.setCurrentDateTitle(nextDate);
-                },
-                icon: Icon(
-                  Icons.arrow_forward_ios_outlined,
-                  color: controller.dayNextDisable
-                      ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.35)
-                      : Theme.of(context).colorScheme.onSurface,
-                ),
-              )
-            ],
-          ),
         ),
         Container(
           margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),

@@ -233,12 +233,9 @@ public class MobileConnect {
     }
 
     public boolean clearGattDisconnect() {
-        if (this.mBluetoothLeService != null) {
-            BluetoothLeService.ClearGattForDisConnect();
-            return true;
-        } else {
-            return false;
-        }
+        // Static cleanup must run even when the service reference is not cached yet.
+        BluetoothLeService.ClearGattForDisConnect();
+        return true;
     }
 
     public ArrayList<BleDevices> getDevicesList() {
