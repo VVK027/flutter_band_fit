@@ -1,6 +1,5 @@
 import 'package:flutter_band_fit_app/common/common_imports.dart';
 import 'package:flutter_band_fit_app/core/services/activity_service_provider.dart';
-import 'package:flutter_band_fit_app/core/services/dial_face_prefetch_service.dart';
 import 'package:flutter_band_fit_app/core/widgets/app_ui_components.dart';
 import 'package:flutter_band_fit_app/core/widgets/settings_widgets.dart';
 import 'package:flutter_band_fit_app/features/device/presentation/controllers/device_settings_controller.dart';
@@ -98,11 +97,6 @@ class DeviceSettingsOptionsSection extends StatelessWidget {
                 subtitle: textDialFacesMsg,
                 onTap: () async {
                   if (await _requireConnection(context) && context.mounted) {
-                    unawaited(
-                      Get.find<DialFacePrefetchService>().prefetchIfNeeded(
-                        force: true,
-                      ),
-                    );
                     Get.to<void>(() => const DialFaceDetails());
                   }
                 },

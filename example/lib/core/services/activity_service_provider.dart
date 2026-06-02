@@ -50,6 +50,10 @@ class ActivityServiceProvider extends GetxController {
   bool deviceConnected = false;
   bool get getDeviceConnected => deviceConnected;
 
+  bool _skipAutoReconnect = false;
+  bool _autoReconnectInProgress = false;
+  DateTime? _lastAutoReconnectAttempt;
+
   /// True when vitals are sourced from Apple Health or Google Fit instead of the band.
   bool healthConnected = false;
   bool get getHealthConnected => healthConnected;
@@ -1172,6 +1176,80 @@ class ActivityServiceProvider extends GetxController {
     return await flutterBandFit.connectLastDeviceAddress();
   }
 
+  void markUserInitiatedDisconnect() {
+    _skipAutoReconnect = true;
+    _autoReconnectInProgress = false;
+  }
+
+  void clearAutoReconnectGuard() {
+    _skipAutoReconnect = false;
+    _autoReconnectInProgress = false;
+    _lastAutoReconnectAttempt = null;
+  }
+
+  /// Reconnects after an unexpected GATT drop (e.g. status 8 timeout).
+  Future<bool> attemptAutoReconnectAfterUnexpectedDisconnect() async {
+    if (_skipAutoReconnect || _autoReconnectInProgress) {
+      return false;
+    }
+
+    final savedMac = sharedService.getDeviceMacAddress().trim();
+    final lastMac = (await getConnectedLastDeviceAddress()).trim();
+    final mac = getDeviceMacAddress.isNotEmpty
+        ? getDeviceMacAddress
+        : (savedMac.isNotEmpty ? savedMac : lastMac);
+    if (mac.isEmpty) {
+      return false;
+    }
+
+    final now = DateTime.now();
+    if (_lastAutoReconnectAttempt != null &&
+        now.difference(_lastAutoReconnectAttempt!) <
+            const Duration(seconds: 4)) {
+      return false;
+    }
+    _lastAutoReconnectAttempt = now;
+    _autoReconnectInProgress = true;
+
+    try {
+      debugPrint('autoReconnect: attempting for $mac');
+      if (Platform.isAndroid) {
+        await flutterBandFit.clearGattDisconnect();
+        await Future<void>.delayed(const Duration(milliseconds: 800));
+      }
+
+      if (!getDeviceConnected && savedMac.isNotEmpty) {
+        await updateUserDeviceConnection(false, true, 'SP', 'SP');
+      }
+
+      var connected = await connectWithLastDeviceAddress();
+      if (!connected) {
+        final deviceModel = BandDeviceModel(
+          address: mac,
+          name: getDeviceSWName.isNotEmpty
+              ? getDeviceSWName
+              : sharedService.getDeviceName(),
+          identifier: '',
+        );
+        final init = await initializeDeviceConnection();
+        if (init == BandFitConstants.SC_INIT) {
+          connected = await connectSmartDevice(deviceModel);
+        } else if (init == BandFitConstants.SC_DISCONNECTED ||
+            init == BandFitConstants.SC_RE_INIT) {
+          connected = await reConnectSmartDevice(deviceModel);
+        }
+      }
+
+      if (connected) {
+        clearAutoReconnectGuard();
+      }
+      debugPrint('autoReconnect: result=$connected');
+      return connected;
+    } finally {
+      _autoReconnectInProgress = false;
+    }
+  }
+
   Future<bool> checkFindBand() async {
     return await flutterBandFit.checkFindBand();
   }
@@ -1328,6 +1406,7 @@ class ActivityServiceProvider extends GetxController {
   }
 
   Future<bool> disconnectDevice() async {
+    markUserInitiatedDisconnect();
     bool disconnectStatus = await flutterBandFit.disconnectDevice();
     debugPrint('disconnectStatus>> $disconnectStatus');
     await updateUserDeviceConnection(false, false, '', '');
@@ -1438,14 +1517,18 @@ class ActivityServiceProvider extends GetxController {
   }
 
   Future<Map<String, dynamic>?> fetchDeviceDataInfo() async {
-    Map<String, dynamic> response = await flutterBandFit.fetchDeviceDataInfo();
-    debugPrint('device_res>>$response');
-    String status = response['status'].toString();
-    if (status == BandFitConstants.SC_SUCCESS) {
-      return response;
-    } else {
-      return null;
+    try {
+      final Map<String, dynamic> response =
+          await flutterBandFit.fetchDeviceDataInfo();
+      debugPrint('device_res>>$response');
+      final String status = response['status'].toString();
+      if (status == BandFitConstants.SC_SUCCESS) {
+        return response;
+      }
+    } catch (e) {
+      debugPrint('fetchDeviceDataInfo error>> $e');
     }
+    return null;
   }
 
   Future<void> clearResetLocalData() async {

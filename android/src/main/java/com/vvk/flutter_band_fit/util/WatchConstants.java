@@ -27,6 +27,7 @@ public class WatchConstants {
     public static final String UPDATE_DEVICE_LIST = "updateDeviceSearchList";
     //  public static final String STOP_DEVICE_SEARCH = "stopDeviceSearch";
     public static final String BIND_DEVICE = "connectDevice";
+    public static final String RE_BIND_DEVICE = "reconnectDevice";
     public static final String UNBIND_DEVICE = "disconnectDevice";
     public static final String BLE_NOT_SUPPORTED = "bleNotSupported";
     public static final String BLE_NOT_ENABLED = "bleNotEnabled";
