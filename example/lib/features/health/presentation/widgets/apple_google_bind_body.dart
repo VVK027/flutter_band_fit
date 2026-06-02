@@ -76,7 +76,7 @@ class AppleGoogleBindBody extends GetView<AppleGoogleBindController> {
                         () => Row(
                           children: [
                             Text(
-                              controller.isBounded.value ? 'UnBound' : 'Bound',
+                              controller.isBounded.value ? textLinked : textLink,
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.blueGrey.withValues(alpha: 0.7),

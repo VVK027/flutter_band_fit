@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_band_fit_app/app/bindings/initial_binding.dart';
+import 'package:flutter_band_fit_app/core/constants/global_constants.dart';
 import 'package:flutter_band_fit_app/app/routes/app_pages.dart';
 import 'package:flutter_band_fit_app/app/routes/app_routes.dart';
 import 'package:flutter_band_fit_app/app/theme/app_theme.dart';
@@ -23,11 +24,11 @@ class BandFitApp extends StatelessWidget {
     return Obx(
           () => GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Band Fit',
+        title: textAppTitle,
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
         themeMode: themeController.theme,
-        initialRoute: AppRoutes.splash,
+        initialRoute: AppRoutes.vitals,
         getPages: AppPages.pages,
         defaultTransition: Transition.cupertino,
       ),

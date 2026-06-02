@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_storage/get_storage.dart';
 
 void main() {
-  testWidgets('BandFitApp builds splash route', (WidgetTester tester) async {
+  testWidgets('BandFitApp builds vitals route', (WidgetTester tester) async {
     await GetStorage.init();
     await tester.pumpWidget(const BandFitApp());
     await tester.pump();

@@ -46,7 +46,7 @@ class _SearchingIndicator extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '$textSearchingDevice...',
+            textSearchingDevice,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(
               fontWeight: FontWeight.w400,

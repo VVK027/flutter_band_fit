@@ -36,7 +36,7 @@ mixin BleTestListenerMixin on GetxController {
           GlobalMethods.showAlertDialog(
             ctx,
             deviceDisconnected,
-            '$deviceDisconnectedMsg\n\nPlease open device settings and try again.',
+            deviceDisconnectedReconnectFailedMsg,
           );
         }
       },

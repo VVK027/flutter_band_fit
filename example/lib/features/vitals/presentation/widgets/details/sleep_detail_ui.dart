@@ -212,7 +212,7 @@ String? _sleepTooltipLines(dynamic data) {
   }
   if (data is MonthlySleepData) {
     return _formatSleepPoint(
-      label: 'Day ${data.dayNumber}',
+      label: '$textDay ${data.dayNumber}',
       date: data.startTime,
       startMin: data.startTimeNum,
       endMin: data.endTimeNum,

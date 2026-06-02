@@ -24,7 +24,7 @@ class FirmwareUpgradeBody extends GetView<FirmwareUpgradeController> {
                       icon: Icon(Icons.arrow_back, color: Colors.white),
                     ),
                     Text(
-                      'Firmware Upgrade',
+                      textFirmwareUpgrade,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 20,
@@ -40,7 +40,7 @@ class FirmwareUpgradeBody extends GetView<FirmwareUpgradeController> {
           const Padding(
             padding: EdgeInsets.only(left: 10, top: 10),
             child: Text(
-              'Newest Version',
+              textNewestVersion,
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 16,
@@ -66,7 +66,7 @@ class FirmwareUpgradeBody extends GetView<FirmwareUpgradeController> {
               child: MaterialButton(
                 onPressed: () {},
                 child: const Text(
-                  'Check for updates',
+                  textCheckForUpdates,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,

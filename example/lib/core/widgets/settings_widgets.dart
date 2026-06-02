@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:flutter_band_fit_app/app/theme/app_colors.dart';
+import 'package:flutter_band_fit_app/core/constants/global_constants.dart';
 import 'package:flutter_band_fit_app/core/widgets/app_ui_components.dart';
 
 /// On/Off pill shown next to settings row titles (device hub).
@@ -309,7 +309,7 @@ class SettingsSaveFab extends StatelessWidget {
     final theme = Theme.of(context);
     return FloatingActionButton(
       onPressed: onPressed,
-      tooltip: 'Save',
+      tooltip: textSave,
       backgroundColor: theme.colorScheme.primary,
       foregroundColor: theme.colorScheme.onPrimary,
       elevation: 4,

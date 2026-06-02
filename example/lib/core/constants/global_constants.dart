@@ -42,7 +42,7 @@ const String bpUnits ='mmHg';
 
 const String tempAPIInCelsius ='C';
 const String tempAPIInFahrenheit ='F';
-const String hrTimeMinutes ='Times/minute';
+const String hrTimeMinutes ='bpm';
 
 const String okText = 'OK';
 const String cancelText = 'Cancel';
@@ -56,37 +56,53 @@ const String textDear = 'Dear';
 const String textBandFit = 'Band Fit';
 const String textLinkAppleHealth = 'Link with Apple Health';
 const String textLinkGoogleFit = 'Link with Google Fit';
-const String textSetOptions = 'Set your Options';
+const String textSetOptions = 'Set your options';
 const String textVersion = 'Version';
 const String textBattery = 'Battery';
 const String textAppleHealth = 'Apple Health';
 const String textGoogleFit = 'Google Fit';
 const String textUnlink = 'Unlink';
 const String textLink = 'Link';
+const String textLinked = 'Linked';
+const String textConnect = 'Connect';
 const String textSettings = 'Settings';
+const String textSave = 'Save';
 const String textDownloads = 'Downloads';
-const String textDownloadingFile = 'Downloading File';
+const String textDownloadingFile = 'Downloading…';
+const String textLightMode = 'Light mode';
+const String textDarkMode = 'Dark mode';
+const String textAppTitle = 'Band Fit';
+const String textMale = 'Male';
+const String textFemale = 'Female';
+const String textSecondsShort = 'sec';
+const String textKcal = 'kcal';
+const String textKm = 'km';
+const String textBluetoothRequired = 'Bluetooth 4.0 required';
 const String textGoal= 'Goal';
 const String textSmartProfile= 'Smart Profile';
 const String textNoWeatherData = 'Weather data is not available yet. Sync your band or check location permissions.';
 const String textRecommendDialFace = 'Recommended';
 const String textSearchDialOnline = 'Online';
-const String textDialFaces = 'Dial Faces';
+const String textDialFaces = 'Dial faces';
 const String textSynchronizing = 'Synchronizing';
-const String textSynchronousDial = 'Synchronous Dial';
-const String textSyncDoneSuccess = 'Sync Done Successfully';
-const String textDialFacesMsg = 'Change your dial screen according to your style';
-const String textNoDevicesConnected = 'No devices are connected currently';
-const String textStoragePermission = 'Storage permission is required for proper functioning of application.';
+const String textSynchronousDial = 'Sync dial face';
+const String textSyncDoneSuccess = 'Sync completed successfully';
+const String textDialFacesMsg = 'Customize your watch face to match your style';
+const String textNoDevicesConnected = 'No devices are currently connected';
+const String textStoragePermission =
+    'Storage permission is required for the app to work properly.';
 
 const String reconnectText = 'Reconnect';
 const String textDisconnect = 'Disconnect';
-const String reconnectingText = 'Reconnecting..!';
-const String deviceDisconnected = 'Device Disconnected';
-const String deviceDisconnectedMsg = 'Your device got disconnected, retry to connect back.';
-const String syncFailed = 'Sync Failed';
-const String syncFailedMsg = 'There is a data sync timeout issue, Please try to sync again..!';
-const String deviceConnected = 'Your Device is connected!';
+const String reconnectingText = 'Reconnecting…';
+const String deviceDisconnected = 'Device disconnected';
+const String deviceDisconnectedMsg =
+    'Your device was disconnected. Tap Reconnect to try again.';
+const String deviceDisconnectedReconnectFailedMsg =
+    'Your device was disconnected. Tap Reconnect to try again.\n\nOpen device settings and try again.';
+const String syncFailed = 'Sync failed';
+const String syncFailedMsg = 'Data sync timed out. Please try again.';
+const String deviceConnected = 'Your device is connected!';
 
 const String textTime = 'Time';
 const String textToday = 'Today';
@@ -101,97 +117,111 @@ const String textMeasuringVitalMsg =
 const String textGender = 'Gender';
 const String textHeight = 'Height';
 const String textWeight = 'Weight';
-const String textDateOfBirth = 'Date Of Birth';
+const String textDateOfBirth = 'Date of birth';
 const String textBMI = 'BMI';
-const String textDailyStepsGoal = 'Daily Steps Goal';
-const String textBandScreenOffTime = 'Band Screen Off Time';
-const String textSetTemperatureUnit = 'Set Temperature Unit';
-const String textRaiseHandActivateLabel = 'Raise Hand to Activate Display';
-const String textRaiseHandActivateMsg = 'Raise your hand to activate display';
-const String textUpdateInfoMsg = 'Update the following information';
+const String textDailyStepsGoal = 'Daily steps goal';
+const String textBandScreenOffTime = 'Screen timeout';
+const String textSetTemperatureUnit = 'Temperature unit';
+const String textRaiseHandActivateLabel = 'Raise wrist to wake display';
+const String textRaiseHandActivateMsg = 'Raise your wrist to wake the display';
+const String textUpdateInfoMsg = 'Please update the following information';
 
-const String textStartTime = 'Start Time';
-const String textEndTime = 'End Time';
+const String textStartTime = 'Start time';
+const String textEndTime = 'End time';
 const String textBegin = 'Begin';
 const String textEnd = 'End';
 const String textDeep = 'Deep';
 const String textLight = 'Light';
 const String textAwake = 'Awake';
-const String textSelectStartTime = 'Select Start Time';
-const String textSelectEndTime = 'Select End Time';
-const String textSyncNow = 'Sync Now';
-const String textHeartRate = 'Heart Rate';
-const String textSleepDuration = 'Sleep Duration';
-const String textTotalSleepHours = 'Total Sleep Hours';
-const String textDeepHours = 'Deep Hours';
-const String textLightHours = 'Light Hours';
-const String textAwakeHours = 'Awake Hours';
-const String textTotalHours = 'Total Hours';
+const String textSelectStartTime = 'Select start time';
+const String textSelectEndTime = 'Select end time';
+const String textSyncNow = 'Sync now';
+const String textHeartRate = 'Heart rate';
+const String textSleepDuration = 'Sleep duration';
+const String textTotalSleepHours = 'Total sleep';
+const String textDeepHours = 'Deep sleep';
+const String textLightHours = 'Light sleep';
+const String textAwakeHours = 'Awake time';
+const String textTotalHours = 'Total time';
 const String textBP = 'BP';
-const String textSpo2 = 'Spo2';
+const String textSpo2 = 'SpO₂';
 const String textTemperature = 'Temperature';
-const String textLastSynced = 'Last Synced';
-const String textLastSyncedNoData = 'No Data Syncing is Done';
-const String textSyncingDataMsg = 'Please wait…! We are syncing your data';
-const String textPleaseWait = 'Please Wait..!';
-const String textPleaseWaitMsg = 'We are syncing your data now, please wait!';
-const String textPhysicalActivities = 'Physical Activities';
+const String textLastSynced = 'Last synced';
+const String textLastSyncedNoData = 'No data has been synced yet';
+const String textSyncingDataMsg = 'Please wait while we sync your data';
+const String textPleaseWait = 'Please wait';
+const String textPleaseWaitMsg = 'Syncing your data. Please wait…';
+const String textPhysicalActivities = 'Activities';
 const String textSteps = 'Steps';
-const String textTotalSteps = 'Total Steps';
+const String textTotalSteps = 'Total steps';
 const String textCalories = 'Calories';
 const String textDistance = 'Distance';
 const String textWeather = 'Weather';
-const String textSaveContinue = 'Save and Continue';
-const String textUpdatedTo = 'Updated to';
+const String textSaveContinue = 'Save and continue';
+const String textUpdatedTo = 'Updated on';
 const String textHumidity = 'Humidity';
-const String textWindSpeed = 'Wind Speed';
-const String textUVIndex = 'UV Index';
-const String textSomethingWrong = 'Something went wrong ! Please try again later !';
-const String textNeedProfileUpdate = 'Need a Profile Update';
-const String textConfigureMonitoring = 'Configure your monitoring options below';
-const String textMonitoringOptions = 'Monitoring Options';
-const String textMonitoringOptionsMsg = 'Data collection configuration options';
-const String textHeartRateMonitoring = 'Heart Rate Monitoring';
-const String text24HrHeartRateTest = '24 hours automatic heart rate';
-const String text24HrTempTest = '24 hours body temperature';
-const String text24HrOxygen = '24-hour automatic body oxygen';
-const String textBodyTemperatureMonitoring = 'Body Temperature Monitoring';
-const String textBodyOxygenMonitoring = 'Body Oxygen Monitoring';
-const String textHighPressure = 'High Pressure';
-const String textLowPressure = 'Low Pressure';
-const String textDoNotDisturb = 'Do Not Disturb';
-const String textDoNotDisturbMsg = 'Choose when you want your Docty-M to keep quiet.(Zzz)';
-const String textListenVibrate = 'Listen your band vibrate';
-const String textListenVibrateMsg = 'Your band will vibrate 3 times. Happy Finding.';
-const String textFindBand = 'Find your smart Band';
-const String textFindBandMsg = 'Will send you 3 vibrations to your band to help you find it';
-const String textAverageHR = 'Average Heart Rate';
-const String textMinHR = 'Minimum Heart Rate';
-const String textMaxHR = 'Maximum Heart Rate';
-const String textMinOxygen = 'Minimum Blood Oxygen';
-const String textMaxOxygen = 'Maximum Blood Oxygen';
-const String textDoNotDisturbLabel = 'Enable this function to keep Docty-M quiet (Screen, Messages, Vibration) e.g.: While you sleep';
-const String textDNDTimeMsg = 'Will turn on the do not disturb within the time below';
-const String textDNDAdditionalMsg = 'In addition to the Do Not Disturb period, the following settings can be configured';
-const String textDNDDisableReminder = 'Disable Message Reminder';
-const String textDNDDisableReminderMsg = 'Messages will not be send to your band during the time above';
-const String textDNDDisableBandVibration = 'Disable Band Vibration';
-const String textDNDDisableBandVibrationMsg = 'Will also disable finding your band';
-const String textSelSameTimings = 'Selected Same Timings';
-const String textSelSameTimingsMsg = 'Start time and End time can&#x27;t be set the same. Kindly correct it.';
-const String textInvalidTimePeriod = 'Invalid Time Period';
-const String textInvalidTimePeriodMsg = 'Please select the appropriate start time and end time. The start time should not be greater than the end time.';
-const String textDNDStatus = 'Do Not Disturb Status';
-const String textDNDStatusMsg = 'Do Not Disturb status is updated. Thanks.';
-const String textSleepQualityAnalysis = 'Sleep Quality Analysis';
+const String textWindSpeed = 'Wind speed';
+const String textUVIndex = 'UV index';
+const String textSomethingWrong =
+    'Something went wrong. Please try again later.';
+const String textNeedProfileUpdate = 'Profile update required';
+const String textConfigureMonitoring =
+    'Configure your monitoring options below';
+const String textMonitoringOptions = 'Monitoring options';
+const String textMonitoringOptionsMsg =
+    'Choose how your band collects health data';
+const String textHeartRateMonitoring = 'Heart rate monitoring';
+const String text24HrHeartRateTest = 'Automatic heart rate every 24 hours';
+const String text24HrTempTest = 'Automatic body temperature every 24 hours';
+const String text24HrOxygen = 'Automatic blood oxygen every 24 hours';
+const String textBodyTemperatureMonitoring = 'Body temperature monitoring';
+const String textBodyOxygenMonitoring = 'Blood oxygen monitoring';
+const String textHighPressure = 'Systolic';
+const String textLowPressure = 'Diastolic';
+const String textDoNotDisturb = 'Do not disturb';
+const String textDoNotDisturbMsg =
+    'Choose when you want your band to stay quiet.';
+const String textListenVibrate = 'Listen for your band';
+const String textListenVibrateMsg =
+    'Your band will vibrate three times. Listen to locate it.';
+const String textFindBand = 'Find your band';
+const String textFindBandMsg =
+    'Your band will vibrate three times to help you find it';
+const String textAverageHR = 'Average heart rate';
+const String textMinHR = 'Minimum heart rate';
+const String textMaxHR = 'Maximum heart rate';
+const String textMinOxygen = 'Minimum SpO₂';
+const String textMaxOxygen = 'Maximum SpO₂';
+const String textDoNotDisturbLabel =
+    'Keep your band quiet (screen, messages, and vibration)—for example, while you sleep';
+const String textDNDTimeMsg =
+    'Do Not Disturb will be active during the times below';
+const String textDNDAdditionalMsg =
+    'You can also configure these options during Do Not Disturb';
+const String textDNDDisableReminder = 'Disable message reminders';
+const String textDNDDisableReminderMsg =
+    'Messages will not be sent to your band during this period';
+const String textDNDDisableBandVibration = 'Disable band vibration';
+const String textDNDDisableBandVibrationMsg =
+    'This also disables Find Band';
+const String textSelSameTimings = 'Same start and end time';
+const String textSelSameTimingsMsg =
+    "Start time and end time can't be the same. Please choose different times.";
+const String textInvalidTimePeriod = 'Invalid time period';
+const String textInvalidTimePeriodMsg =
+    'End time must be after start time. Please choose a valid time range.';
+const String textDNDStatus = 'Do Not Disturb updated';
+const String textDNDStatusMsg = 'Do Not Disturb settings have been updated.';
+const String textSleepQualityAnalysis = 'Sleep quality';
 const String textSleepNotLate = 'Don\'t sleep too late';
 const String textSleepLake = 'Lack of sleep';
 const String textSleepWakeEarly = 'Wake up early';
 const String textMinTemperature = 'Minimum body temperature';
 const String textMaxTemperature = 'Maximum body temperature';
-const String textRecentTemperature = 'Recent Body Temperature';
-const String textTempNotSupported = 'Temperature Not Supported';
-const String textTempNotSupportedMsg = 'Your device doesn\'t support for the temperature testing.';
+const String textRecentTemperature = 'Latest temperature';
+const String textTempNotSupported = 'Temperature not supported';
+const String textTempNotSupportedMsg =
+    'Your device does not support temperature measurement.';
 
 
 
@@ -200,40 +230,72 @@ const String textTempNotSupportedMsg = 'Your device doesn\'t support for the tem
 const String tempString = 'Our normal body temperature averages between 36 - 37 °C (96.8 - 98.6 °F). On a daily basis, the human body sees slight changes in body temperature depending on the time of day, age, gender, activity, etc.';
 
 //const String tempDisclaimer = 'Declaration: All data or results are for reference only,and it is not recommended as a formal basis for medical or health conditions.';
-const String tempDisclaimer = 'Disclaimer: All data and readings are for reference only. These are not medical readings and it is recommended to not consider the same when judging a health condition.';
+const String tempDisclaimer =
+    'Disclaimer: All data and readings are for reference only. They are not medical measurements and should not be used to diagnose or treat any health condition.';
 
 //const String sleepToLateString = '''The best time to fall asleep before 22 o'clock,long-term stay up late may make the body's immune system decreased,accelerated aging.''';
 const String sleepToLateString = '''Sleeping on time (best before 22:00) is a healthy habit. It keeps the body’s immune system balanced.''';
 
-const String sleepEarlyWakeUpString = '''After a good night’s rest, waking up early keeps the body relaxed and ready to take on the day’s activity.''';
+const String sleepEarlyWakeUpString =
+    '''After a good night’s rest, waking up early helps you feel refreshed and ready for the day.''';
 
-const String sleepLackString = '''The best total sleep time is 7 to 9 hours. Insufficient sleep may make the body's immune system decreased and unresponsive.''';
+const String sleepLackString =
+    '''Most adults need 7 to 9 hours of sleep per night. Too little sleep can weaken your immune system and leave you feeling sluggish.''';
 
 //const String addSmartWatchText = 'Add a Smart watch to get to know more about your health information.';
-const String addSmartWatchText = 'Add your wearable band to access your health reading and information';
+const String addSmartWatchText =
+    'Add your wearable band to view your health readings and insights';
 
 //const String goalTextTitle = "According to the WHO recommendations, you need at least 150 minutes a week moderate aerobic activity which is equivalent to at least 8000 per day.";
-const String goalTextTitle = "World Health Organization recommends at least 8000 steps per day to keep you fit. \nSelect your goal.";
+const String goalTextTitle =
+    'The World Health Organization recommends at least 8,000 steps per day to stay active.\nSelect your daily goal.';
 
 
 const String raiseHandWakeUpText = 'The device lights up automatically when you raise your hand.';
 
 
 
-const String noDeviceFoundHead = 'No Device Found';
+const String noDeviceFoundHead = 'No device found';
 const String textBluetooth = 'Bluetooth';
 const String textAddDevice = 'Add Device';
-const String bleNotConnected = 'Please enable the Bluetooth connectivity to search for devices.';
-const String bleNotSupported = "The Bluetooth version of your handset is lower than the expectation. Your handset bluetooth doesn't support for the Bluetooth";
-const String noDeviceFoundMessage = 'Connect your band device';
-const String textNoDeviceMsg = 'No devices are found, Retry Again';
-const String textSearchingDevice = 'Searching for your nearest band';
+const String bleNotConnected = 'Turn on Bluetooth to search for devices.';
+const String bleNotSupported =
+    "Your phone's Bluetooth version is too low. This app requires Bluetooth 4.0 or later.";
+const String noDeviceFoundMessage = 'Connect your band to get started';
+const String textNoDeviceMsg = 'No devices found. Tap Refresh to search again.';
+const String textSearchingDevice = 'Searching for nearby bands…';
 const String textConnectingDevice = 'Connecting to your band';
 const String textConnectingDeviceMsg = 'Please wait while we pair your device';
-const String textConnectionFailed = 'Connection Failed';
-const String textConnectionFailedMsg = 'Something went wrong..! Retry again by refreshing the page.';
-const String textChooseSmartBand = 'Choose your SmartBand';
-const String textChooseSmartBandMsg = 'Please select your band watch from the list';
+const String textConnectionFailed = 'Connection failed';
+const String textConnectionFailedMsg =
+    'Something went wrong. Refresh the page and try again.';
+const String textChooseSmartBand = 'Choose your band';
+const String textChooseSmartBandMsg = 'Select your band from the list below';
+
+const String textFirmwareUpgrade = 'Firmware upgrade';
+const String textNewestVersion = 'Latest version';
+const String textCheckForUpdates = 'Check for updates';
+const String textSmartReminders = 'Smart reminders';
+const String textSmartRemindersSubtitle =
+    'Get band alerts for inactivity, text messages, and calls.';
+const String textSmartBandReminders = 'Band reminders';
+const String textSecondaryReminder = 'Inactivity reminder';
+const String textSecondaryReminderMsg =
+    'If you have been inactive for a while, your band vibrates to remind you to move.';
+const String textSmsReminder = 'SMS reminder';
+const String textSmsReminderMsg =
+    'When your phone receives a text message, your band vibrates to alert you.';
+const String textCallReminder = 'Call reminder';
+const String textCallReminderMsg =
+    'When your phone has an incoming call, your band vibrates to alert you.';
+const String textBluetoothReminderNotice =
+    'Your phone must stay connected to your band. Keep Bluetooth turned on.';
+const String textNoOnlineDialFaces =
+    'No online dial faces found for your device';
+const String textNoDialFacesAvailable = 'No dial faces available';
+const String textLoadMore = 'Load more';
+const String healthStatusNormal = 'Normal';
+const String healthStatusConsultDoctor = 'Consult your doctor';
 
 
 // const String secondaryReminderMsg = 'In case of continuous time without exercise, the device will vibrate for reminding';
@@ -245,22 +307,30 @@ enum Activity { steps, cal, distance, heartRate, bp, oxygen, temperature, sleepD
 
 extension ActivityExtension on Activity {
   String get name {
-    return ["Steps", "Calories Burnt", "Distance", "Heart Rate", "Blood Pressure",
-      "SPo2", "Temperature", "Sleep Duration"][index];
+    return [
+      'Steps',
+      'Calories burned',
+      'Distance',
+      'Heart rate',
+      'Blood pressure',
+      'SpO₂',
+      'Temperature',
+      'Sleep duration',
+    ][index];
   }
 }
 
 extension ActivityTextLabel on Activity {
    String get textLabel {
     return [
-      "Steps are a useful measure of how much you're moving around the world which can helps you spot changes in your activity levels",
-      "Your body uses energy for more than just workouts. You'll see an estimate of your total calories burned while your are in rest as well as active.",
-      'Measuring your distance is useful way to track your achievements in your running or walking activities',
-      'Heart rate is measured in beats per minute (bpm) and can be elevated by things like activity, stress, or excitement',
-      'Blood Pressure is measured in millimetres of mercury (mmHg), and your systolic and diastolic readings are an indicator of your heart health',
-      'Oxygen Saturation (Spo2) is the percentage of oxygen in your blood, which gives your body energy to support physical and mental activity',
-      'Your body temperature can vary slightly throughout the day, but you might notice more significant changes during illness',
-      'Duration shows your total time slept each night. Mostly healthy adults need between 7 and 9 hours',
+      'Steps show how much you move each day and help you spot changes in your activity.',
+      'Your body burns calories at rest and during activity. This is an estimate of your total daily burn.',
+      'Distance helps you track progress in walking, running, and other activities.',
+      'Heart rate is measured in beats per minute (bpm). It often rises with activity, stress, or excitement.',
+      'Blood pressure is measured in millimetres of mercury (mmHg). Systolic and diastolic readings reflect heart health.',
+      'Blood oxygen (SpO₂) is the percentage of oxygen in your blood. It fuels physical and mental activity.',
+      'Body temperature varies slightly through the day and may change more when you are unwell.',
+      'Sleep duration is your total time asleep each night. Most healthy adults need 7 to 9 hours.',
     ][index];
   }
 }

@@ -33,7 +33,7 @@ class VitalMain extends GetView<VitalMainController> {
               actions: [
                 const ThemeToggleButton(),
                 IconButton(
-                  tooltip: 'Device settings',
+                  tooltip: textSettings,
                   icon: Image.asset(
                     'assets/fit/watch_selected.png',
                     width: 28,

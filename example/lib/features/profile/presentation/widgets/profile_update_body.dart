@@ -48,7 +48,7 @@ class ProfileUpdateBody extends StatelessWidget {
                     const Padding(
                       padding: EdgeInsets.all(2.0),
                       //child: Text('We need the below fields to be updated, to proceed further..!',
-                      child: Text('$textUpdateInfoMsg..!',
+                      child: Text(textUpdateInfoMsg,
                           //'Please update the following before you proceed..!',
                           style: TextStyle(
                               fontSize: 12, fontWeight: FontWeight.w300)),
@@ -289,7 +289,7 @@ class ProfileUpdateBody extends StatelessWidget {
                         child: Text(textBandScreenOffTime, //'Band Screen Off Time',
                             style: TextStyle(fontSize: 16)),
                       ),
-                      Text('${controller.selectedScreenOffSecs} Secs',
+                      Text('${controller.selectedScreenOffSecs} $textSecondsShort',
                           style: const TextStyle(
                               fontSize: 16, color: Colors.blueAccent)),
                     ],
@@ -575,8 +575,8 @@ class ProfileUpdateBody extends StatelessWidget {
                         initialItem: tempSelectedDate == 'female' ? 1 : 0),
                     //itemExtent: 10,
                     children: [
-                      Text('male'.toUpperCase(), style: themedPickerItemStyle(context)),
-                      Text('female'.toUpperCase(), style: themedPickerItemStyle(context)),
+                      Text(textMale.toUpperCase(), style: themedPickerItemStyle(context)),
+                      Text(textFemale.toUpperCase(), style: themedPickerItemStyle(context)),
                     ],
                   ),
                 ),
