@@ -119,5 +119,5 @@ Avoid importing `widgets.dart` in controllers or services.
 ## Further documentation
 
 - Docs index: [docs/README.md](docs/README.md)
+- Plugin full workflow: [docs/plugin/full-implementation-guide.md](docs/plugin/full-implementation-guide.md)
 - Feature template: [docs/architecture/feature-template.md](docs/architecture/feature-template.md)
-- Migration checklist: [docs/migration/clean-architecture-checklist.md](docs/migration/clean-architecture-checklist.md)

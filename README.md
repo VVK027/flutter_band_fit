@@ -1,103 +1,106 @@
 # flutter_band_fit
 
-Flutter plugin for **UTE smart band / fitness watch** connectivity on Android and iOS. It wraps the native UTE SDK (BLE pairing, sync, vitals, dial faces, firmware, weather, and device settings) and exposes a Dart API for host apps.
+Flutter plugin for **UTE smart band / fitness watch** BLE connectivity on Android and iOS.
+
+## Overview
+
+- This plugin integrates the **UTE SDK** used by many UTE/GloryFit-class bands. On Android and iOS the vendor packages differ, but they implement the same **GloryFit SDK** capabilities (scan, bind, sync vitals, dial faces, firmware, device settings).
+- **Primary goal:** expose one **common Dart platform** so Flutter apps do not maintain parallel native SDK integrations on each OS.
+- **Reference implementation:** the [`example/`](example/) app (`flutter_band_fit_app`) is a complete demo — pairing, dashboard, detail charts, device settings, dial upload, and health export patterns.
 
 ## Features
 
-- Scan, pair, connect, and disconnect BLE band devices
-- Sync steps, sleep, heart rate, blood pressure, SpO₂, temperature, and related history
-- Device settings: goals, DND, reminders, 24h monitoring toggles, find band, reset
-- Optional Apple Health / Google Fit path in the example app
-- Event stream for connection state, sync progress, and SDK callbacks
+- Scan, pair, connect, disconnect, and reconnect BLE band devices
+- Sync steps, sleep, heart rate, blood pressure, SpO₂, temperature, and sport data
+- Fetch historical data by date or bulk from on-device storage
+- Device settings: user profile, 24h monitoring, DND, find band, language, weather, call reject
+- Online watch dial transfer and progress events
+- Event streams for connection state, sync progress, and live tests (e.g. blood pressure)
 
-## Requirements
+## BLE connection workflow
 
-- Flutter **≥ 3.24**, Dart **≥ 3.5**
-- **Android**: `minSdk 26`, Bluetooth permissions (runtime on API 31+)
-- **iOS**: Xcode project with `UTESmartBandApi` framework (included under `ios/`)
+Typical integration order (aligned with the UTE/GloryFit native BLE flow):
 
-## Installation
-
-Add to your app `pubspec.yaml`:
-
-```yaml
-dependencies:
-  flutter_band_fit:
-    path: ../flutter_band_fit   # or your published source
+```mermaid
+flowchart TD
+    A["FlutterBandFit() singleton"] --> B["initializeDeviceConnection()"]
+    B --> C{BLE supported?}
+    C -->|bleNotSupported| X[Stop: unsupported device]
+    C -->|ok| D["receiveEventListeners(...)"]
+    D --> E{Bluetooth on + permissions?}
+    E -->|no| P[Request BT / permissions]
+    P --> F["startSearchingDevices()"]
+    E -->|yes| F
+    F --> G{Devices found?}
+    G -->|no| H[Show empty / retry scan]
+    G -->|yes| I["connectDevice() / reConnectDevice()"]
+    I --> J{Connected?}
+    J -->|no| K[Show error / retry]
+    J -->|yes| L["setUserParameters + sync + fetch"]
+    L --> M[Ongoing: event stream + checkConnectionStatus]
 ```
 
-### Android
-
-The plugin uses `com.vvk.flutter_band_fit` and bundles `ute_sdk` (AAR). Ensure your app manifest merges BLE/location permissions as required by your target SDK.
-
-### iOS
-
-Register the plugin in your `Podfile` / Flutter iOS project like any federated plugin; the native `FlutterBandFitPlugin` bridges to `UTESmartBandApi`.
-
-## Usage
+Quick start in code:
 
 ```dart
 import 'package:flutter_band_fit/flutter_band_fit.dart';
 
 final band = FlutterBandFit();
 
-// 1) Initialize BLE stack
 await band.initializeDeviceConnection();
+band.receiveEventListeners(onData: (data) {}, onError: (e) {});
 
-// 2) Register listeners while the feature is active
-band.receiveEventListeners(
-  onData: (data) {},
-  onError: (error) {},
-);
+final devices = await band.startSearchingDevices();
+// ... user picks device ...
+await band.connectDevice(devices.first);
 
-// 3) Connect and run operations
-final connected = await band.checkConnectionStatus();
-if (connected) {
+if (await band.checkConnectionStatus()) {
   await band.syncStepsData();
 }
 
-// 4) Cleanup listeners when done
 band.dispose();
 ```
 
-Constants and method names align with the native SDK (`BandFitConstants`, device events, sync operations). See `lib/src/util/band_fit_constants.dart` and the **example** app for full flows.
+## Requirements
 
-## API lifecycle best practices
+- Flutter **≥ 3.24**, Dart **≥ 3.5**
+- **Android:** `minSdk 26`, Bluetooth permissions (runtime on API 31+)
+- **iOS:** `UTESmartBandApi.framework` (included under `ios/`)
 
-- Keep a single `FlutterBandFit` instance for the app/session.
-- Register listeners only while the related UI flow is active:
-  - `receiveEventListeners(...)`
-  - `receiveBPListeners(...)`
-- On screen/service teardown, release listeners with either:
-  - `cancelEventListeners()` and `cancelBPListeners()`, or
-  - `dispose()` to cancel both subscriptions.
-- Prefer `checkConnectionStatus()` before sync/fetch/test calls.
-  - `checkConectionStatus()` is still supported for backward compatibility.
-- Treat platform results as runtime values:
-  - String methods usually return status constants (`success`, `failure`, `disconnected`, `canceled`, `initiated`)
-  - Map methods return parsed payloads and may return empty maps on invalid/empty data.
+## Installation
 
-## API workflow reference
+```yaml
+dependencies:
+  flutter_band_fit: ^0.0.3   # after publishing; use path/git until then
+```
 
-- Full plugin method grouping and operation flow:
-  - `example/docs/plugin/plugin-api-workflow.md`
-- Integration and lifecycle guide:
-  - `example/docs/plugin/plugin-integration-guide.md`
-- Optimization and maintenance checklist:
-  - `example/docs/plugin/plugin-optimization-maintenance.md`
+For local development:
+
+```yaml
+dependencies:
+  flutter_band_fit:
+    path: ../flutter_band_fit
+```
+
+### Android
+
+Plugin package `com.vvk.flutter_band_fit` bundles `ute_sdk` (AAR). Merge BLE/location permissions in your app manifest as required by your `targetSdk`.
+
+### iOS
+
+Use the federated plugin setup from `pub get`; native code bridges to `UTESmartBandApi`.
+
+## Documentation
+
+| Guide | Path |
+| ----- | ---- |
+| **Full implementation** (workflow + example map) | [example/docs/plugin/full-implementation-guide.md](example/docs/plugin/full-implementation-guide.md) |
+| **Integration steps** | [example/docs/plugin/plugin-integration-guide.md](example/docs/plugin/plugin-integration-guide.md) |
+| **API by operation** | [example/docs/plugin/plugin-api-workflow.md](example/docs/plugin/plugin-api-workflow.md) |
+| **Example docs index** | [example/docs/README.md](example/docs/README.md) |
+| **Example app layout** | [example/ARCHITECTURE.md](example/ARCHITECTURE.md) |
 
 ## Example app
-
-The `example/` package (`flutter_band_fit_app`) is a reference UI built with **GetX**:
-
-| Area | Path |
-| ---- | ---- |
-| Entry | `example/lib/main.dart` → `app/main.dart` |
-| Routes | `example/lib/app/routes/` |
-| BLE / sync state | `example/lib/core/services/activity_service_provider.dart` |
-| Features | `example/lib/features/` (splash, vitals, device, profile, health) |
-
-Run:
 
 ```bash
 cd example
@@ -105,17 +108,42 @@ flutter pub get
 flutter run
 ```
 
-Architecture and import conventions: [example/ARCHITECTURE.md](example/ARCHITECTURE.md).
+| Area | Path |
+| ---- | ---- |
+| Entry | `example/lib/main.dart` → `app/main.dart` |
+| BLE / sync | `example/lib/core/services/activity_service_provider.dart` |
+| Pairing | `example/lib/features/device/` |
+| Vitals UI | `example/lib/features/vitals/` |
+
+## API lifecycle
+
+- Use one `FlutterBandFit` instance per app session.
+- Register `receiveEventListeners` / `receiveBPListeners` only while needed; call `dispose()` or cancel subscriptions on teardown.
+- Prefer `checkConnectionStatus()` before sync, fetch, or test calls (`checkConectionStatus()` remains as a compatibility alias).
+- Treat platform results as untrusted: branch on `BandFitConstants` status strings; empty maps mean no data or decode failure.
 
 ## Project layout
 
 ```text
-lib/                    # Plugin Dart API (public)
-android/                # Android library + ute_sdk
-ios/                    # iOS plugin + UTESmartBandApi.framework
-example/                # Demo application
+lib/                    # Public Dart API
+android/                # Plugin + ute_sdk
+ios/                    # Plugin + UTESmartBandApi.framework
+example/                # Full reference application
+example/docs/           # Integration and architecture docs
 ```
+
+## Publishing to pub.dev
+
+Before your first publish:
+
+1. Set `homepage`, `repository`, and `issue_tracker` in `pubspec.yaml` (already pointed at this repo).
+2. Replace `LICENSE` placeholder with your chosen license (pub.dev requires a valid SPDX license).
+3. Run `dart format lib`, `flutter analyze lib`, and `flutter test`.
+4. Update [CHANGELOG.md](CHANGELOG.md) for each release.
+5. `dart pub publish --dry-run` from the package root, then `dart pub publish`.
+
+Third-party SDK binaries (`ute_sdk.aar`, iOS framework) are bundled with the plugin — confirm redistribution rights for your product.
 
 ## License
 
-See repository license terms. UTE SDK binaries (`ute_sdk.aar`, iOS framework) are third-party artifacts—confirm redistribution rights for your product.
+See [LICENSE](LICENSE). Native UTE/GloryFit SDK artifacts are third-party; verify vendor terms for commercial distribution.
