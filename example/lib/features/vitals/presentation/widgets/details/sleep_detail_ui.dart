@@ -137,7 +137,7 @@ Widget buildSleepRangeChart(
         interval: 480,
         axisLine: const AxisLine(width: 0),
       ),
-      tooltipBehavior: sleepTooltipBehavior(context),
+      //tooltipBehavior: sleepTooltipBehavior(context),
       trackballBehavior: sleepTrackballBehavior(context),
       series: series,
     ),
@@ -145,27 +145,15 @@ Widget buildSleepRangeChart(
 }
 
 TooltipBehavior sleepTooltipBehavior(BuildContext context) {
-  final theme = Theme.of(context);
   return TooltipBehavior(
     enable: true,
     canShowMarker: true,
     activationMode: ActivationMode.singleTap,
-    color: theme.colorScheme.inverseSurface,
-    borderColor: theme.dividerColor,
+    color: Theme.of(context).colorScheme.inverseSurface,
+    borderColor: Theme.of(context).dividerColor,
     borderWidth: 1,
     builder: (dynamic data, point, series, pointIndex, seriesIndex) {
-      final content = _sleepTooltipLines(data);
-      if (content == null) return const SizedBox.shrink();
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        child: Text(
-          content,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onInverseSurface,
-            height: 1.35,
-          ),
-        ),
-      );
+      return _buildSleepTooltipWidget(context, data) ?? const SizedBox.shrink();
     },
   );
 }
@@ -187,16 +175,48 @@ TrackballBehavior sleepTrackballBehavior(BuildContext context) {
       borderColor: theme.colorScheme.onSurface,
       color: sleepLightColor,
     ),
-    tooltipSettings: InteractiveTooltip(
-      enable: true,
+    builder: (BuildContext context, TrackballDetails trackballDetails) {
+      final pointIndex = trackballDetails.pointIndex;
+      final series = trackballDetails.series;
+      if (pointIndex == null || series == null) {
+        return const SizedBox.shrink();
+      }
+
+      final dataSource = series.dataSource as List<dynamic>?;
+      if (dataSource == null || pointIndex < 0 || pointIndex >= dataSource.length) {
+        return const SizedBox.shrink();
+      }
+
+      return _buildSleepTooltipWidget(context, dataSource[pointIndex]) ??
+          const SizedBox.shrink();
+    },
+    tooltipSettings: const InteractiveTooltip(
+      enable: false,
       canShowMarker: false,
+    ),
+  );
+}
+
+Widget? _buildSleepTooltipWidget(BuildContext context, dynamic data) {
+  final content = _sleepTooltipLines(data);
+  if (content == null) {
+    return null;
+  }
+
+  final theme = Theme.of(context);
+  return Container(
+    decoration: BoxDecoration(
       color: theme.colorScheme.inverseSurface,
-      textStyle: TextStyle(
+      border: Border.all(color: theme.dividerColor),
+      borderRadius: BorderRadius.circular(4),
+    ),
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    child: Text(
+      content,
+      style: theme.textTheme.bodySmall?.copyWith(
         color: theme.colorScheme.onInverseSurface,
-        fontSize: 11,
+        height: 1.35,
       ),
-      borderColor: theme.dividerColor,
-      borderWidth: 1,
     ),
   );
 }

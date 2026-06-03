@@ -16,7 +16,7 @@ class ActivitiesDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<ActivitiesDetailsController>(
       init: ActivitiesDetailsController(displayTitle: displayTitle, activityLabel: activityLabel, stepsView: stepsView, calView: calView, distanceView: distanceView),
-      builder: (_) => ActivitiesDetailsBody(),
+      builder: (_) => const ActivitiesDetailsBody(),
     );
   }
 }

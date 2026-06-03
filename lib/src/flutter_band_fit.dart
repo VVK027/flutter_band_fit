@@ -523,8 +523,4 @@ class FlutterBandFit {
     cancelEventListeners();
     cancelBPListeners();
   }
-
-  Future<String?> getPlatformVersion() {
-    return FlutterBandFitPlatform.instance.getPlatformVersion();
-  }
 }

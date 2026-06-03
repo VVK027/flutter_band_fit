@@ -28,6 +28,7 @@ const String deviceNameKey ='watchName';
 const String deviceMacAddressKey ='watchMacAddress';
 const String deviceSyncDateKey ='lastSyncDateTime';
 const String deviceMacAddressId ='lastMacAddressId';
+const String cachedOnlineDialsKey = 'cachedOnlineDials';
 
 const String weatherSyncDateTime ='weatherSyncDateTime';
 const String deviceSyncDateTime ='lastSyncDateTimeNow';

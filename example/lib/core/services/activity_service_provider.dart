@@ -800,9 +800,13 @@ class ActivityServiceProvider extends GetxController {
     final jsonData = event['data'];
     switch (result) {
       case BandFitConstants.DEVICE_VERSION:
-        String deviceID = jsonData['deviceVersion'].toString();
-        debugPrint('deviceVersion>>$deviceID');
-        setDeviceVersion(deviceID);
+        final version = JsonUtils.asString(
+          JsonUtils.asMap(jsonData)['deviceVersion'],
+        );
+        debugPrint('deviceVersion>>$version');
+        if (version.isNotEmpty) {
+          await setDeviceVersion(version);
+        }
         break;
 
       case BandFitConstants.BATTERY_STATUS:
@@ -1483,6 +1487,7 @@ class ActivityServiceProvider extends GetxController {
     debugPrint(
       'syncPairedDeviceFromBle name=$deviceSWName mac=$deviceMacAddress',
     );
+    await fetchDeviceVersion();
     await fetchBatteryStatus();
   }
 
@@ -1774,26 +1779,55 @@ class ActivityServiceProvider extends GetxController {
   }
 
 
+  Future<bool> _isBandConnectedForRead() async {
+    return deviceConnected || await checkIsDeviceConnected();
+  }
+
   Future<void> fetchBatteryStatus() async {
-    if (!deviceConnected) {
+    if (!await _isBandConnectedForRead()) {
       return;
     }
     final result = await flutterBandFit.getBatteryStatus();
     debugPrint('fetchBatteryStatus>>>$result');
   }
 
-  Future<void> fetchDeviceVersion() async {
+  Future<void> fetchDeviceVersion({int maxAttempts = 2}) async {
     final cached = sharedService.getDeviceVersionId();
     if (cached.isNotEmpty) {
       deviceVersion = cached;
       update();
     }
 
-    if (!deviceConnected) return;
+    if (!await _isBandConnectedForRead()) {
+      return;
+    }
 
-    final resultVersionStatus = await flutterBandFit.getDeviceVersion();
-    debugPrint('fetchDeviceVersion status>>>$resultVersionStatus');
-    // Actual version string is delivered asynchronously via DEVICE_VERSION event.
+    for (var attempt = 0; attempt < maxAttempts; attempt++) {
+      if (attempt > 0) {
+        await Future<void>.delayed(const Duration(milliseconds: 700));
+      }
+
+      final resultVersionStatus = await flutterBandFit.getDeviceVersion();
+      debugPrint(
+        'fetchDeviceVersion status>>>$resultVersionStatus attempt=$attempt',
+      );
+
+      // Version is delivered asynchronously on the event channel.
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+
+      final stored = sharedService.getDeviceVersionId().trim();
+      if (deviceVersion.trim().isNotEmpty || stored.isNotEmpty) {
+        if (deviceVersion.trim().isEmpty && stored.isNotEmpty) {
+          deviceVersion = stored;
+          update();
+        }
+        return;
+      }
+
+      if (resultVersionStatus != BandFitConstants.SC_INIT) {
+        break;
+      }
+    }
   }
 
   void updateSyncingView(bool updateView) {
