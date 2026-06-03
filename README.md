@@ -1,4 +1,4 @@
-# flutter_band_fit
+# Flutter Band Fit
 
 Flutter plugin for **UTE smart band / fitness watch** BLE connectivity on Android and iOS.
 
@@ -11,6 +11,11 @@ Flutter plugin for **UTE smart band / fitness watch** BLE connectivity on Androi
 - Integrates the native **UTE SDK (= GloryFit SDK)** for band scan, bind, sync, vitals, dial faces, firmware, and device settings.
 - **Primary goal:** expose one **common Dart platform** so Flutter apps do not maintain parallel native SDK integrations on each OS.
 - **Reference implementation:** the [`example/`](example/) app (`flutter_band_fit_app`) is a complete demo — pairing, dashboard, detail charts, device settings, dial upload, and health export patterns.
+
+## Preview
+
+https://github.com/user-attachments/assets/715b9c82-4345-4bde-9d9d-4706b03ee25d
+
 
 ## Features
 
