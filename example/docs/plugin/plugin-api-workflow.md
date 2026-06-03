@@ -2,6 +2,8 @@
 
 Reference for the current `FlutterBandFit` API grouped by operational flow.
 
+See also [full implementation guide](full-implementation-guide.md) for end-to-end workflow and [plugin integration guide](plugin-integration-guide.md) for recommended call order.
+
 ## Connection and lifecycle
 
 - `initializeDeviceConnection() -> Future<String>`
@@ -10,6 +12,9 @@ Reference for the current `FlutterBandFit` API grouped by operational flow.
 - `disconnectDevice() -> Future<bool>`
 - `checkConectionStatus() -> Future<bool>`
 - `checkConnectionStatus() -> Future<bool>` (preferred alias)
+- `getDeviceVersion() -> Future<String>`
+- `getBatteryStatus() -> Future<String>`
+- `callQuickSwitchSettingStatus() -> Future<String>`
 - `dispose() -> void`
 
 ## Scan and connect

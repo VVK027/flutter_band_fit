@@ -1,31 +1,40 @@
-# Example app docs
+# Example app documentation
 
-Documentation for the `example/` app architecture and contribution patterns.
+Documentation for the `flutter_band_fit` **plugin** and the **example** reference app (`flutter_band_fit_app`).
 
-## Architecture
+## About the plugin
 
-- [Feature-first clean architecture](architecture/clean-architecture.md)
-- [Dependency rules](architecture/dependency-rules.md)
-- [Feature template](architecture/feature-template.md)
+- Targets **UTE smart band / fitness watch** devices over BLE.
+- Wraps the native **UTE SDK** (the same SDK family as **GloryFit** on many OEM bands).
+- Provides a **single Flutter API** over separate Android (`ute_sdk`) and iOS (`UTESmartBandApi`) implementations.
 
-## Plugin implementation
+A **full reference implementation** (pairing, sync, vitals UI, settings, dial, firmware, health export) ships in the `example/` package — not only API stubs.
 
-- [Plugin integration guide](plugin/plugin-integration-guide.md)
-- [Plugin API workflow reference](plugin/plugin-api-workflow.md)
-- [Plugin optimization and maintenance](plugin/plugin-optimization-maintenance.md)
+## Plugin integration (start here)
 
-## Migration and maintenance
+| Document | Description |
+| -------- | ----------- |
+| [Full implementation guide](plugin/full-implementation-guide.md) | End-to-end workflow, architecture, example app map |
+| [Plugin integration guide](plugin/plugin-integration-guide.md) | Step-by-step integration for new apps |
+| [Plugin API workflow reference](plugin/plugin-api-workflow.md) | `FlutterBandFit` methods by category |
 
-- [Clean architecture checklist](migration/clean-architecture-checklist.md)
-- [Plugin changelog](../../CHANGELOG.md)
+## Example app architecture
+
+| Document | Description |
+| -------- | ----------- |
+| [Feature-first clean architecture](architecture/clean-architecture.md) | Layers and feature layout |
+| [Dependency rules](architecture/dependency-rules.md) | Import and boundary rules |
+| [Feature template](architecture/feature-template.md) | Scaffold for new features |
+| [ARCHITECTURE.md](../ARCHITECTURE.md) | High-level example overview |
+
+## Changelog
+
+- [CHANGELOG.md](../../CHANGELOG.md) — plugin version history
 
 ## Recommended reading order
 
-1. `architecture/clean-architecture.md`
-2. `architecture/dependency-rules.md`
-3. `architecture/feature-template.md`
-4. `plugin/plugin-integration-guide.md`
-5. `plugin/plugin-api-workflow.md`
-6. `plugin/plugin-optimization-maintenance.md`
-7. `migration/clean-architecture-checklist.md`
-8. `../../CHANGELOG.md`
+1. [Full implementation guide](plugin/full-implementation-guide.md)
+2. [Plugin integration guide](plugin/plugin-integration-guide.md)
+3. [Plugin API workflow reference](plugin/plugin-api-workflow.md)
+4. Run and explore `example/` (see [example/README.md](../README.md))
+5. [ARCHITECTURE.md](../ARCHITECTURE.md) when extending the demo app

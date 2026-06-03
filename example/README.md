@@ -1,6 +1,8 @@
 # flutter_band_fit_example
 
-Reference app for the [flutter_band_fit](../README.md) plugin — pair a UTE smart band, sync vitals, and manage device settings.
+Reference application for the [flutter_band_fit](../README.md) plugin — pair a UTE/GloryFit-class smart band, sync vitals, and manage device settings.
+
+This package is the **full implementation** of plugin usage (not a minimal stub). Copy patterns from `lib/features/` and `lib/core/services/activity_service_provider.dart` into your own app.
 
 ## Run
 
@@ -11,15 +13,15 @@ flutter run
 
 Requires Bluetooth and (on Android 12+) runtime BLE/location permissions.
 
-## Architecture and docs
+## Documentation
 
-This example app follows a **feature-first clean architecture** layout.
-
-- High-level overview: [ARCHITECTURE.md](ARCHITECTURE.md)
-- Full docs index: [docs/README.md](docs/README.md)
-- Dependency boundaries: [docs/architecture/dependency-rules.md](docs/architecture/dependency-rules.md)
-- New feature template: [docs/architecture/feature-template.md](docs/architecture/feature-template.md)
-- Migration checklist: [docs/migration/clean-architecture-checklist.md](docs/migration/clean-architecture-checklist.md)
+| Topic | Link |
+| ----- | ---- |
+| Docs index | [docs/README.md](docs/README.md) |
+| Full workflow + example map | [docs/plugin/full-implementation-guide.md](docs/plugin/full-implementation-guide.md) |
+| Integration steps | [docs/plugin/plugin-integration-guide.md](docs/plugin/plugin-integration-guide.md) |
+| API reference | [docs/plugin/plugin-api-workflow.md](docs/plugin/plugin-api-workflow.md) |
+| App architecture | [ARCHITECTURE.md](ARCHITECTURE.md) |
 
 ## Code layout (quick)
 
@@ -27,10 +29,10 @@ Main flows:
 
 - **Vitals home** — `features/vitals/presentation/views/vital_main.dart` + `VitalMainController`
 - **Add device** — `AddDeviceController` + scan list widgets
-- **Settings** — `DeviceSettingsController` + large settings view
+- **Settings** — `DeviceSettingsController` + device settings views
 
 Top-level folders:
 
-- `lib/app` — app bootstrap, root bindings, routes, theme
-- `lib/core` — shared framework-level utilities/widgets/services
-- `lib/features` — feature modules (`device`, `vitals`, `health`, `profile`, `splash`)
+- `lib/app` — bootstrap, bindings, routes, theme
+- `lib/core` — shared services (including `activity_service_provider.dart`)
+- `lib/features` — `device`, `vitals`, `health`, `profile`, `splash`
