@@ -74,7 +74,8 @@ class DevicePresentationRepositoryImpl implements DevicePresentationRepository {
   String getLastMacAddressId() => _provider.getLastMacAddressId;
 
   @override
-  Future<void> fetchDeviceVersion() => _provider.fetchDeviceVersion();
+  Future<void> fetchDeviceVersion({int maxAttempts = 2}) =>
+      _provider.fetchDeviceVersion(maxAttempts: maxAttempts);
 
   @override
   Future<void> fetchBatteryStatus() => _provider.fetchBatteryStatus();

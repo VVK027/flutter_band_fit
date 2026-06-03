@@ -32,10 +32,10 @@ class DeviceSettingsController extends GetxController {
     debugPrint('fetchDeviceData>>isConnected>> $isConnected');
     if (isConnected || _deviceRepository.getDeviceConnected()) {
       if (Platform.isAndroid) {
-        await Future<void>.delayed(const Duration(milliseconds: 100));
+        await Future<void>.delayed(const Duration(milliseconds: 300));
       }
+      await _deviceRepository.fetchDeviceVersion(maxAttempts: 3);
       await _deviceRepository.fetchBatteryStatus();
-      await _deviceRepository.fetchDeviceVersion();
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter_band_fit_app/common/common_imports.dart';
 import 'package:flutter_band_fit_app/core/services/activity_service_provider.dart';
+import 'package:flutter_band_fit_app/core/utils/shared_service.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/dial/dial_face_catalog.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -12,6 +13,8 @@ class DialFaceDetailsController extends GetxController {
   final isLoadingOnline = false.obs;
   final hasLoadedOnlineOnce = false.obs;
   final hasMoreOnline = true.obs;
+  final onlineLoadError = RxnString();
+  final showingCachedDials = false.obs;
 
   String deviceBleName = '';
   String deviceMacAddress = '';
@@ -41,15 +44,28 @@ class DialFaceDetailsController extends GetxController {
   }
 
   void _applyDefaultDeviceInfo() {
-    final mac = provider.getDeviceMacAddress.replaceAll(':', '');
+    var mac = provider.getDeviceMacAddress.replaceAll(':', '').trim();
+    var name = provider.getDeviceSWName.trim();
+    if (mac.isEmpty) {
+      mac = sharedService.getDeviceMacAddress().replaceAll(':', '').trim();
+    }
+    if (name.isEmpty) {
+      name = sharedService.getDeviceName().trim();
+    }
     if (mac.isEmpty) {
       return;
     }
-    deviceBleName = provider.getDeviceSWName.isNotEmpty
-        ? provider.getDeviceSWName
-        : 'RB112TRQC';
+    deviceBleName = name.isNotEmpty ? name : 'RB112TRQC';
     deviceMacAddress = mac;
   }
+
+  String get _cacheKey => dialFaceCacheKey(
+        bleName: deviceBleName,
+        mac: deviceMacAddress,
+        dpi: deviceDpi,
+        compatible: deviceCompatible,
+        shape: deviceShape,
+      );
 
   Future<void> _initializeDialScreen() async {
     isInitializing.value = true;
@@ -80,6 +96,7 @@ class DialFaceDetailsController extends GetxController {
             status == BandFitConstants.SC_SUCCESS &&
             jsonData != null) {
           _applyDeviceInfoMap(Map<String, dynamic>.from(jsonData as Map));
+          await loadOnlineDials(refresh: true);
         } else if (result == BandFitConstants.WATCH_DIAL_PROGRESS_STATUS &&
             status == BandFitConstants.SC_SUCCESS) {
           final syncProcess = jsonData?['progress'] as int? ?? 0;
@@ -114,13 +131,44 @@ class DialFaceDetailsController extends GetxController {
   }
 
   void _applyDeviceInfoMap(Map<String, dynamic> jsonData) {
-    deviceBleName = jsonData['bleName']?.toString() ?? deviceBleName;
-    deviceMacAddress = jsonData['mac']?.toString() ?? deviceMacAddress;
+    final bleName = jsonData['bleName']?.toString().trim() ?? '';
+    final mac = jsonData['mac']?.toString().replaceAll(':', '').trim() ?? '';
+    if (bleName.isNotEmpty) {
+      deviceBleName = bleName;
+    }
+    if (mac.isNotEmpty) {
+      deviceMacAddress = mac;
+    }
     deviceDpi = jsonData['dpi']?.toString() ?? deviceDpi;
     deviceMaxCapacity = jsonData['maxCapacity']?.toString() ?? deviceMaxCapacity;
     deviceShape = jsonData['shape']?.toString() ?? deviceShape;
     deviceCompatible = jsonData['compatible']?.toString() ?? deviceCompatible;
     update();
+  }
+
+  bool _restoreCachedOnlineDials() {
+    final cached = sharedService.getCachedOnlineDials(_cacheKey);
+    final models = dialFacesFromCachedJson(cached);
+    if (models.isEmpty) {
+      showingCachedDials.value = false;
+      return false;
+    }
+    onlineDials.assignAll(models);
+    _onlinePageKey = models.length;
+    hasMoreOnline.value = false;
+    showingCachedDials.value = true;
+    onlineLoadError.value = null;
+    return true;
+  }
+
+  Future<void> _persistOnlineDials(List<BandDialModel> models) async {
+    if (models.isEmpty) {
+      return;
+    }
+    await sharedService.setCachedOnlineDials(
+      _cacheKey,
+      dialFacesToCachedJson(models),
+    );
   }
 
   Future<void> loadOnlineDials({bool refresh = false}) async {
@@ -132,6 +180,8 @@ class DialFaceDetailsController extends GetxController {
       onlineDials.clear();
       hasMoreOnline.value = true;
       hasLoadedOnlineOnce.value = false;
+      onlineLoadError.value = null;
+      showingCachedDials.value = false;
     }
     if (!hasMoreOnline.value) {
       return;
@@ -148,27 +198,59 @@ class DialFaceDetailsController extends GetxController {
             '{"compatible":"$deviceCompatible","shape":"$deviceShape","limit":"$_onlinePageKey,18","maxCapacity":"$deviceMaxCapacity",'
             '"appkey":"$dialFaceYcAppKey","language":"en","sort":"1","type":"0","btname":"$deviceBleName","dpi":"$deviceDpi","mac":"$deviceMacAddress"}',
       });
-      final response = await request.send();
+      final response = await request.send().timeout(
+        const Duration(seconds: 25),
+        onTimeout: () {
+          throw Exception('Dial catalog request timed out');
+        },
+      );
       if (response.statusCode != 200) {
+        onlineLoadError.value =
+            'Unable to load dial faces (HTTP ${response.statusCode}).';
+        if (refresh) {
+          _restoreCachedOnlineDials();
+        }
         return;
       }
       final responseStr = await response.stream.bytesToString();
       final responseData = json.decode(responseStr) as Map<String, dynamic>;
       final flag = responseData['flag'];
       if (flag is! num || flag <= 0) {
+        debugPrint(
+          'loadOnlineDials: API flag=$flag msg=${responseData['msg']} '
+          'btname=$deviceBleName mac=$deviceMacAddress dpi=$deviceDpi '
+          'compatible=$deviceCompatible shape=$deviceShape',
+        );
+        if (refresh && onlineDials.isEmpty) {
+          onlineLoadError.value = textNoOnlineDialFaces;
+          _restoreCachedOnlineDials();
+        }
         return;
       }
       final dataList = responseData['list'] as List<dynamic>? ?? [];
       final models = dataList
           .map(
-            (e) => BandDialModel.fromJson(Map<String, dynamic>.from(e as Map)),
+            (e) => dialFaceFromApiJson(Map<String, dynamic>.from(e as Map)),
           )
           .toList();
       onlineDials.addAll(models);
       _onlinePageKey += models.length;
       hasMoreOnline.value = models.length >= _pageSize;
+      onlineLoadError.value = null;
+      showingCachedDials.value = false;
+      if (refresh && models.isNotEmpty) {
+        await _persistOnlineDials(onlineDials.toList());
+      }
     } catch (e) {
       debugPrint('loadOnlineDials: $e');
+      if (isDialFaceNetworkError(e)) {
+        onlineLoadError.value = textDialFacesNeedInternet;
+      } else {
+        onlineLoadError.value = textNoOnlineDialFaces;
+      }
+      if (refresh) {
+        _restoreCachedOnlineDials();
+      }
     } finally {
       isLoadingOnline.value = false;
       hasLoadedOnlineOnce.value = true;
@@ -182,7 +264,9 @@ class DialFaceDetailsController extends GetxController {
       final fileName =
           '${item.title}_${DateTime.now().millisecondsSinceEpoch}.bin';
       final file = File('${dir.path}/$fileName');
-      final response = await http.get(Uri.parse(item.resource));
+      final response = await http
+          .get(Uri.parse(item.resource))
+          .timeout(const Duration(seconds: 60));
       if (response.statusCode != 200) {
         provider.updateDialSyncUI(false, false, false);
         return;

@@ -221,21 +221,18 @@ class AddDeviceController extends GetxController {
 
   Future<void> updateDeviceConnection() async {
     try {
-    await _deviceRepository.fetchDeviceVersion();
-    if (Platform.isAndroid) {
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-    }
-    await _deviceRepository.fetchBatteryStatus();
-    await _deviceRepository.updateUserDeviceConnection(
-      false,
-      true,
-      selectedDevice.name,
-      selectedDevice.address,
-    );
-    if (Platform.isAndroid) {
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-    }
-    await _deviceRepository.updateDeviceBandLanguage();
+      await _deviceRepository.updateUserDeviceConnection(
+        false,
+        true,
+        selectedDevice.name,
+        selectedDevice.address,
+      );
+      if (Platform.isAndroid) {
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+      }
+      await _deviceRepository.fetchDeviceVersion();
+      await _deviceRepository.fetchBatteryStatus();
+      await _deviceRepository.updateDeviceBandLanguage();
     GlobalMethods.navigatePopBack();
     if (selectedIndex < arrConDisConButton.length) {
       arrConDisConButton[selectedIndex] = textDisconnect;

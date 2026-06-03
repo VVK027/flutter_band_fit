@@ -2,7 +2,6 @@
 import 'package:flutter_band_fit_app/app/theme/theme_controller.dart';
 import 'package:flutter_band_fit_app/common/common_imports.dart';
 import 'package:flutter_band_fit_app/core/services/activity_service_provider.dart';
-import 'package:flutter_band_fit_app/core/services/dial_face_prefetch_service.dart';
 import 'package:flutter_band_fit_app/core/utils/shared_service.dart';
 import 'package:flutter_band_fit_app/features/vitals/domain/usecases/check_vitals_device_connection_usecase.dart';
 import 'package:flutter_band_fit_app/features/vitals/domain/usecases/reconnect_vitals_device_usecase.dart';
@@ -247,6 +246,8 @@ class VitalMainController extends GetxController
 
     else if (result == BandFitConstants.DEVICE_CONNECTED) {
       debugPrint("receiveEventsFromMainScreen>> Device Connected");
+      _activityServiceProvider.clearAutoReconnectGuard();
+      notifiedDisconnected = false;
       if (status == BandFitConstants.SC_SUCCESS) {
         //await Future.delayed(const Duration(milliseconds: 500));
         //await _activityServiceProvider.updateUserParamsWatch(false);
@@ -310,43 +311,15 @@ class VitalMainController extends GetxController
     }
     else if (result == BandFitConstants.DEVICE_DISCONNECTED) {
       if (status == BandFitConstants.SC_SUCCESS) {
-        bool deviceConnected = await _checkVitalsDeviceConnectionUseCase();
-        debugPrint('deviceConnectedStatus>> $deviceConnected');
+        final bleConnected = await _checkVitalsDeviceConnectionUseCase();
+        debugPrint('deviceConnectedStatus>> $bleConnected');
         debugPrint('isReConnectStatus>> $isReConnectStatus');
         debugPrint('_activityServiceProvider.isSyncProgress>> ${_activityServiceProvider.isSyncProgress}');
         if (_activityServiceProvider.isSyncProgress) {
           _activityServiceProvider.updateSyncingView(false);
-          if (Get.context != null) {
-            retryConnection(Get.context!);
-          }
-        }else{
-          if (!deviceConnected) {
-            Get.find<DialFacePrefetchService>().invalidate();
-    notifiedDisconnected = true;
-    update();
-            if(isReConnectStatus){
-              String address = await _activityServiceProvider.getConnectedLastDeviceAddress();
-              debugPrint('last_address $address');
-              if (address.toString().trim() == reConnectMacAddress.toString().trim()) {
-                bool lastInitStatus = await _activityServiceProvider.connectWithLastDeviceAddress();
-                debugPrint('last_connected_status>> $lastInitStatus');
-              }else{
-                if (Get.context != null) {
-                  GlobalMethods.navigatePopBack();
-    isReConnectStatus = false;
-    update();
-                  retryConnection(Get.context!);
-                }
-              }
-            } else {
-              debugPrint('isReConnectStatus_else $isReConnectStatus');
-              if (_activityServiceProvider.getDeviceConnected) {
-                if (Get.context != null) {
-                  retryConnection(Get.context!);
-                }
-              }
-            }
-          }
+        }
+        if (!bleConnected) {
+          unawaited(_handleUnexpectedDisconnect());
         }
       }
     }
@@ -376,7 +349,11 @@ class VitalMainController extends GetxController
 
   Future<void> updateDeviceConnection() async {
     await _activityServiceProvider.updateUserDeviceConnection(false, true, 'SP', 'SP');
-    //await Future.delayed(const Duration(milliseconds: 500));
+    if (Platform.isAndroid) {
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+    }
+    await _activityServiceProvider.fetchDeviceVersion();
+    await _activityServiceProvider.fetchBatteryStatus();
     await _activityServiceProvider.updateDeviceBandLanguage();
     debugPrint('isReConnectStatus>> $isReConnectStatus');
     if(isReConnectStatus){
@@ -388,10 +365,65 @@ class VitalMainController extends GetxController
     // Utils.showToastMessage(context, deviceConnected);
     refreshPage();
     validateTimeAndSync();
-    unawaited(Get.find<DialFacePrefetchService>().prefetchIfNeeded());
   }
 
   void refreshPage() => update();
+
+  Future<void> _handleUnexpectedDisconnect() async {
+    final savedMac = sharedService.getDeviceMacAddress().trim();
+    final hadPairedDevice = savedMac.isNotEmpty ||
+        _activityServiceProvider.getDeviceMacAddress.isNotEmpty;
+    if (!hadPairedDevice) {
+      return;
+    }
+
+    final reconnected =
+        await _activityServiceProvider.attemptAutoReconnectAfterUnexpectedDisconnect();
+    if (reconnected) {
+      isReConnectStatus = true;
+      reConnectMacAddress = _activityServiceProvider.getDeviceMacAddress;
+      update();
+      return;
+    }
+
+    if (isReConnectStatus) {
+      final address = await _activityServiceProvider.getConnectedLastDeviceAddress();
+      debugPrint('last_address $address');
+      if (address.trim() == reConnectMacAddress.trim()) {
+        final lastInitStatus =
+            await _activityServiceProvider.connectWithLastDeviceAddress();
+        debugPrint('last_connected_status>> $lastInitStatus');
+        if (lastInitStatus) {
+          return;
+        }
+      } else if (Get.context != null) {
+        GlobalMethods.navigatePopBack();
+        isReConnectStatus = false;
+        update();
+      }
+    }
+
+    if (!notifiedDisconnected && Get.context != null) {
+      notifiedDisconnected = true;
+      update();
+      retryConnection(Get.context!);
+    }
+  }
+
+  Future<void> _reconnectIfNeededOnResume() async {
+    if (_activityServiceProvider.getHealthConnected) {
+      return;
+    }
+    final connected = await _checkVitalsDeviceConnectionUseCase();
+    if (connected) {
+      return;
+    }
+    final savedMac = sharedService.getDeviceMacAddress().trim();
+    if (savedMac.isEmpty) {
+      return;
+    }
+    await _activityServiceProvider.attemptAutoReconnectAfterUnexpectedDisconnect();
+  }
 
   void retryConnection(BuildContext context) {
     GlobalMethods.showAlertDialogWithFunction(Get.context!, deviceDisconnected, deviceDisconnectedMsg, reconnectText, () async {
@@ -491,6 +523,7 @@ class VitalMainController extends GetxController
       // widget is resumed
         debugPrint('AppLifecycleState.resumed');
         _activityServiceProvider.resumeEventListeners();
+        unawaited(_reconnectIfNeededOnResume());
         break;
       case AppLifecycleState.inactive:
       // widget is inactive

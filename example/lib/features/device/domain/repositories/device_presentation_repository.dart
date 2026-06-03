@@ -33,7 +33,7 @@ abstract class DevicePresentationRepository {
 
   String getLastMacAddressId();
 
-  Future<void> fetchDeviceVersion();
+  Future<void> fetchDeviceVersion({int maxAttempts = 2});
 
   Future<void> fetchBatteryStatus();
 

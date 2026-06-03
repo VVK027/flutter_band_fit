@@ -5,7 +5,6 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_band_fit/flutter_band_fit_platform_interface.dart';
 
 part 'src/flutter_band_fit.dart';
 part 'src/util/band_fit_constants.dart';

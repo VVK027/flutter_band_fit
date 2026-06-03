@@ -332,4 +332,19 @@ class SharedService {
     return _storageBox.read(DEVICE_HAND_WAKE_UP) ?? true;
   }
 
+  Future<void> setCachedOnlineDials(String cacheKey, String json) async {
+    final all = Map<String, dynamic>.from(
+      _storageBox.read(cachedOnlineDialsKey) as Map? ?? {},
+    );
+    all[cacheKey] = json;
+    await _storageBox.write(cachedOnlineDialsKey, all);
+  }
+
+  String getCachedOnlineDials(String cacheKey) {
+    final all = Map<String, dynamic>.from(
+      _storageBox.read(cachedOnlineDialsKey) as Map? ?? {},
+    );
+    return all[cacheKey]?.toString() ?? '';
+  }
+
 }

@@ -35,8 +35,11 @@ class DialFaceDetailsBody extends GetView<DialFaceDetailsController> {
                 isLoading: controller.isLoadingOnline.value,
                 hasLoadedOnce: controller.hasLoadedOnlineOnce.value,
                 hasMore: controller.hasMoreOnline.value,
+                errorMessage: controller.onlineLoadError.value,
+                showingCachedData: controller.showingCachedDials.value,
                 onTap: (item) => _showDialDialog(context, item),
                 onLoadMore: () => controller.loadOnlineDials(),
+                onRetry: () => controller.loadOnlineDials(refresh: true),
               ),
             ),
           ],
@@ -145,14 +148,20 @@ class _OnlineDialTab extends StatelessWidget {
     required this.hasMore,
     required this.onTap,
     required this.onLoadMore,
+    required this.onRetry,
+    this.errorMessage,
+    this.showingCachedData = false,
   });
 
   final List<BandDialModel> items;
   final bool isLoading;
   final bool hasLoadedOnce;
   final bool hasMore;
+  final String? errorMessage;
+  final bool showingCachedData;
   final void Function(BandDialModel item) onTap;
   final VoidCallback onLoadMore;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -160,13 +169,30 @@ class _OnlineDialTab extends StatelessWidget {
       return const _DialLoadingState();
     }
 
+    final emptyMessage = errorMessage ?? textNoOnlineDialFaces;
+
     return Column(
       children: [
+        if (showingCachedData && items.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: Text(
+              textDialFacesShowingCache,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.65),
+                  ),
+            ),
+          ),
         Expanded(
           child: _DialGrid(
             items: items,
             onTap: onTap,
-            emptyMessage: textNoOnlineDialFaces,
+            emptyMessage: emptyMessage,
+            onRetry: items.isEmpty ? onRetry : null,
           ),
         ),
         if (isLoading)
@@ -276,11 +302,13 @@ class _DialGrid extends StatelessWidget {
     required this.items,
     required this.onTap,
     this.emptyMessage = textNoDialFacesAvailable,
+    this.onRetry,
   });
 
   final List<BandDialModel> items;
   final void Function(BandDialModel item) onTap;
   final String emptyMessage;
+  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -306,6 +334,13 @@ class _DialGrid extends StatelessWidget {
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
+              if (onRetry != null) ...[
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: onRetry,
+                  child: const Text(textRetry),
+                ),
+              ],
             ],
           ),
         ),

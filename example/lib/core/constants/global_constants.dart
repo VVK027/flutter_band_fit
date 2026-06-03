@@ -293,6 +293,12 @@ const String textBluetoothReminderNotice =
 const String textNoOnlineDialFaces =
     'No online dial faces found for your device';
 const String textNoDialFacesAvailable = 'No dial faces available';
+const String textDialFacesNeedInternet =
+    'Internet connection is required to browse online dial faces. '
+    'Turn on mobile data or Wi‑Fi and tap Retry.';
+const String textDialFacesShowingCache =
+    'Showing previously downloaded dial faces. Connect to the internet for the latest catalog.';
+const String textRetry = 'Retry';
 const String textLoadMore = 'Load more';
 const String healthStatusNormal = 'Normal';
 const String healthStatusConsultDoctor = 'Consult your doctor';
