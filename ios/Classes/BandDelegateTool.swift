@@ -72,14 +72,14 @@ class BandDelegateTool: NSObject,UTEManagerDelegate {
             //  print("***Scanned device name22=\(String(describing: modelDevices.address)) str=\(String(describing: modelDevices.addressStr))")
             //  print("***Scanned device name33=\(String(describing: modelDevices.description)) rssi=\(String(describing: modelDevices.rssi))")
             // print("***Scanned device name44=\(String(describing: modelDevices.advertisementData)) addr=\(String(describing: modelDevices.advertisementAddress))")
-            if modelDevices.name.lowercased().contains("docty") || modelDevices.name.lowercased().contains("kmo4") {
+            //if modelDevices.name.lowercased().contains("docty") || modelDevices.name.lowercased().contains("kmo4") {
                 if modelDevices.advertisementAddress != nil {
                     self.mArrayDevices.append(modelDevices)
                     if self.getDevicesList != nil {
                         self.getDevicesList!(self.mArrayDevices);
                     }
                 }
-            }
+            //}
         }
     }
     

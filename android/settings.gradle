@@ -1,2 +1,4 @@
+package android
+
 rootProject.name = 'flutter_band_fit'
-include 'ute_sdk'
+include ':ute_sdk'

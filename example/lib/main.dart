@@ -1,60 +1,37 @@
-import 'package:flutter_band_fit_app/common/common_imports.dart';
-import 'package:flutter_band_fit_app/splash_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_band_fit_app/app/bindings/initial_binding.dart';
+import 'package:flutter_band_fit_app/core/constants/global_constants.dart';
+import 'package:flutter_band_fit_app/app/routes/app_pages.dart';
+import 'package:flutter_band_fit_app/app/routes/app_routes.dart';
+import 'package:flutter_band_fit_app/app/theme/app_theme.dart';
+import 'package:flutter_band_fit_app/app/theme/theme_controller.dart';
 import 'package:get/get.dart';
-
+import 'package:get_storage/get_storage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
-  runApp(const MainApp());
+  InitialBinding().dependencies();
+  runApp(const BandFitApp());
 }
 
-class MainApp extends StatefulWidget {
-  const MainApp({super.key});
-
-  @override
-  State<MainApp> createState() => _MainAppState();
-}
-
-class _MainAppState extends State<MainApp> {
-  //final _flutterBandFitPlugin = FlutterBandFit();
-
-  final themeController = Get.put(ThemeController());
-
-  @override
-  void initState() {
-    super.initState();
-  }
+class BandFitApp extends StatelessWidget {
+  const BandFitApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Band Fit',
-      //initialBinding: ActivityServiceProvider(),
-      theme: Themes.lightTheme,
-      darkTheme: Themes.darkTheme,
-      themeMode: themeController.theme,
-      initialRoute: '/',
-      //localizationsDelegates: [
-      // GlobalMaterialLocalizations.delegate,
-      // GlobalCupertinoLocalizations.delegate,
-      // GlobalWidgetsLocalizations.delegate,
-      // DefaultCupertinoLocalizations.delegate,
-      //  ],
-      getPages: [
-        GetPage(
-          name: '/',
-          page: () => const Splash(),
-        ),
-        // GetPage(name: '/edit_name', page: () => UpdateStoreName()),
-        // GetPage(name: '/add_followers', page: () => AddFollowers()),
-        // GetPage(name: '/toggle_status', page: () => StoreStatus()),
-        // GetPage(name: '/edit_follower_count', page: () => AddFollowerCount()),
-        // GetPage(name: '/add_reviews', page: () => AddReviews()),
-        // GetPage(name: '/update_menu', page: () => const UpdateMenu()),
-      ],
-      home: const Splash(),
+    final themeController = Get.find<ThemeController>();
+    return Obx(
+          () => GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: textAppTitle,
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: themeController.theme,
+        initialRoute: AppRoutes.vitals,
+        getPages: AppPages.pages,
+        defaultTransition: Transition.cupertino,
+      ),
     );
   }
 }

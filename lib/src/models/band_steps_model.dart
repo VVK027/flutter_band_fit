@@ -1,4 +1,4 @@
-part of flutter_band_fit;
+part of '../../flutter_band_fit.dart';
 
 class BandStepsModel {
   final String time;
@@ -6,22 +6,17 @@ class BandStepsModel {
 
   const BandStepsModel({required this.step, required this.time});
 
-  factory BandStepsModel.fromJson(Map<String, dynamic> data) => BandStepsModel(
-    step: data['step'].toString(),
-    time: data['time'].toString(),
-  );
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> formData = <String, dynamic>{};
-    formData['step'] = step;
-    formData['time'] = time;
-    return formData;
+  factory BandStepsModel.fromJson(Map<String, dynamic> data) {
+    return BandStepsModel(
+      step: '${data['step']}',
+      time: '${data['time']}',
+    );
   }
 
-/* @override
-  // TODO: implement props
-  List<Object> get props => [index, name, alias, address, type, bondState];
-
-  @override
-  bool get stringify => false;*/
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'step': step,
+      'time': time,
+    };
+  }
 }
