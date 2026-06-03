@@ -191,6 +191,6 @@ struct GlobalConstants {
     
     
     // for streaming broadcast action event name
-    static let BROADCAST_ACTION_NAME = "com.vk.band_fit"
+    static let BROADCAST_ACTION_NAME = "com.vvk.band_fit"
     
 }

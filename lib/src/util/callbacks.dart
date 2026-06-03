@@ -1,4 +1,4 @@
-part of flutter_band_fit;
+part of '../../flutter_band_fit.dart';
 
 // const _channel = MethodChannel(BandFitConstants.SMART_CALLBACK);
 // typedef MultiUseCallback = void Function(dynamic msg);

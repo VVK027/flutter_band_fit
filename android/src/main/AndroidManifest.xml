@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.vk.flutter_band_fit">
+    package="com.vvk.flutter_band_fit">
 
     <uses-permission android:name="android.permission.INTERNET"/>
 

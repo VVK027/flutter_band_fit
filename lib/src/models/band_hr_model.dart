@@ -1,4 +1,4 @@
-part of flutter_band_fit;
+part of '../../flutter_band_fit.dart';
 
 class BandHRModel {
   final String calender;
@@ -10,29 +10,24 @@ class BandHRModel {
     required this.calender,
     required this.time,
     required this.dateTime,
-    required this.rate
+    required this.rate,
   });
 
-  factory BandHRModel.fromJson(Map<String, dynamic> data) => BandHRModel(
-    calender: data['calender'].toString(),
-    time: data['time'].toString(),
-    dateTime: data['dateTime'].toString(),
-    rate: data['rate'].toString(),
-  );
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> formData = <String, dynamic>{};
-    formData['calender'] = calender;
-    formData['time'] = time;
-    formData['dateTime'] = dateTime;
-    formData['rate'] = rate;
-    return formData;
+  factory BandHRModel.fromJson(Map<String, dynamic> data) {
+    return BandHRModel(
+      calender: '${data['calender']}',
+      time: '${data['time']}',
+      dateTime: '${data['dateTime']}',
+      rate: '${data['rate']}',
+    );
   }
 
-/* @override
-  // TODO: implement props
-  List<Object> get props => [index, name, alias, address, type, bondState];
-
-  @override
-  bool get stringify => false;*/
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'calender': calender,
+      'time': time,
+      'dateTime': dateTime,
+      'rate': rate,
+    };
+  }
 }
