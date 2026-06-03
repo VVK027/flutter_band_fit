@@ -1,6 +1,6 @@
 # flutter_band_fit_example
 
-Reference application for the [flutter_band_fit](../README.md) plugin — pair a UTE/GloryFit-class smart band, sync vitals, and manage device settings.
+Reference application for the [flutter_band_fit](../README.md) plugin — pair a UTE smart band (native **UTE SDK = GloryFit SDK**), sync vitals, and manage device settings.
 
 This package is the **full implementation** of plugin usage (not a minimal stub). Copy patterns from `lib/features/` and `lib/core/services/activity_service_provider.dart` into your own app.
 

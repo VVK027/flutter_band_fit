@@ -5,8 +5,8 @@ Documentation for the `flutter_band_fit` **plugin** and the **example** referenc
 ## About the plugin
 
 - Targets **UTE smart band / fitness watch** devices over BLE.
-- Wraps the native **UTE SDK** (the same SDK family as **GloryFit** on many OEM bands).
-- Provides a **single Flutter API** over separate Android (`ute_sdk`) and iOS (`UTESmartBandApi`) implementations.
+- **The UTE SDK is the GloryFit SDK** — same native stack; UTE is the vendor package name in this repo (`ute_sdk` / `UTESmartBandApi`), GloryFit is the widely used name for that SDK on fitness bands.
+- Provides a **single Flutter API** over the GloryFit/UTE SDK on Android and iOS (separate native binaries per platform, one Dart contract).
 
 A **full reference implementation** (pairing, sync, vitals UI, settings, dial, firmware, health export) ships in the `example/` package — not only API stubs.
 

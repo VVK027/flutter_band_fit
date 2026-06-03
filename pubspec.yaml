@@ -1,5 +1,5 @@
 name: flutter_band_fit
-description: Flutter plugin for UTE/GloryFit smart band BLE connectivity, sync, and vitals on Android and iOS.
+description: Flutter plugin for UTE smart bands using the UTE SDK (the GloryFit SDK) for BLE connectivity, sync, and vitals on Android and iOS.
 version: 0.0.3
 homepage: https://github.com/VK027/flutter_band_fit
 repository: https://github.com/VK027/flutter_band_fit

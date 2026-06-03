@@ -5,8 +5,17 @@ End-to-end reference for integrating `flutter_band_fit` and mirroring the **exam
 ## What this plugin is
 
 - **UTE smart band / fitness watch** connectivity via BLE on Android and iOS.
-- Native stacks use the **UTE SDK**, which is the same family as the **GloryFit SDK** (vendor naming differs by platform/build, but capabilities align: scan, bind, sync, vitals, dial, firmware, settings).
-- **Goal of the plugin:** one Dart API and method/event channels so Flutter apps do not duplicate separate Android and iOS SDK integrations.
+
+### UTE SDK = GloryFit SDK
+
+| Name | Role in this project |
+| ---- | -------------------- |
+| **UTE SDK** | Native SDK as integrated here: Android `ute_sdk` AAR, iOS `UTESmartBandApi.framework` |
+| **GloryFit SDK** | The **same SDK** under the GloryFit product name used by many bands and OEM apps |
+
+**The UTE SDK is the GloryFit SDK** — not a separate alternative. Vendor documentation and app store listings often say “GloryFit”; this repository and Android artifact use “UTE”. Capabilities are identical: scan, bind, sync, vitals, dial, firmware, settings.
+
+- **Goal of the plugin:** one Dart API and method/event channels so Flutter apps do not duplicate separate Android and iOS GloryFit/UTE integrations.
 
 ## Layered architecture
 
@@ -83,7 +92,7 @@ Example: `ActivityServiceProvider` sync helpers and `VitalMainController` / deta
 
 The vendor BLE flow (initialize → BLE support → listener → BT on → scan → connect) maps to Dart as follows:
 
-| Native concept (UTE / GloryFit) | Flutter plugin |
+| Native concept (UTE SDK = GloryFit SDK) | Flutter plugin |
 | ------------------------------- | -------------- |
 | Service instance / bind | `FlutterBandFit()` singleton |
 | `isSupportBle4_0()` | `initializeDeviceConnection()` → `bleNotSupported` |
