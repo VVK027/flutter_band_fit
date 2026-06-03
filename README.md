@@ -2,9 +2,13 @@
 
 Flutter plugin for **UTE smart band / fitness watch** BLE connectivity on Android and iOS.
 
+## UTE SDK and GloryFit SDK
+
+**The UTE SDK is the GloryFit SDK.** They are the same native stack: UTE is the vendor/SDK branding used in this project (`ute_sdk` on Android, `UTESmartBandApi` on iOS), while **GloryFit** is the common product name for that same SDK on many fitness bands and companion apps. This plugin does not wrap two different SDKs—it exposes one Flutter API over that single GloryFit/UTE implementation on each platform.
+
 ## Overview
 
-- This plugin integrates the **UTE SDK** used by many UTE/GloryFit-class bands. On Android and iOS the vendor packages differ, but they implement the same **GloryFit SDK** capabilities (scan, bind, sync vitals, dial faces, firmware, device settings).
+- Integrates the native **UTE SDK (= GloryFit SDK)** for band scan, bind, sync, vitals, dial faces, firmware, and device settings.
 - **Primary goal:** expose one **common Dart platform** so Flutter apps do not maintain parallel native SDK integrations on each OS.
 - **Reference implementation:** the [`example/`](example/) app (`flutter_band_fit_app`) is a complete demo — pairing, dashboard, detail charts, device settings, dial upload, and health export patterns.
 
@@ -19,7 +23,7 @@ Flutter plugin for **UTE smart band / fitness watch** BLE connectivity on Androi
 
 ## BLE connection workflow
 
-Typical integration order (aligned with the UTE/GloryFit native BLE flow):
+Typical integration order (aligned with the native UTE / GloryFit BLE flow):
 
 ```mermaid
 flowchart TD
@@ -146,4 +150,4 @@ Third-party SDK binaries (`ute_sdk.aar`, iOS framework) are bundled with the plu
 
 ## License
 
-See [LICENSE](LICENSE). Native UTE/GloryFit SDK artifacts are third-party; verify vendor terms for commercial distribution.
+See [LICENSE](LICENSE). Native UTE (= GloryFit) SDK binaries are third-party; verify vendor terms for commercial distribution.

@@ -4,7 +4,7 @@ This guide explains how to integrate `flutter_band_fit` in a Flutter app and str
 
 For SDK background, native↔Dart mapping, and how the **example app** wires each phase, see [full implementation guide](full-implementation-guide.md).
 
-**UTE / GloryFit:** the plugin wraps the vendor **UTE SDK** (GloryFit-class smart bands). Android and iOS ship separate native binaries; Dart methods are the shared contract.
+**UTE SDK = GloryFit SDK:** this plugin wraps the native **UTE SDK**, which **is the GloryFit SDK** (same stack; UTE branding in code, GloryFit branding in many consumer apps). Android (`ute_sdk`) and iOS (`UTESmartBandApi`) are platform builds of that SDK; Dart methods are the shared contract.
 
 **Reference app:** complete flows live under `example/lib/` — use them as the canonical implementation alongside this guide.
 

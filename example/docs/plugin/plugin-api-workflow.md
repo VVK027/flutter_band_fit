@@ -2,7 +2,9 @@
 
 Reference for the current `FlutterBandFit` API grouped by operational flow.
 
-See also [full implementation guide](full-implementation-guide.md) for end-to-end workflow and [plugin integration guide](plugin-integration-guide.md) for recommended call order.
+**SDK note:** all native methods below delegate to the **UTE SDK**, which **is the GloryFit SDK** (see [full implementation guide](full-implementation-guide.md)).
+
+See also [plugin integration guide](plugin-integration-guide.md) for recommended call order.
 
 ## Connection and lifecycle
 
