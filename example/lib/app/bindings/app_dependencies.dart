@@ -52,7 +52,8 @@ class AppDependencies {
       fenix: true,
     );
     Get.lazyPut<CheckVitalsDeviceConnectionUseCase>(
-      () => CheckVitalsDeviceConnectionUseCase(Get.find<VitalsSyncRepository>()),
+      () =>
+          CheckVitalsDeviceConnectionUseCase(Get.find<VitalsSyncRepository>()),
       fenix: true,
     );
     Get.lazyPut<ReconnectVitalsDeviceUseCase>(
@@ -64,7 +65,8 @@ class AppDependencies {
       fenix: true,
     );
     Get.lazyPut<SaveActivityMonitorSettingsUseCase>(
-      () => SaveActivityMonitorSettingsUseCase(Get.find<VitalsSyncRepository>()),
+      () =>
+          SaveActivityMonitorSettingsUseCase(Get.find<VitalsSyncRepository>()),
       fenix: true,
     );
 
@@ -73,11 +75,13 @@ class AppDependencies {
       fenix: true,
     );
     Get.lazyPut<DevicePresentationRepository>(
-      () => DevicePresentationRepositoryImpl(Get.find<ActivityServiceProvider>()),
+      () =>
+          DevicePresentationRepositoryImpl(Get.find<ActivityServiceProvider>()),
       fenix: true,
     );
     Get.lazyPut<CheckDeviceConnectionUseCase>(
-      () => CheckDeviceConnectionUseCase(Get.find<DeviceConnectionRepository>()),
+      () =>
+          CheckDeviceConnectionUseCase(Get.find<DeviceConnectionRepository>()),
       fenix: true,
     );
     Get.lazyPut<ReconnectSavedDeviceUseCase>(

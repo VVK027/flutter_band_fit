@@ -41,8 +41,11 @@ class DeviceSettingsOptionsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SettingsSectionLabel(label: textSettings),
+        const SettingsSectionLabel(
+            key: Key(WidgetKeys.settingsSectionLabel),
+            label: textSettings),
         SettingsSectionCard(
+          key: const Key(WidgetKeys.settingsSectionCard),
           children: [
             SettingsNavigationTile(
               iconAsset: 'assets/fit/goal_right.png',
@@ -97,7 +100,9 @@ class DeviceSettingsOptionsSection extends StatelessWidget {
                 subtitle: textDialFacesMsg,
                 onTap: () async {
                   if (await _requireConnection(context) && context.mounted) {
-                    Get.to<void>(() => const DialFaceDetails());
+                    Get.to<void>(() => const DialFaceDetails(
+                          key: Key(WidgetKeys.dialFaceDetails),
+                        ));
                   }
                 },
               ),
@@ -109,7 +114,9 @@ class DeviceSettingsOptionsSection extends StatelessWidget {
                 statusChip: SettingsStatusChip(isOn: monitoringOn),
                 onTap: () async {
                   if (await _requireConnection(context) && context.mounted) {
-                    GlobalMethods.navigateTo(const ActivityMonitor());
+                    GlobalMethods.navigateTo(const ActivityMonitor(
+                      key: Key(WidgetKeys.activityMonitor),
+                    ));
                   }
                 },
               ),
@@ -121,7 +128,9 @@ class DeviceSettingsOptionsSection extends StatelessWidget {
                 statusChip: SettingsStatusChip(isOn: dndOn),
                 onTap: () async {
                   if (await _requireConnection(context) && context.mounted) {
-                    GlobalMethods.navigateTo(const DoNotDisturb());
+                    GlobalMethods.navigateTo(const DoNotDisturb(
+                      key: Key(WidgetKeys.doNotDisturb),
+                    ));
                   }
                 },
               ),
@@ -130,7 +139,9 @@ class DeviceSettingsOptionsSection extends StatelessWidget {
                 iconAsset: 'assets/fit/reminders.png',
                 title: textSmartReminders,
                 subtitle: textSmartRemindersSubtitle,
-                onTap: () => GlobalMethods.navigateTo(const BandReminders()),
+                onTap: () => GlobalMethods.navigateTo(const BandReminders(
+                  key: Key(WidgetKeys.bandReminders),
+                )),
               ),
             if (connected)
               SettingsNavigationTile(
@@ -150,11 +161,13 @@ class DeviceSettingsOptionsSection extends StatelessWidget {
                 },
               ),
             if (connected)
-            SettingsNavigationTile(
-              iconAsset: 'assets/fit/goal_right.png',
-              title: textFirmwareUpgrade,
-              onTap: () => GlobalMethods.navigateTo(const FirmwareUpgrade()),
-            ),
+              SettingsNavigationTile(
+                iconAsset: 'assets/fit/goal_right.png',
+                title: textFirmwareUpgrade,
+                onTap: () => GlobalMethods.navigateTo(const FirmwareUpgrade(
+                  key: Key(WidgetKeys.firmwareUpgrade),
+                )),
+              ),
           ],
         ),
         const SizedBox(height: 12),

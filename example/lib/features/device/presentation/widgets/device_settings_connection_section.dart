@@ -22,6 +22,7 @@ class DeviceSettingsConnectionSection extends StatelessWidget {
   Widget build(BuildContext context) {
     if (provider.getDeviceConnected) {
       return _ConnectedBandCard(
+        key: const Key(WidgetKeys.connectedBandCard),
         provider: provider,
         controller: controller,
         activityServiceProvider: activityServiceProvider,
@@ -29,17 +30,21 @@ class DeviceSettingsConnectionSection extends StatelessWidget {
     }
     if (provider.getHealthConnected) {
       return _LinkedHealthCard(
+        key: const Key(WidgetKeys.linkedHealthCard),
         provider: provider,
         controller: controller,
         activityServiceProvider: activityServiceProvider,
       );
     }
-    return _NoDeviceConnectedSection(provider: provider);
+    return _NoDeviceConnectedSection(
+        key: const Key(WidgetKeys.noDeviceConnectedSection),
+        provider: provider);
   }
 }
 
 class _ConnectedBandCard extends StatelessWidget {
   const _ConnectedBandCard({
+    super.key,
     required this.provider,
     required this.controller,
     required this.activityServiceProvider,
@@ -111,7 +116,8 @@ class _ConnectedBandCard extends StatelessWidget {
                               ),
                               onPressed: () async {
                                 final isDeviceDisconnected =
-                                    await activityServiceProvider.disconnectDevice();
+                                    await activityServiceProvider
+                                        .disconnectDevice();
                                 debugPrintI(
                                   'isDeviceDisconnected>>> $isDeviceDisconnected',
                                 );
@@ -176,7 +182,7 @@ class _ConnectedBandCard extends StatelessWidget {
                         padding: const EdgeInsets.all(2.0),
                         child: RepaintBoundary(
                           child: BatteryIndicator(
-                            key: WidgetKeys.batteryIndicator,
+                            key: const Key(WidgetKeys.batteryIndicator),
                             batteryFromPhone: false,
                             style: BatteryIndicatorStyle.skeumorphism,
                             size: 20.0,
@@ -203,6 +209,7 @@ class _ConnectedBandCard extends StatelessWidget {
 
 class _LinkedHealthCard extends StatelessWidget {
   const _LinkedHealthCard({
+    super.key,
     required this.provider,
     required this.controller,
     required this.activityServiceProvider,
@@ -304,7 +311,7 @@ class _LinkedHealthCard extends StatelessWidget {
 }
 
 class _NoDeviceConnectedSection extends StatelessWidget {
-  const _NoDeviceConnectedSection({required this.provider});
+  const _NoDeviceConnectedSection({super.key, required this.provider});
 
   final ActivityServiceProvider provider;
 
@@ -329,7 +336,9 @@ class _NoDeviceConnectedSection extends StatelessWidget {
           ),
         ),
         GestureDetector(
-          onTap: () => GlobalMethods.navigateTo(const AddDevice()),
+          onTap: () => GlobalMethods.navigateTo(const AddDevice(
+            key: Key(WidgetKeys.addDevice),
+          )),
           child: Card(
             elevation: 2.0,
             margin: const EdgeInsets.all(4.0),

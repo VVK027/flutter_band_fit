@@ -5,9 +5,9 @@ class CupertinoButtonWidget extends StatelessWidget {
   final String title;
 
   const CupertinoButtonWidget({
+    super.key,
     required this.onPressed,
     required this.title,
-    super.key,
   });
 
   @override

@@ -11,7 +11,8 @@ class CommonDataResult {
   final DateTime time;
   final double dataPoint;
   final Color color;
-  CommonDataResult({required this.time, required this.dataPoint, required this.color});
+  CommonDataResult(
+      {required this.time, required this.dataPoint, required this.color});
 }
 
 class WeekStepsData {
@@ -19,7 +20,11 @@ class WeekStepsData {
   final DateTime dateTime;
   final int dataPoint;
   final Color color;
-  WeekStepsData({required this.weekName, required this.dateTime, required this.dataPoint, required this.color});
+  WeekStepsData(
+      {required this.weekName,
+      required this.dateTime,
+      required this.dataPoint,
+      required this.color});
 }
 
 class MonthStepsData {
@@ -27,14 +32,18 @@ class MonthStepsData {
   final int dayNumber;
   final int dataPoint;
   final Color color;
-  MonthStepsData({required this.dayNumber, required this.dataPoint, required this.color});
+  MonthStepsData(
+      {required this.dayNumber, required this.dataPoint, required this.color});
 }
 
 class BPData {
   final String highPressure;
   final String lowPressure;
   final DateTime time;
-  BPData({required this.highPressure, required this.lowPressure, required this.time});
+  BPData(
+      {required this.highPressure,
+      required this.lowPressure,
+      required this.time});
 }
 
 class WeeklySleepData {
@@ -44,7 +53,13 @@ class WeeklySleepData {
   final int startTimeNum;
   final int endTimeNum;
   final Color color;
-  WeeklySleepData({required this.weekName, required this.startTime, required this.endTime, required this.startTimeNum, required this.endTimeNum, required this.color});
+  WeeklySleepData(
+      {required this.weekName,
+      required this.startTime,
+      required this.endTime,
+      required this.startTimeNum,
+      required this.endTimeNum,
+      required this.color});
 }
 
 class MonthlySleepData {
@@ -55,7 +70,13 @@ class MonthlySleepData {
   final int startTimeNum;
   final int endTimeNum;
   final Color color;
-  MonthlySleepData({required this.dayNumber, required this.startTime, required this.endTime, required this.startTimeNum, required this.endTimeNum, required this.color});
+  MonthlySleepData(
+      {required this.dayNumber,
+      required this.startTime,
+      required this.endTime,
+      required this.startTimeNum,
+      required this.endTimeNum,
+      required this.color});
 }
 
 class StepsMainModel {
@@ -65,7 +86,12 @@ class StepsMainModel {
   final String calender;
   final List<BandStepsModel> dataList;
 
-  const StepsMainModel({required this.calender,required this.steps,required this.distance,required this.calories,required this.dataList});
+  const StepsMainModel(
+      {required this.calender,
+      required this.steps,
+      required this.distance,
+      required this.calories,
+      required this.dataList});
 
   factory StepsMainModel.fromJson(Map<String, dynamic> data) {
     final List<BandStepsModel> stepsList = [];
@@ -115,19 +141,19 @@ class SleepMainModel {
 
   const SleepMainModel(
       {required this.calender,
-        required  this.total,
-        required  this.light,
-        required  this.deep,
-        required this.awake,
-        required this.beginTime,
-        required this.endTime,
-        required this.totalNum,
-        required this.lightNum,
-        required this.deepNum,
-        required this.awakeNum,
-        required this.beginTimeNum,
-        required this.endTimeNum,
-        required this.dataList});
+      required this.total,
+      required this.light,
+      required this.deep,
+      required this.awake,
+      required this.beginTime,
+      required this.endTime,
+      required this.totalNum,
+      required this.lightNum,
+      required this.deepNum,
+      required this.awakeNum,
+      required this.beginTimeNum,
+      required this.endTimeNum,
+      required this.dataList});
 
   factory SleepMainModel.fromJson(Map<String, dynamic> data) {
     final List<BandSleepModel> sleepDataList = [];

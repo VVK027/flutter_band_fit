@@ -65,5 +65,6 @@ class WeatherDeviceCodeMapper {
     321: 204,
   };
 
-  static int map(int openWeatherCode) => _openWeatherToBand[openWeatherCode] ?? 201;
+  static int map(int openWeatherCode) =>
+      _openWeatherToBand[openWeatherCode] ?? 201;
 }

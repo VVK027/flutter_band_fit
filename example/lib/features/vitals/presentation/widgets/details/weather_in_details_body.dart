@@ -1,4 +1,5 @@
 import 'package:flutter_band_fit_app/core/exports/band_exports.dart';
+import 'package:flutter_band_fit_app/core/constants/widget_keys.dart';
 import 'package:flutter_band_fit_app/features/vitals/data/models/weather_model.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/weather_in_details_controller.dart';
 import 'package:intl/intl.dart';
@@ -19,13 +20,15 @@ class WeatherInDetailsBody extends GetView<WeatherInDetailsController> {
       ),
       body: controller.weatherData.isEmpty
           ? const Center(child: Text(textSomethingWrong))
-          : _WeatherContent(controller: controller),
+          : _WeatherContent(
+              key: const Key(WidgetKeys.weatherContent),
+              controller: controller),
     );
   }
 }
 
 class _WeatherContent extends StatelessWidget {
-  const _WeatherContent({required this.controller});
+  const _WeatherContent({super.key, required this.controller});
 
   final WeatherInDetailsController controller;
 

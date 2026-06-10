@@ -14,7 +14,9 @@ class ThemeToggleButton extends StatelessWidget {
         tooltip: controller.isDark ? textLightMode : textDarkMode,
         onPressed: controller.toggleTheme,
         icon: Icon(
-          controller.isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+          controller.isDark
+              ? Icons.light_mode_outlined
+              : Icons.dark_mode_outlined,
         ),
       ),
     );

@@ -77,8 +77,7 @@ class _CustomAssetsBarState extends State<CustomAssetsBar> {
       debugPrintI('assetsSum < _getValuesSum() - Check your values!');
       return const SizedBox.shrink();
     }
-    final double rad =
-        widget.radius > 0 ? widget.radius : (widget.height / 2);
+    final double rad = widget.radius > 0 ? widget.radius : (widget.height / 2);
     return RepaintBoundary(
       child: Container(
         clipBehavior: Clip.antiAlias,

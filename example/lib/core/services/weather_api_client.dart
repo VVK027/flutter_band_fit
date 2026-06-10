@@ -40,7 +40,8 @@ class WeatherApiClient {
     );
 
     try {
-      final response = await _client.get(uri).timeout(const Duration(seconds: 15));
+      final response =
+          await _client.get(uri).timeout(const Duration(seconds: 15));
       if (response.statusCode != 200) {
         debugPrintI('WeatherApiClient: HTTP ${response.statusCode}');
         return null;

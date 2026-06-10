@@ -13,7 +13,8 @@ class HeartRateDetailController extends GetxController
   final String displayTitle;
   final String activityLabel;
 
-  final VitalsDataRepository _vitalsDataRepository = Get.find<VitalsDataRepository>();
+  final VitalsDataRepository _vitalsDataRepository =
+      Get.find<VitalsDataRepository>();
 
   late final TooltipBehavior tooltipBehavior;
 

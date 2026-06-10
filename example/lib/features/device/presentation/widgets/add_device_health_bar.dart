@@ -83,7 +83,9 @@ class AddDeviceAppBar extends StatelessWidget implements PreferredSizeWidget {
           tooltip: textRefresh,
           onPressed: onRefresh,
         ),
-        const ThemeToggleButton(),
+        const ThemeToggleButton(
+          key: Key(WidgetKeys.themeToggleButton),
+        ),
       ],
     );
   }
