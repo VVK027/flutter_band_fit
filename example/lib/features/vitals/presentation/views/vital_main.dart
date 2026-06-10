@@ -21,6 +21,7 @@ class VitalMain extends GetView<VitalMainController> {
       },
       child: Scaffold(
         appBar: AppBrandAppBar(
+          key: const Key(WidgetKeys.appBrandAppBar),
           title: textBandFit,
           leading: Platform.isIOS
               ? IconButton(
@@ -29,7 +30,9 @@ class VitalMain extends GetView<VitalMainController> {
                 )
               : null,
           actions: [
-            const ThemeToggleButton(),
+            const ThemeToggleButton(
+              key: Key(WidgetKeys.themeToggleButton),
+            ),
             IconButton(
               tooltip: textSettings,
               icon: Image.asset(
@@ -37,7 +40,9 @@ class VitalMain extends GetView<VitalMainController> {
                 width: 28,
                 height: 28,
               ),
-              onPressed: () => GlobalMethods.navigateTo(const DeviceSettings()),
+              onPressed: () => GlobalMethods.navigateTo(const DeviceSettings(
+                key: Key(WidgetKeys.deviceSettings),
+              )),
             ),
             const SizedBox(width: 4),
           ],
@@ -49,7 +54,9 @@ class VitalMain extends GetView<VitalMainController> {
                     child: CircularProgressIndicator(),
                   ),
                 )
-              : const _VitalMainBody(),
+              : const _VitalMainBody(
+                  key: Key(WidgetKeys.vitalMainBody),
+                ),
         ),
       ),
     );
@@ -58,7 +65,7 @@ class VitalMain extends GetView<VitalMainController> {
 
 /// Provider-driven dashboard sections — scoped below the app bar so chrome does not rebuild.
 class _VitalMainBody extends GetView<VitalMainController> {
-  const _VitalMainBody();
+  const _VitalMainBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +74,7 @@ class _VitalMainBody extends GetView<VitalMainController> {
         GetBuilder<ActivityServiceProvider>(
           id: ActivityServiceProvider.dashboardStepsId,
           builder: (provider) => VitalMainStepsCard(
+            key: const Key(WidgetKeys.vitalMainStepsCard),
             provider: provider,
             onOpenSteps: openStepsDetail,
             onOpenWeather: openWeatherDetails,
@@ -79,15 +87,21 @@ class _VitalMainBody extends GetView<VitalMainController> {
           builder: (provider) {
             if (provider.isSyncProgress) {
               return VitalMainSyncingBanner(
+                key: const Key(WidgetKeys.vitalMainSyncingBanner),
                 rotation: controller.syncController,
-                onTap: () => GlobalMethods.navigateTo(const AddDevice()),
+                onTap: () => GlobalMethods.navigateTo(const AddDevice(
+                  key: Key(WidgetKeys.addDevice),
+                )),
               );
             }
             if (!provider.getDeviceConnected &&
                 provider.getOverAllStepsData.isEmpty &&
                 provider.getSteps <= 0) {
               return VitalMainAddDeviceBanner(
-                onTap: () => GlobalMethods.navigateTo(const AddDevice()),
+                key: const Key(WidgetKeys.vitalMainAddDeviceBanner),
+                onTap: () => GlobalMethods.navigateTo(const AddDevice(
+                  key: Key(WidgetKeys.addDevice),
+                )),
               );
             }
             return const SizedBox.shrink();
@@ -96,6 +110,7 @@ class _VitalMainBody extends GetView<VitalMainController> {
         GetBuilder<ActivityServiceProvider>(
           id: ActivityServiceProvider.dashboardVitalsId,
           builder: (provider) => VitalMainVitalList(
+            key: const Key(WidgetKeys.vitalMainVitalList),
             provider: provider,
             isSyncBlocked: () => provider.isSyncProgress,
             onSyncBlockedTap: controller.showSyncMessage,

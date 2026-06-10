@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_band_fit_app/core/constants/widget_keys.dart';
 import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
 import 'package:flutter_band_fit_app/core/utils/shared_service.dart';
 import 'package:flutter_band_fit_app/core/widgets/themed_picker_bottom_sheet.dart';
@@ -17,7 +18,11 @@ class ProfileUpdateBody extends StatelessWidget {
         appBar: AppBar(
           centerTitle: true,
           title: const Text(textNeedProfileUpdate),
-          actions: const [ThemeToggleButton()],
+          actions: const [
+            ThemeToggleButton(
+              key: Key(WidgetKeys.themeToggleButton),
+            )
+          ],
         ),
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -38,7 +43,8 @@ class ProfileUpdateBody extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       child: Padding(
                         padding: const EdgeInsets.all(2.0),
-                        child: Text('$textDear ${controller.userFullName}',
+                        child: Text(
+                          '$textDear ${controller.userFullName}',
                           style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.start,
@@ -63,44 +69,51 @@ class ProfileUpdateBody extends StatelessWidget {
                 onTap: () async {
                   String? data = await selectGender(controller.selectedGender);
                   if (data!.isNotEmpty) {
-                    
-                      controller.selectedGender = data;
-                      // _textEditingController.text = pickedDate.toString();
-                    
-                    controller.update();                  }
+                    controller.selectedGender = data;
+                    // _textEditingController.text = pickedDate.toString();
+
+                    controller.update();
+                  }
                   debugPrintI('_selectedGender>> $controller.selectedGender');
                 },
                 child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 4.0, horizontal: 2.0),
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      const Expanded(child: Text(textGender, style: TextStyle(fontSize: 16))),
-                      Text(controller.selectedGender.toUpperCase(), style: const TextStyle(fontSize: 16, color: Colors.blueAccent)),
+                      const Expanded(
+                          child:
+                              Text(textGender, style: TextStyle(fontSize: 16))),
+                      Text(controller.selectedGender.toUpperCase(),
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.blueAccent)),
                     ],
                   ),
                 ),
               ),
               const Divider(// thickness: 1.0,
-              ),
+                  ),
               GestureDetector(
                 onTap: () async {
                   // DateTime tempPickedDate =  DateTime.now();
 
                   DateTime? data = await selectDate(controller.selectedDate);
                   if (data != DateTime.now()) {
-                    
-                      controller.selectedDate = data!;
-                      // _textEditingController.text = pickedDate.toString();
-                    
-                    controller.update();                  }
-                  debugPrintI('controller.selectedDate>> $controller.selectedDate');
+                    controller.selectedDate = data!;
+                    // _textEditingController.text = pickedDate.toString();
+
+                    controller.update();
+                  }
+                  debugPrintI(
+                      'controller.selectedDate>> $controller.selectedDate');
 
                   debugPrintI('data>> $data');
                 },
                 child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 4.0, horizontal: 2.0),
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -109,7 +122,11 @@ class ProfileUpdateBody extends StatelessWidget {
                         child: Text(textDateOfBirth, //'Date of Birth',
                             style: TextStyle(fontSize: 16)),
                       ),
-                      Text(controller.selectedDate.toString().trim().split(' ')[0],
+                      Text(
+                          controller.selectedDate
+                              .toString()
+                              .trim()
+                              .split(' ')[0],
                           style: const TextStyle(
                               fontSize: 16, color: Colors.blueAccent)),
                     ],
@@ -117,18 +134,19 @@ class ProfileUpdateBody extends StatelessWidget {
                 ),
               ),
               const Divider(// thickness: 1.0,
-              ),
+                  ),
               GestureDetector(
                 onTap: () async {
                   String? data = await selectHeight(controller.selectedHeight);
                   if (data!.isNotEmpty) {
-                    
-                      controller.selectedHeight = data;
-                      controller.calculateBMI();
-                      // _textEditingController.text = pickedDate.toString();
-                    
-                    controller.update();                  }
-                  debugPrintI('controller.selectedHeight>> $controller.selectedHeight');
+                    controller.selectedHeight = data;
+                    controller.calculateBMI();
+                    // _textEditingController.text = pickedDate.toString();
+
+                    controller.update();
+                  }
+                  debugPrintI(
+                      'controller.selectedHeight>> $controller.selectedHeight');
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(
@@ -149,18 +167,19 @@ class ProfileUpdateBody extends StatelessWidget {
                 ),
               ),
               const Divider(// thickness: 1.0,
-              ),
+                  ),
               GestureDetector(
                 onTap: () async {
                   String? data = await selectWeight(controller.selectedWeight);
                   if (data!.isNotEmpty) {
-                    
-                      controller.selectedWeight = data;
-                      controller.calculateBMI();
-                      // _textEditingController.text = pickedDate.toString();
-                    
-                    controller.update();                  }
-                  debugPrintI('controller.selectedWeight>> $controller.selectedWeight');
+                    controller.selectedWeight = data;
+                    controller.calculateBMI();
+                    // _textEditingController.text = pickedDate.toString();
+
+                    controller.update();
+                  }
+                  debugPrintI(
+                      'controller.selectedWeight>> $controller.selectedWeight');
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(
@@ -170,8 +189,8 @@ class ProfileUpdateBody extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       const Expanded(
-                          child: Text(textWeight,
-                              style: TextStyle(fontSize: 16))),
+                          child:
+                              Text(textWeight, style: TextStyle(fontSize: 16))),
                       Text('${controller.selectedWeight} kg',
                           style: const TextStyle(
                               fontSize: 16, color: Colors.blueAccent)),
@@ -180,7 +199,7 @@ class ProfileUpdateBody extends StatelessWidget {
                 ),
               ),
               const Divider(// thickness: 1.0,
-              ),
+                  ),
               GestureDetector(
                 onTap: () async {},
                 child: Container(
@@ -191,48 +210,48 @@ class ProfileUpdateBody extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       const Expanded(
-                          child: Text(textBMI,
-                              style: TextStyle(fontSize: 16))),
+                          child: Text(textBMI, style: TextStyle(fontSize: 16))),
                       Row(
-                          children: [
-                            Text(controller.myBMI,
-                                style: const TextStyle(
-                                    fontSize: 16, color: Colors.blueAccent)),
-                            const SizedBox(
-                              width: 8,
-                            ),
-                            /*Text(Utils.tr(context, controller.bmiStatus),
+                        children: [
+                          Text(controller.myBMI,
+                              style: const TextStyle(
+                                  fontSize: 16, color: Colors.blueAccent)),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          /*Text(Utils.tr(context, controller.bmiStatus),
                                 style: TextStyle(
                                     fontSize: 16, color: GlobalMethods.getColor(controller.bmiStatus))),*/
-                            /*SizedBox(
+                          /*SizedBox(
                               width: 4,
                             ),*/
-                            Container(
-                              decoration: BoxDecoration(
-                                  color: GlobalMethods.getColor(controller.bmiStatus),
-                                  shape: BoxShape.circle),
-                              height: 16,
-                              width: 16,
-                            ),
-                          ],
-                        ),
+                          Container(
+                            decoration: BoxDecoration(
+                                color: GlobalMethods.getColor(
+                                    controller.bmiStatus),
+                                shape: BoxShape.circle),
+                            height: 16,
+                            width: 16,
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
               ),
               const Divider(// thickness: 1.0,
-              ),
+                  ),
               GestureDetector(
                 onTap: () async {
                   //String selectedGoal ='';
                   String data = await GlobalMethods.selectGoalSteps(
                       context, controller.selectedSteps);
                   if (data.isNotEmpty) {
-                    
-                      controller.selectedSteps = data;
-                      // _textEditingController.text = pickedDate.toString();
-                    
-                    controller.update();                  }
+                    controller.selectedSteps = data;
+                    // _textEditingController.text = pickedDate.toString();
+
+                    controller.update();
+                  }
                   debugPrintI('selectedGoal>> $controller.selectedSteps');
                   // DateTime tempPickedDate =  DateTime.now();
                   /*DateTime data = await selectDate(controller.selectedDate);
@@ -264,19 +283,21 @@ class ProfileUpdateBody extends StatelessWidget {
                 ),
               ),
               const Divider(
-                // thickness: 1.0,
-              ),
+                  // thickness: 1.0,
+                  ),
               GestureDetector(
                 onTap: () async {
                   //String selectedGoal ='';
-                  String? data = await selectRaiseUpSeconds(controller.selectedScreenOffSecs);
+                  String? data = await selectRaiseUpSeconds(
+                      controller.selectedScreenOffSecs);
                   if (data!.isNotEmpty) {
-                    
-                      controller.selectedScreenOffSecs = data;
-                      // _textEditingController.text = pickedDate.toString();
-                    
-                    controller.update();                  }
-                  debugPrintI('_selectedRaiseUpSecs>> $controller.selectedScreenOffSecs');
+                    controller.selectedScreenOffSecs = data;
+                    // _textEditingController.text = pickedDate.toString();
+
+                    controller.update();
+                  }
+                  debugPrintI(
+                      '_selectedRaiseUpSecs>> $controller.selectedScreenOffSecs');
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(
@@ -286,10 +307,12 @@ class ProfileUpdateBody extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       const Expanded(
-                        child: Text(textBandScreenOffTime, //'Band Screen Off Time',
+                        child: Text(
+                            textBandScreenOffTime, //'Band Screen Off Time',
                             style: TextStyle(fontSize: 16)),
                       ),
-                      Text('${controller.selectedScreenOffSecs} $textSecondsShort',
+                      Text(
+                          '${controller.selectedScreenOffSecs} $textSecondsShort',
                           style: const TextStyle(
                               fontSize: 16, color: Colors.blueAccent)),
                     ],
@@ -297,19 +320,21 @@ class ProfileUpdateBody extends StatelessWidget {
                 ),
               ),
               const Divider(
-                // thickness: 1.0,
-              ),
+                  // thickness: 1.0,
+                  ),
               GestureDetector(
                 onTap: () async {
                   //String selectedGoal ='';
-                  String? data = await selectTemperatureUnits(controller.selectedTemperatureUnits);
+                  String? data = await selectTemperatureUnits(
+                      controller.selectedTemperatureUnits);
                   if (data!.isNotEmpty) {
-                    
-                      controller.selectedTemperatureUnits = data;
-                      // _textEditingController.text = pickedDate.toString();
-                    
-                    controller.update();                  }
-                  debugPrintI('controller.selectedTemperatureUnits>> $controller.selectedTemperatureUnits');
+                    controller.selectedTemperatureUnits = data;
+                    // _textEditingController.text = pickedDate.toString();
+
+                    controller.update();
+                  }
+                  debugPrintI(
+                      'controller.selectedTemperatureUnits>> $controller.selectedTemperatureUnits');
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(
@@ -320,17 +345,20 @@ class ProfileUpdateBody extends StatelessWidget {
                     mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
                       const Expanded(
-                        child: Text(textSetTemperatureUnit, //'Set Temperature Units',
+                        child: Text(
+                            textSetTemperatureUnit, //'Set Temperature Units',
                             style: TextStyle(fontSize: 16)),
                       ),
-                      Text(controller.selectedTemperatureUnits, style: const TextStyle(fontSize: 16, color: Colors.blueAccent)),
+                      Text(controller.selectedTemperatureUnits,
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.blueAccent)),
                     ],
                   ),
                 ),
               ),
               const Divider(
-                // thickness: 1.0,
-              ),
+                  // thickness: 1.0,
+                  ),
               GestureDetector(
                 onTap: () {
                   /*showRoundedModalBottomSheet(
@@ -362,18 +390,18 @@ class ProfileUpdateBody extends StatelessWidget {
                       child: CupertinoSwitch(
                         value: controller.selectedRaiseWakeUp,
                         onChanged: (bool value) {
-                          
-                            controller.selectedRaiseWakeUp = value;
-                          
-                    controller.update();                        },
+                          controller.selectedRaiseWakeUp = value;
+
+                          controller.update();
+                        },
                       ),
                     ),
                   ],
                 ),
               ),
               const Divider(
-                // thickness: 1.0,
-              ),
+                  // thickness: 1.0,
+                  ),
               const SizedBox(
                 height: 21.0,
               ),
@@ -383,43 +411,57 @@ class ProfileUpdateBody extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
           mini: true,
           onPressed: () async {
-            debugPrintI('H: $controller.selectedHeight, W: $controller.selectedWeight,DOB: $controller.selectedDate, G: $controller.selectedGender');
+            debugPrintI(
+                'H: $controller.selectedHeight, W: $controller.selectedWeight,DOB: $controller.selectedDate, G: $controller.selectedGender');
             debugPrintI('gender: ${controller.gender}, dob: ${controller.dob}');
 
             String submitDateOfBirth = '';
-            try{
-              if (controller.dob  != 'N/A'  &&  controller.dob.isNotEmpty){
+            try {
+              if (controller.dob != 'N/A' && controller.dob.isNotEmpty) {
                 DateTime pastDOB = DateTime.parse(controller.dob).toLocal();
-                DateTime currentDOB = DateTime(controller.selectedDate.year, controller.selectedDate.month, controller.selectedDate.day);
+                DateTime currentDOB = DateTime(controller.selectedDate.year,
+                    controller.selectedDate.month, controller.selectedDate.day);
                 //debugPrintI('pastDOB>> $pastDOB');
                 //debugPrintI('currentDOB>> $currentDOB');
                 int duration = pastDOB.difference(currentDOB).inDays;
                 debugPrintI('duration>> $duration');
-                if (duration < 0 ) {
+                if (duration < 0) {
                   submitDateOfBirth = currentDOB.toString();
-                }else if (duration > 0 ) {
+                } else if (duration > 0) {
                   submitDateOfBirth = currentDOB.toString();
-                }else{
+                } else {
                   // no dob update
                   submitDateOfBirth = '';
                 }
-              }else{
+              } else {
                 submitDateOfBirth = controller.selectedDate.toString();
               }
               //debugPrintI('submitDateOfBirth>> $submitDateOfBirth');
-            }catch(exp){
+            } catch (exp) {
               debugPrintI('dateOfBirthExp>> $exp');
             }
 
-            bool isConnected = await controller.activityProvider.checkIsDeviceConnected();
-            await controller.activityProvider.updateTargetedSteps(controller.selectedSteps);
-            await controller.activityProvider.setScreenOffTime(controller.selectedScreenOffSecs);
-            await controller.activityProvider.setTemperatureUnits(controller.selectedTemperatureUnits.toString().trim());
-            await controller.activityProvider.setRaiseHandWakeUp(controller.selectedRaiseWakeUp);
-            await controller.activityProvider.updateBMIStatus(controller.myBMI, controller.bmiStatus);
+            bool isConnected =
+                await controller.activityProvider.checkIsDeviceConnected();
+            await controller.activityProvider
+                .updateTargetedSteps(controller.selectedSteps);
+            await controller.activityProvider
+                .setScreenOffTime(controller.selectedScreenOffSecs);
+            await controller.activityProvider.setTemperatureUnits(
+                controller.selectedTemperatureUnits.toString().trim());
+            await controller.activityProvider
+                .setRaiseHandWakeUp(controller.selectedRaiseWakeUp);
+            await controller.activityProvider
+                .updateBMIStatus(controller.myBMI, controller.bmiStatus);
 
-            String dob = submitDateOfBirth.isEmpty? controller.selectedDate.toString(): submitDateOfBirth;
-            await controller.activityProvider.updateWatchProfile(controller.selectedHeight, controller.selectedWeight, controller.selectedGender.toLowerCase(), dob);
+            String dob = submitDateOfBirth.isEmpty
+                ? controller.selectedDate.toString()
+                : submitDateOfBirth;
+            await controller.activityProvider.updateWatchProfile(
+                controller.selectedHeight,
+                controller.selectedWeight,
+                controller.selectedGender.toLowerCase(),
+                dob);
 
             if (controller.gender != controller.selectedGender &&
                 submitDateOfBirth.isNotEmpty) {
@@ -437,10 +479,10 @@ class ProfileUpdateBody extends StatelessWidget {
               await controller.activityProvider.updateUserParamsWatch(false);
             }
             await sharedService.setProfileUpdate(true);
-            debugPrintI('profilecontroller.activityProvider.getDeviceSWName>> ${controller.activityProvider.getDeviceSWName}');
+            debugPrintI(
+                'profilecontroller.activityProvider.getDeviceSWName>> ${controller.activityProvider.getDeviceSWName}');
             if (controller.activityProvider.getDeviceSWName != googleFitKey &&
-                controller.activityProvider.getDeviceSWName !=
-                    appleHealthKey &&
+                controller.activityProvider.getDeviceSWName != appleHealthKey &&
                 controller.fromSettings) {
               GlobalMethods.navigatePopBack();
             }
@@ -452,11 +494,9 @@ class ProfileUpdateBody extends StatelessWidget {
     );
   }
 
-
   Future<void> updateUserDOBGender(String dateOfBirth, String gender) async {
-
-    String dobUpdate ='';
-    String genderUpdate ='';
+    String dobUpdate = '';
+    String genderUpdate = '';
     if (dateOfBirth.isNotEmpty) {
       //debugPrintI('dateOfBirth12>> $dateOfBirth');
       dobUpdate = DateTime.parse(dateOfBirth).toUtc().toIso8601String();
@@ -473,43 +513,43 @@ class ProfileUpdateBody extends StatelessWidget {
       context: Get.context!,
       builder: (context) {
         return Column(
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  CupertinoButtonWidget(
-                      title:cancelText,
-                      onPressed: () {
-                        // Navigator.of(context).pop();
-                        GlobalMethods.navigatePopBack();
-                      },
-                    ),
-                    CupertinoButtonWidget(
-                      title: doneText,
-                      onPressed: () {
-                        //Navigator.of(context).pop();
-                        Navigator.of(context).pop(tempPickedDate);
-                      },
-                    ),
-                  ],
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                CupertinoButtonWidget(
+                  title: cancelText,
+                  onPressed: () {
+                    // Navigator.of(context).pop();
+                    GlobalMethods.navigatePopBack();
+                  },
                 ),
-              const Divider(
-                height: 0,
-                thickness: 1,
-              ),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.all(8.0),
-                  child: CupertinoDatePicker(
-                    initialDateTime: tempPickedDate,
-                    mode: CupertinoDatePickerMode.date,
-                    onDateTimeChanged: (DateTime dateTime) {
-                      tempPickedDate = dateTime;
-                    },
-                  ),
+                CupertinoButtonWidget(
+                  title: doneText,
+                  onPressed: () {
+                    //Navigator.of(context).pop();
+                    Navigator.of(context).pop(tempPickedDate);
+                  },
+                ),
+              ],
+            ),
+            const Divider(
+              height: 0,
+              thickness: 1,
+            ),
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.all(8.0),
+                child: CupertinoDatePicker(
+                  initialDateTime: tempPickedDate,
+                  mode: CupertinoDatePickerMode.date,
+                  onDateTimeChanged: (DateTime dateTime) {
+                    tempPickedDate = dateTime;
+                  },
                 ),
               ),
-            ],
+            ),
+          ],
         );
       },
     );
@@ -526,62 +566,64 @@ class ProfileUpdateBody extends StatelessWidget {
       context: Get.context!,
       builder: (context) {
         return Column(
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  CupertinoButtonWidget(
-                      title:cancelText,
-                      onPressed: () {
-                        // Navigator.of(context).pop();
-                        GlobalMethods.navigatePopBack();
-                      },
-                    ),
-                    CupertinoButtonWidget(
-                      title: doneText,
-                      onPressed: () {
-                        //Navigator.of(context).pop();
-                        Navigator.of(context).pop(tempSelectedDate);
-                      },
-                    ),
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                CupertinoButtonWidget(
+                  title: cancelText,
+                  onPressed: () {
+                    // Navigator.of(context).pop();
+                    GlobalMethods.navigatePopBack();
+                  },
+                ),
+                CupertinoButtonWidget(
+                  title: doneText,
+                  onPressed: () {
+                    //Navigator.of(context).pop();
+                    Navigator.of(context).pop(tempSelectedDate);
+                  },
+                ),
+              ],
+            ),
+            const Divider(
+              height: 0,
+              thickness: 1,
+            ),
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.all(8.0),
+                child: CupertinoPicker(
+                  //offAxisFraction: 0.18, // 0.45 is the Max
+                  magnification: 2.35 / 2.1,
+                  useMagnifier: true,
+                  squeeze: 1.25,
+                  onSelectedItemChanged: (value) {
+                    debugPrintI('value>> $value');
+                    //tempSelectedDate
+                    if (value == 1) {
+                      tempSelectedDate = 'female';
+                    } else {
+                      tempSelectedDate = 'male';
+                    }
+                  },
+                  selectionOverlay:
+                      const CupertinoPickerDefaultSelectionOverlay(),
+                  backgroundColor: themedPickerBackground(context),
+                  itemExtent: 28,
+                  scrollController: FixedExtentScrollController(
+                      initialItem: tempSelectedDate == 'female' ? 1 : 0),
+                  //itemExtent: 10,
+                  children: [
+                    Text(textMale.toUpperCase(),
+                        style: themedPickerItemStyle(context)),
+                    Text(textFemale.toUpperCase(),
+                        style: themedPickerItemStyle(context)),
                   ],
                 ),
-              const Divider(
-                height: 0,
-                thickness: 1,
               ),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.all(8.0),
-                  child: CupertinoPicker(
-                    //offAxisFraction: 0.18, // 0.45 is the Max
-                    magnification: 2.35 / 2.1,
-                    useMagnifier: true,
-                    squeeze: 1.25,
-                    onSelectedItemChanged: (value) {
-                      debugPrintI('value>> $value');
-                      //tempSelectedDate
-                      if (value == 1) {
-                        tempSelectedDate = 'female';
-                      } else {
-                        tempSelectedDate = 'male';
-                      }
-                    },
-                    selectionOverlay:
-                    const CupertinoPickerDefaultSelectionOverlay(),
-                    backgroundColor: themedPickerBackground(context),
-                    itemExtent: 28,
-                    scrollController: FixedExtentScrollController(
-                        initialItem: tempSelectedDate == 'female' ? 1 : 0),
-                    //itemExtent: 10,
-                    children: [
-                      Text(textMale.toUpperCase(), style: themedPickerItemStyle(context)),
-                      Text(textFemale.toUpperCase(), style: themedPickerItemStyle(context)),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+            ),
+          ],
         );
       },
     );
@@ -598,56 +640,57 @@ class ProfileUpdateBody extends StatelessWidget {
       context: Get.context!,
       builder: (context) {
         return Column(
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  CupertinoButtonWidget(
-                      title:cancelText,
-                      onPressed: () {
-                        // Navigator.of(context).pop();
-                        GlobalMethods.navigatePopBack();
-                      },
-                    ),
-                    CupertinoButtonWidget(
-                      title: doneText,
-                      onPressed: () {
-                        //Navigator.of(context).pop();
-                        Navigator.of(context).pop(tempSelectedHeight);
-                      },
-                    ),
-                  ],
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                CupertinoButtonWidget(
+                  title: cancelText,
+                  onPressed: () {
+                    // Navigator.of(context).pop();
+                    GlobalMethods.navigatePopBack();
+                  },
                 ),
-              const Divider(
-                height: 0,
-                thickness: 1,
-              ),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.all(8.0),
-                  child: CupertinoPicker(
-                    //offAxisFraction: 0.18, // 0.45 is the Max
-                    magnification: 2.35 / 2.1,
-                    useMagnifier: true,
-                    squeeze: 1.25,
-                    onSelectedItemChanged: (value) {
-                      debugPrintI('value_index>> $value');
-                      tempSelectedHeight = (value + heightMin).toString();
-                    },
-                    selectionOverlay:
-                    const CupertinoPickerDefaultSelectionOverlay(),
-                    backgroundColor: themedPickerBackground(context),
-                    itemExtent: 28,
-                    scrollController: FixedExtentScrollController(
-                        initialItem: int.parse(tempSelectedHeight) - heightMin),
-                    //itemExtent: 10,
-                    children: controller.defaultHeightList
-                        .map((e) => Text(e, style: themedPickerItemStyle(context)))
-                        .toList(),
-                  ),
+                CupertinoButtonWidget(
+                  title: doneText,
+                  onPressed: () {
+                    //Navigator.of(context).pop();
+                    Navigator.of(context).pop(tempSelectedHeight);
+                  },
+                ),
+              ],
+            ),
+            const Divider(
+              height: 0,
+              thickness: 1,
+            ),
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.all(8.0),
+                child: CupertinoPicker(
+                  //offAxisFraction: 0.18, // 0.45 is the Max
+                  magnification: 2.35 / 2.1,
+                  useMagnifier: true,
+                  squeeze: 1.25,
+                  onSelectedItemChanged: (value) {
+                    debugPrintI('value_index>> $value');
+                    tempSelectedHeight = (value + heightMin).toString();
+                  },
+                  selectionOverlay:
+                      const CupertinoPickerDefaultSelectionOverlay(),
+                  backgroundColor: themedPickerBackground(context),
+                  itemExtent: 28,
+                  scrollController: FixedExtentScrollController(
+                      initialItem: int.parse(tempSelectedHeight) - heightMin),
+                  //itemExtent: 10,
+                  children: controller.defaultHeightList
+                      .map(
+                          (e) => Text(e, style: themedPickerItemStyle(context)))
+                      .toList(),
                 ),
               ),
-            ],
+            ),
+          ],
         );
       },
     );
@@ -664,56 +707,57 @@ class ProfileUpdateBody extends StatelessWidget {
       context: Get.context!,
       builder: (context) {
         return Column(
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  CupertinoButtonWidget(
-                      title:cancelText,
-                      onPressed: () {
-                        //Navigator.of(context).pop();
-                        GlobalMethods.navigatePopBack();
-                      },
-                    ),
-                    CupertinoButtonWidget(
-                      title: doneText,
-                      onPressed: () {
-                        //Navigator.of(context).pop();
-                        Navigator.of(context).pop(tempSelectedWeight);
-                      },
-                    ),
-                  ],
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                CupertinoButtonWidget(
+                  title: cancelText,
+                  onPressed: () {
+                    //Navigator.of(context).pop();
+                    GlobalMethods.navigatePopBack();
+                  },
                 ),
-              const Divider(
-                height: 0,
-                thickness: 1,
-              ),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.all(8.0),
-                  child: CupertinoPicker(
-                    //offAxisFraction: 0.18, // 0.45 is the Max
-                    magnification: 2.35 / 2.1,
-                    useMagnifier: true,
-                    squeeze: 1.25,
-                    onSelectedItemChanged: (value) {
-                      debugPrintI('value_index>> $value');
-                      tempSelectedWeight = (value + weightMin).toString();
-                    },
-                    selectionOverlay:
-                    const CupertinoPickerDefaultSelectionOverlay(),
-                    backgroundColor: themedPickerBackground(context),
-                    itemExtent: 28,
-                    scrollController: FixedExtentScrollController(
-                        initialItem: int.parse(tempSelectedWeight) - weightMin),
-                    //itemExtent: 10,
-                    children: controller.defaultWeightList
-                        .map((e) => Text(e, style: themedPickerItemStyle(context)))
-                        .toList(),
-                  ),
+                CupertinoButtonWidget(
+                  title: doneText,
+                  onPressed: () {
+                    //Navigator.of(context).pop();
+                    Navigator.of(context).pop(tempSelectedWeight);
+                  },
+                ),
+              ],
+            ),
+            const Divider(
+              height: 0,
+              thickness: 1,
+            ),
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.all(8.0),
+                child: CupertinoPicker(
+                  //offAxisFraction: 0.18, // 0.45 is the Max
+                  magnification: 2.35 / 2.1,
+                  useMagnifier: true,
+                  squeeze: 1.25,
+                  onSelectedItemChanged: (value) {
+                    debugPrintI('value_index>> $value');
+                    tempSelectedWeight = (value + weightMin).toString();
+                  },
+                  selectionOverlay:
+                      const CupertinoPickerDefaultSelectionOverlay(),
+                  backgroundColor: themedPickerBackground(context),
+                  itemExtent: 28,
+                  scrollController: FixedExtentScrollController(
+                      initialItem: int.parse(tempSelectedWeight) - weightMin),
+                  //itemExtent: 10,
+                  children: controller.defaultWeightList
+                      .map(
+                          (e) => Text(e, style: themedPickerItemStyle(context)))
+                      .toList(),
                 ),
               ),
-            ],
+            ),
+          ],
         );
       },
     );
@@ -730,65 +774,65 @@ class ProfileUpdateBody extends StatelessWidget {
       context: Get.context!,
       builder: (context) {
         return Column(
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  CupertinoButtonWidget(
-                      title:cancelText,
-                      onPressed: () {
-                        //Navigator.of(context).pop();
-                        GlobalMethods.navigatePopBack();
-                      },
-                    ),
-                    CupertinoButtonWidget(
-                      title: doneText,
-                      onPressed: () {
-                        //Navigator.of(context).pop();
-                        Navigator.of(context).pop(tempScreenOffSecs);
-                      },
-                    ),
-                  ],
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                CupertinoButtonWidget(
+                  title: cancelText,
+                  onPressed: () {
+                    //Navigator.of(context).pop();
+                    GlobalMethods.navigatePopBack();
+                  },
                 ),
-              const Divider(
-                height: 0,
-                thickness: 1,
-              ),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.all(8.0),
-                  child: CupertinoPicker(
-                    //offAxisFraction: 0.18, // 0.45 is the Max
-                    magnification: 2.35 / 2.1,
-                    useMagnifier: true,
-                    squeeze: 1.25,
-                    onSelectedItemChanged: (value) {
-                      debugPrintI('value_index>> $value');
-                      //tempScreenOffSecs = value.toString();
-                      //tempScreenOffSecs = (value + screenOffTimeMin).toString();
-                      tempScreenOffSecs =
-                          screenOffSecondsList[value].toString();
-                    },
-                    selectionOverlay:
-                    const CupertinoPickerDefaultSelectionOverlay(),
-                    backgroundColor: themedPickerBackground(context),
-                    itemExtent: 28,
-                    scrollController: FixedExtentScrollController(
-                        initialItem:
-                        screenOffSecondsList.indexOf(tempScreenOffSecs)),
-                    //scrollController: FixedExtentScrollController(
-                    //initialItem: int.parse(tempScreenOffSecs),
-                    //  initialItem: int.parse(tempScreenOffSecs) - screenOffTimeMin
+                CupertinoButtonWidget(
+                  title: doneText,
+                  onPressed: () {
+                    //Navigator.of(context).pop();
+                    Navigator.of(context).pop(tempScreenOffSecs);
+                  },
+                ),
+              ],
+            ),
+            const Divider(
+              height: 0,
+              thickness: 1,
+            ),
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.all(8.0),
+                child: CupertinoPicker(
+                  //offAxisFraction: 0.18, // 0.45 is the Max
+                  magnification: 2.35 / 2.1,
+                  useMagnifier: true,
+                  squeeze: 1.25,
+                  onSelectedItemChanged: (value) {
+                    debugPrintI('value_index>> $value');
+                    //tempScreenOffSecs = value.toString();
+                    //tempScreenOffSecs = (value + screenOffTimeMin).toString();
+                    tempScreenOffSecs = screenOffSecondsList[value].toString();
+                  },
+                  selectionOverlay:
+                      const CupertinoPickerDefaultSelectionOverlay(),
+                  backgroundColor: themedPickerBackground(context),
+                  itemExtent: 28,
+                  scrollController: FixedExtentScrollController(
+                      initialItem:
+                          screenOffSecondsList.indexOf(tempScreenOffSecs)),
+                  //scrollController: FixedExtentScrollController(
+                  //initialItem: int.parse(tempScreenOffSecs),
+                  //  initialItem: int.parse(tempScreenOffSecs) - screenOffTimeMin
 
-                    // ),
-                    //itemExtent: 10,
-                    children: screenOffSecondsList
-                        .map((e) => Text(e, style: themedPickerItemStyle(context)))
-                        .toList(),
-                  ),
+                  // ),
+                  //itemExtent: 10,
+                  children: screenOffSecondsList
+                      .map(
+                          (e) => Text(e, style: themedPickerItemStyle(context)))
+                      .toList(),
                 ),
               ),
-            ],
+            ),
+          ],
         );
       },
     );
@@ -805,62 +849,63 @@ class ProfileUpdateBody extends StatelessWidget {
       context: Get.context!,
       builder: (context) {
         return Column(
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  CupertinoButtonWidget(
-                      title:cancelText,
-                      onPressed: () {
-                        //Navigator.of(context).pop();
-                        GlobalMethods.navigatePopBack();
-                      },
-                    ),
-                    CupertinoButtonWidget(
-                      title: doneText,
-                      onPressed: () {
-                        //Navigator.of(context).pop();
-                        Navigator.of(context).pop(tempUnits);
-                      },
-                    ),
-                  ],
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                CupertinoButtonWidget(
+                  title: cancelText,
+                  onPressed: () {
+                    //Navigator.of(context).pop();
+                    GlobalMethods.navigatePopBack();
+                  },
                 ),
-              const Divider(
-                height: 0,
-                thickness: 1,
-              ),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.all(8.0),
-                  child: CupertinoPicker(
-                    //offAxisFraction: 0.18, // 0.45 is the Max
-                    magnification: 2.35 / 2.1,
-                    useMagnifier: true,
-                    squeeze: 1.25,
-                    onSelectedItemChanged: (value) {
-                      debugPrintI('value_index>> $value');
-                      //tempScreenOffSecs = value.toString();
-                      //tempScreenOffSecs = (value + screenOffTimeMin).toString();
-                      tempUnits = temperatureUnitsList[value].toString();
-                    },
-                    selectionOverlay:
-                    const CupertinoPickerDefaultSelectionOverlay(),
-                    backgroundColor: themedPickerBackground(context),
-                    itemExtent: 28,
-                    scrollController: FixedExtentScrollController(
-                        initialItem: temperatureUnitsList.indexOf(tempUnits)),
-                    //scrollController: FixedExtentScrollController(
-                    //initialItem: int.parse(tempUnits),
-                    //  initialItem: int.parse(tempUnits) - screenOffTimeMin
-                    // ),
-                    //itemExtent: 10,
-                    children: temperatureUnitsList
-                        .map((e) => Text(e, style: themedPickerItemStyle(context)))
-                        .toList(),
-                  ),
+                CupertinoButtonWidget(
+                  title: doneText,
+                  onPressed: () {
+                    //Navigator.of(context).pop();
+                    Navigator.of(context).pop(tempUnits);
+                  },
+                ),
+              ],
+            ),
+            const Divider(
+              height: 0,
+              thickness: 1,
+            ),
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.all(8.0),
+                child: CupertinoPicker(
+                  //offAxisFraction: 0.18, // 0.45 is the Max
+                  magnification: 2.35 / 2.1,
+                  useMagnifier: true,
+                  squeeze: 1.25,
+                  onSelectedItemChanged: (value) {
+                    debugPrintI('value_index>> $value');
+                    //tempScreenOffSecs = value.toString();
+                    //tempScreenOffSecs = (value + screenOffTimeMin).toString();
+                    tempUnits = temperatureUnitsList[value].toString();
+                  },
+                  selectionOverlay:
+                      const CupertinoPickerDefaultSelectionOverlay(),
+                  backgroundColor: themedPickerBackground(context),
+                  itemExtent: 28,
+                  scrollController: FixedExtentScrollController(
+                      initialItem: temperatureUnitsList.indexOf(tempUnits)),
+                  //scrollController: FixedExtentScrollController(
+                  //initialItem: int.parse(tempUnits),
+                  //  initialItem: int.parse(tempUnits) - screenOffTimeMin
+                  // ),
+                  //itemExtent: 10,
+                  children: temperatureUnitsList
+                      .map(
+                          (e) => Text(e, style: themedPickerItemStyle(context)))
+                      .toList(),
                 ),
               ),
-            ],
+            ),
+          ],
         );
       },
     );
@@ -883,7 +928,8 @@ class ProfileUpdateBody extends StatelessWidget {
               height: 20.0,
             ),
             Center(
-              child: Text(textRaiseHandActivateMsg, //'Raise your hand to activate display',
+              child: Text(
+                textRaiseHandActivateMsg, //'Raise your hand to activate display',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ),
@@ -892,7 +938,8 @@ class ProfileUpdateBody extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Text(raiseHandWakeUpText,
+              child: Text(
+                raiseHandWakeUpText,
                 textAlign: TextAlign.justify,
                 style: TextStyle(fontSize: 14),
               ),
