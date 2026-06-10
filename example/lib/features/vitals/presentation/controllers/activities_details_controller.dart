@@ -2,8 +2,14 @@ import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
 import 'package:flutter_band_fit_app/features/vitals/domain/repositories/vitals_data_repository.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/mixins/vitals_storage_ready_mixin.dart';
 
-class ActivitiesDetailsController extends GetxController with VitalsStorageReadyMixin {
-  ActivitiesDetailsController({required this.displayTitle, required this.activityLabel, required this.stepsView, required this.calView, required this.distanceView});
+class ActivitiesDetailsController extends GetxController
+    with VitalsStorageReadyMixin {
+  ActivitiesDetailsController(
+      {required this.displayTitle,
+      required this.activityLabel,
+      required this.stepsView,
+      required this.calView,
+      required this.distanceView});
 
   final String displayTitle;
   final String activityLabel;
@@ -13,7 +19,6 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
 
   BuildContext get context => Get.context!;
 
-
   int selectedPage = 0;
 
   /// Rebuild scope for D/W/M tab bodies only (not the full scaffold).
@@ -21,10 +26,8 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
 
   void notifyChartTab() => update([chartTabId]);
 
-
-
-
-  final VitalsDataRepository _vitalsDataRepository = Get.find<VitalsDataRepository>();
+  final VitalsDataRepository _vitalsDataRepository =
+      Get.find<VitalsDataRepository>();
 
   List<dynamic> overAllStepsData = [];
   int totalTargetedSteps = 0;
@@ -63,7 +66,8 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
   @override
   void onInit() {
     tooltipDayBehavior = TooltipBehavior(enable: true, canShowMarker: false);
-    tooltipWeekBehavior = TooltipBehavior(enable: true, canShowMarker: false, header: '');
+    tooltipWeekBehavior =
+        TooltipBehavior(enable: true, canShowMarker: false, header: '');
     dayDateTitle = _formatDayTitle(todayTime);
     monthlyDateTitle = _formatMonthTitle(todayTime);
     super.onInit();
@@ -92,7 +96,8 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
 
   void _reloadStoredStepsData() {
     final stepsData = _vitalsDataRepository.getOverAllStepsData();
-    totalTargetedSteps = int.tryParse(_vitalsDataRepository.getTargetedSteps()) ?? 0;
+    totalTargetedSteps =
+        int.tryParse(_vitalsDataRepository.getTargetedSteps()) ?? 0;
     if (stepsData.isEmpty) {
       overAllStepsData = [];
       return;
@@ -108,7 +113,8 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
     currentWeekDateTime = await GlobalMethods.getWeekDatesListByTime(todayTime);
     await setWeekDateTitle(currentWeekDateTime);
     //month
-    currentMonthDateTime = await GlobalMethods.getMonthyDatesListByTime(todayTime);
+    currentMonthDateTime =
+        await GlobalMethods.getMonthyDatesListByTime(todayTime);
     await setMonthDateTitle(currentMonthDateTime);
     notifyChartTab();
   }
@@ -122,9 +128,11 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
       //List<StepsMainModel> stepsMainModelList = await _activityServiceProvider.getCurrentDaySteps(overAllStepsData, calender);
       List<StepsMainModel> stepsMainModelList = [];
       if (Platform.isIOS) {
-        stepsMainModelList = await _vitalsDataRepository.getSelectedDayStepsData(overAllStepsData, calender);
-      }else{
-        stepsMainModelList = await _vitalsDataRepository.getCurrentDaySteps(overAllStepsData, calender);
+        stepsMainModelList = await _vitalsDataRepository
+            .getSelectedDayStepsData(overAllStepsData, calender);
+      } else {
+        stepsMainModelList = await _vitalsDataRepository.getCurrentDaySteps(
+            overAllStepsData, calender);
       }
 
       debugPrintI('stepsMainModelList>>  ${stepsMainModelList.length}');
@@ -175,11 +183,11 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
         stepsDayDataList = dataRepList;
         notifyChartTab();
       } else {
-          stepsDayDataList = [];
-          dayTotalSteps = '0';
-          dayTotalDistance = '0.0';
-          dayTotalCalories = '0.0';
-    notifyChartTab();
+        stepsDayDataList = [];
+        dayTotalSteps = '0';
+        dayTotalDistance = '0.0';
+        dayTotalCalories = '0.0';
+        notifyChartTab();
       }
     } catch (e) {
       debugPrintI('setStepsTitleException:: $e');
@@ -215,18 +223,23 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
         weekDateTitle = firstDay + ' ' +prevMonth+ ' ~ ' + lastDay + ' ' + nextMonth;
       });*/
       String title = await GlobalMethods.getWeekTitleLabel(context, weekList);
-      
-        weekDateTitle = title;
-    notifyChartTab();
-      List<String> calenderList =[];
+
+      weekDateTitle = title;
+      notifyChartTab();
+      List<String> calenderList = [];
       for (var element in weekList) {
         calenderList.add(GlobalMethods.convertBandReadableCalender(element));
       }
       if (Platform.isIOS) {
         if (Get.context == null) return;
         List<dynamic> dataList = [];
-        if(context.mounted) {
-          dataList = await _vitalsDataRepository.getSelectedRangeStepsData(false, overAllStepsData, calenderList, context, totalTargetedSteps);
+        if (context.mounted) {
+          dataList = await _vitalsDataRepository.getSelectedRangeStepsData(
+              false,
+              overAllStepsData,
+              calenderList,
+              context,
+              totalTargetedSteps);
         }
         final weekDataList = List<WeekStepsData>.from(dataList[0] as List);
         final totalSteps = dataList[1] as double;
@@ -234,21 +247,21 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
         final totalCalories = dataList[3] as double;
 
         if (weekDataList.isNotEmpty) {
-            weekStepsDataList = weekDataList;
-            weekTotalSteps = totalSteps.toInt().toString();
-            weekTotalDistance = totalDistance.toStringAsFixed(2);
-            weekTotalCalories = totalCalories.toStringAsFixed(2);
-    notifyChartTab();
-
-        }else{
-            weekStepsDataList = [];
-            weekTotalSteps = '0';
-            weekTotalDistance = '0.0';
-            weekTotalCalories = '0.0';
-    notifyChartTab();
+          weekStepsDataList = weekDataList;
+          weekTotalSteps = totalSteps.toInt().toString();
+          weekTotalDistance = totalDistance.toStringAsFixed(2);
+          weekTotalCalories = totalCalories.toStringAsFixed(2);
+          notifyChartTab();
+        } else {
+          weekStepsDataList = [];
+          weekTotalSteps = '0';
+          weekTotalDistance = '0.0';
+          weekTotalCalories = '0.0';
+          notifyChartTab();
         }
-      }else{
-        List<StepsMainModel> stepsWeekModelList = await _vitalsDataRepository.getStepsBySelectedWeek(overAllStepsData, calenderList);
+      } else {
+        List<StepsMainModel> stepsWeekModelList = await _vitalsDataRepository
+            .getStepsBySelectedWeek(overAllStepsData, calenderList);
         debugPrintI('stepsWeekModelList>>  ${stepsWeekModelList.length}');
         if (stepsWeekModelList.isNotEmpty) {
           List<WeekStepsData> weekDataList = [];
@@ -267,41 +280,44 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
                 dateTime: dateTime,
                 dataPoint: elementSteps.toInt(),
                 //color: color,
-                color: elementSteps.toInt() < totalTargetedSteps * stepsWeekModelList.length ? darkStepsColor : completeColor
-            ));
+                color: elementSteps.toInt() <
+                        totalTargetedSteps * stepsWeekModelList.length
+                    ? darkStepsColor
+                    : completeColor));
           }
-            weekStepsDataList = weekDataList;
-            weekTotalSteps = totalSteps.toInt().toString();
-            weekTotalDistance = totalDistance.toStringAsFixed(2);
-            weekTotalCalories = totalCalories.toStringAsFixed(2);
-    notifyChartTab();
-        }else{
-            weekStepsDataList = [];
-            weekTotalSteps = '0';
-            weekTotalDistance = '0.0';
-            weekTotalCalories = '0.0';
-    notifyChartTab();
+          weekStepsDataList = weekDataList;
+          weekTotalSteps = totalSteps.toInt().toString();
+          weekTotalDistance = totalDistance.toStringAsFixed(2);
+          weekTotalCalories = totalCalories.toStringAsFixed(2);
+          notifyChartTab();
+        } else {
+          weekStepsDataList = [];
+          weekTotalSteps = '0';
+          weekTotalDistance = '0.0';
+          weekTotalCalories = '0.0';
+          notifyChartTab();
         }
       }
-
-    }else{
-        weekStepsDataList = [];
-        weekTotalSteps = '0';
-        weekTotalDistance = '0.0';
-        weekTotalCalories = '0.0';
-    notifyChartTab();
+    } else {
+      weekStepsDataList = [];
+      weekTotalSteps = '0';
+      weekTotalDistance = '0.0';
+      weekTotalCalories = '0.0';
+      notifyChartTab();
     }
   }
 
-  bool checkNextWeekAvailable(DateTime todayTime, List<DateTime> currentWeekDateTime) {
+  bool checkNextWeekAvailable(
+      DateTime todayTime, List<DateTime> currentWeekDateTime) {
     bool tempFlag = false;
-    for(DateTime date in currentWeekDateTime){
-      if (date.toString().substring(0,10).trim() == todayTime.toString().substring(0,10).trim()) {
+    for (DateTime date in currentWeekDateTime) {
+      if (date.toString().substring(0, 10).trim() ==
+          todayTime.toString().substring(0, 10).trim()) {
         tempFlag = true;
         break;
       }
     }
-    return  tempFlag;
+    return tempFlag;
   }
 
   Future<void> setMonthDateTitle(List<DateTime> monthList) async {
@@ -311,38 +327,41 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
       //String lastDay = monthList[monthList.length - 1].day.toString();
       // String month = tempCalenderMonth[monthList[0].month - 1];
       String month = calMonths[monthList[0].month - 1];
-        monthlyDateTitle ='$month $year';
-        //monthlyDateTitle = Utils.tr(context,month) + ' ' + year;
-    notifyChartTab();
+      monthlyDateTitle = '$month $year';
+      //monthlyDateTitle = Utils.tr(context,month) + ' ' + year;
+      notifyChartTab();
 
-      List<String> calenderList =[];
+      List<String> calenderList = [];
       for (var element in monthList) {
         calenderList.add(GlobalMethods.convertBandReadableCalender(element));
       }
       if (Platform.isIOS) {
-        List<dynamic> dataList = await _vitalsDataRepository.getSelectedRangeStepsData(true, overAllStepsData, calenderList, context, totalTargetedSteps);
+        List<dynamic> dataList =
+            await _vitalsDataRepository.getSelectedRangeStepsData(true,
+                overAllStepsData, calenderList, context, totalTargetedSteps);
         final monthDataList = List<MonthStepsData>.from(dataList[0] as List);
         final totalSteps = dataList[1] as double;
         final totalDistance = dataList[2] as double;
         final totalCalories = dataList[3] as double;
-        if(monthDataList.isNotEmpty){
-            monthStepsDataList = monthDataList;
-            monthTotalSteps = totalSteps.toInt().toString();
-            monthTotalDistance = totalDistance.toStringAsFixed(2);
-            monthTotalCalories = totalCalories.toStringAsFixed(2);
-    notifyChartTab();
-        }else{
-            monthStepsDataList = [];
-            monthTotalSteps = '0';
-            monthTotalDistance = '0.0';
-            monthTotalCalories = '0.0';
-    notifyChartTab();
+        if (monthDataList.isNotEmpty) {
+          monthStepsDataList = monthDataList;
+          monthTotalSteps = totalSteps.toInt().toString();
+          monthTotalDistance = totalDistance.toStringAsFixed(2);
+          monthTotalCalories = totalCalories.toStringAsFixed(2);
+          notifyChartTab();
+        } else {
+          monthStepsDataList = [];
+          monthTotalSteps = '0';
+          monthTotalDistance = '0.0';
+          monthTotalCalories = '0.0';
+          notifyChartTab();
         }
-      }else{
-        List<StepsMainModel> stepsMonthModelList = await _vitalsDataRepository.getStepsBySelectedWeek(overAllStepsData, calenderList);
+      } else {
+        List<StepsMainModel> stepsMonthModelList = await _vitalsDataRepository
+            .getStepsBySelectedWeek(overAllStepsData, calenderList);
         debugPrintI('stepsMonthModelList>>  ${stepsMonthModelList.length}');
         if (stepsMonthModelList.isNotEmpty) {
-          List<MonthStepsData> monthDataList =[];
+          List<MonthStepsData> monthDataList = [];
           double totalSteps = 0;
           double totalDistance = 0;
           double totalCalories = 0;
@@ -352,50 +371,51 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
             totalSteps = totalSteps + elementSteps;
             totalDistance = totalDistance + double.tryParse(element.distance)!;
             totalCalories = totalCalories + double.tryParse(element.calories)!;
-            monthDataList.add(MonthStepsData(
-                dayNumber: dateTime.day,
-                dataPoint: elementSteps.toInt(),
-                color: elementSteps.toInt() >= totalTargetedSteps
-                    ? completeColor
-                    : darkStepsColor),
+            monthDataList.add(
+              MonthStepsData(
+                  dayNumber: dateTime.day,
+                  dataPoint: elementSteps.toInt(),
+                  color: elementSteps.toInt() >= totalTargetedSteps
+                      ? completeColor
+                      : darkStepsColor),
               // color: elementSteps.toInt() < totalTargetedSteps - 1000
               //     ? darkStepsColor
               //     : completeColor),
             );
           }
 
-            monthStepsDataList = monthDataList;
-            monthTotalSteps = totalSteps.toInt().toString();
-            monthTotalDistance = totalDistance.toStringAsFixed(2);
-            monthTotalCalories = totalCalories.toStringAsFixed(2);
-    notifyChartTab();
-
-        }else{
-            monthStepsDataList = [];
-            monthTotalSteps = '0';
-            monthTotalDistance = '0.0';
-            monthTotalCalories = '0.0';
-    notifyChartTab();
+          monthStepsDataList = monthDataList;
+          monthTotalSteps = totalSteps.toInt().toString();
+          monthTotalDistance = totalDistance.toStringAsFixed(2);
+          monthTotalCalories = totalCalories.toStringAsFixed(2);
+          notifyChartTab();
+        } else {
+          monthStepsDataList = [];
+          monthTotalSteps = '0';
+          monthTotalDistance = '0.0';
+          monthTotalCalories = '0.0';
+          notifyChartTab();
         }
       }
-    }else{
-        monthStepsDataList = [];
-        monthTotalSteps = '0';
-        monthTotalDistance = '0.0';
-        monthTotalCalories = '0.0';
-    notifyChartTab();
+    } else {
+      monthStepsDataList = [];
+      monthTotalSteps = '0';
+      monthTotalDistance = '0.0';
+      monthTotalCalories = '0.0';
+      notifyChartTab();
     }
   }
 
-  bool checkNextMonthAvailable(DateTime todayTime, List<DateTime> currentMonthDateTime) {
+  bool checkNextMonthAvailable(
+      DateTime todayTime, List<DateTime> currentMonthDateTime) {
     bool tempFlag = false;
-    for(DateTime date in currentMonthDateTime){
-      if (date.toString().substring(0,10).trim() == todayTime.toString().substring(0,10).trim()) {
+    for (DateTime date in currentMonthDateTime) {
+      if (date.toString().substring(0, 10).trim() ==
+          todayTime.toString().substring(0, 10).trim()) {
         tempFlag = true;
         break;
       }
     }
-    return  tempFlag;
+    return tempFlag;
   }
-
 }

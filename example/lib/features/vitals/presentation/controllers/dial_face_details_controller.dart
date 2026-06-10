@@ -140,7 +140,8 @@ class DialFaceDetailsController extends GetxController {
       deviceMacAddress = mac;
     }
     deviceDpi = jsonData['dpi']?.toString() ?? deviceDpi;
-    deviceMaxCapacity = jsonData['maxCapacity']?.toString() ?? deviceMaxCapacity;
+    deviceMaxCapacity =
+        jsonData['maxCapacity']?.toString() ?? deviceMaxCapacity;
     deviceShape = jsonData['shape']?.toString() ?? deviceShape;
     deviceCompatible = jsonData['compatible']?.toString() ?? deviceCompatible;
     update();
@@ -196,7 +197,7 @@ class DialFaceDetailsController extends GetxController {
       request.fields.addAll({
         'content':
             '{"compatible":"$deviceCompatible","shape":"$deviceShape","limit":"$_onlinePageKey,18","maxCapacity":"$deviceMaxCapacity",'
-            '"appkey":"$dialFaceYcAppKey","language":"en","sort":"1","type":"0","btname":"$deviceBleName","dpi":"$deviceDpi","mac":"$deviceMacAddress"}',
+                '"appkey":"$dialFaceYcAppKey","language":"en","sort":"1","type":"0","btname":"$deviceBleName","dpi":"$deviceDpi","mac":"$deviceMacAddress"}',
       });
       final response = await request.send().timeout(
         const Duration(seconds: 25),

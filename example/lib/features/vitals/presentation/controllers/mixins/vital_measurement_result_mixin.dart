@@ -44,11 +44,13 @@ mixin VitalMeasurementResultMixin on GetxController {
     await loadDay(now);
   }
 
-  bool mapAlreadyContainsReading(List<dynamic> data, Map<String, dynamic> reading) {
+  bool mapAlreadyContainsReading(
+      List<dynamic> data, Map<String, dynamic> reading) {
     return data.any((entry) {
       if (entry is! Map) return false;
       final entryMap = Map<String, dynamic>.from(entry);
-      return entryMap['calender']?.toString() == reading['calender']?.toString() &&
+      return entryMap['calender']?.toString() ==
+              reading['calender']?.toString() &&
           entryMap['time']?.toString() == reading['time']?.toString() &&
           _readingValue(entryMap) == _readingValue(reading);
     });

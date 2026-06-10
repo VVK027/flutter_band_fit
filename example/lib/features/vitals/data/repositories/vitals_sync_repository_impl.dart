@@ -34,12 +34,15 @@ class VitalsSyncRepositoryImpl implements VitalsSyncRepository {
   }
 
   @override
-  Future<void> saveActivityMonitorSettings(ActivityMonitorSettings settings) async {
+  Future<void> saveActivityMonitorSettings(
+      ActivityMonitorSettings settings) async {
     if (_activityServiceProvider.getHR24Enabled != settings.hrEnabled) {
       await _activityServiceProvider.set24HrHeartRate(settings.hrEnabled);
     }
-    if (_activityServiceProvider.getTemperature24Enabled != settings.tempEnabled) {
-      await _activityServiceProvider.set24HrTemperatureTest(settings.tempEnabled);
+    if (_activityServiceProvider.getTemperature24Enabled !=
+        settings.tempEnabled) {
+      await _activityServiceProvider
+          .set24HrTemperatureTest(settings.tempEnabled);
     }
     if (_activityServiceProvider.getOxygen24Enabled != settings.oxygenEnabled) {
       await _activityServiceProvider.set24HrOxygen(settings.oxygenEnabled);

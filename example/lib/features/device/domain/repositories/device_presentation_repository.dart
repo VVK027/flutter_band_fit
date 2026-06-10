@@ -11,6 +11,8 @@ abstract class DevicePresentationRepository {
     required void Function() onDone,
   });
 
+  void cancelEventListeners();
+
   Future<void> updateUserParamsWatch(bool isDisconnected);
 
   String getJsonWeatherData();
@@ -29,7 +31,8 @@ abstract class DevicePresentationRepository {
 
   void setBatteryPercentage(String batteryStat, bool fromBle);
 
-  Future<void> updateEventResult(Map<String, dynamic> eventData, BuildContext context);
+  Future<void> updateEventResult(
+      Map<String, dynamic> eventData, BuildContext context);
 
   String getLastMacAddressId();
 

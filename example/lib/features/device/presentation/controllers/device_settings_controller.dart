@@ -1,4 +1,3 @@
-import 'package:flutter_band_fit_app/app/routes/app_routes.dart';
 import 'package:flutter_band_fit_app/common/common_imports.dart';
 import 'package:flutter_band_fit_app/core/utils/shared_service.dart';
 import 'package:flutter_band_fit_app/core/services/activity_service_provider.dart';
@@ -9,9 +8,12 @@ import 'package:flutter_band_fit_app/features/device/domain/usecases/reconnect_s
 class DeviceSettingsController extends GetxController {
   ActivityServiceProvider get provider => Get.find<ActivityServiceProvider>();
 
-  final DevicePresentationRepository _deviceRepository = Get.find<DevicePresentationRepository>();
-  final CheckDeviceConnectionUseCase _checkDeviceConnectionUseCase = Get.find<CheckDeviceConnectionUseCase>();
-  final ReconnectSavedDeviceUseCase _reconnectSavedDeviceUseCase = Get.find<ReconnectSavedDeviceUseCase>();
+  final DevicePresentationRepository _deviceRepository =
+      Get.find<DevicePresentationRepository>();
+  final CheckDeviceConnectionUseCase _checkDeviceConnectionUseCase =
+      Get.find<CheckDeviceConnectionUseCase>();
+  final ReconnectSavedDeviceUseCase _reconnectSavedDeviceUseCase =
+      Get.find<ReconnectSavedDeviceUseCase>();
 
   @override
   void onInit() {
@@ -60,12 +62,7 @@ class DeviceSettingsController extends GetxController {
   }
 
   void goDashboardPage() {
-    if (!_deviceRepository.getHealthConnected() &&
-        !_deviceRepository.getDeviceConnected()) {
-      Get.offAllNamed<void>(AppRoutes.vitals);
-    } else {
-      GlobalMethods.navigatePopBack();
-    }
+    GlobalMethods.navigatePopBack();
   }
 
   Future<void> refreshPage([bool isDisconnected = false]) async {
