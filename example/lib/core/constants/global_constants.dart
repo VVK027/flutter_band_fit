@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 export 'package:flutter_band_fit_app/app/theme/app_colors.dart' show AppColors;
 
 //Default TargetedSteps
-const String defaultTargetedSteps ='8000';
+const String defaultTargetedSteps = '8000';
 
-const String defaultDateFormat ='yyyy-MM-dd';
-const String defaultDateTimeParseFormat ='yyyy-MM-dd HH:mm';
+const String defaultDateFormat = 'yyyy-MM-dd';
+const String defaultDateTimeParseFormat = 'yyyy-MM-dd HH:mm';
 //const String defaultLastSyncDateTimeFormat ='yyyy-MM-dd hh:mm:ss a';
-const String defaultLastSyncDateTimeFormat ='yyyy-MM-dd hh:mm a';
+const String defaultLastSyncDateTimeFormat = 'yyyy-MM-dd hh:mm a';
 
 //const Color completeColor = Color(0xFF36688D);
 const Color completeColor = Colors.deepPurple;
@@ -36,13 +36,13 @@ const int weightMin = 20;
 const int weightMax = 200;
 const int screenOffTimeMin = 15;
 
-const String tempInCelsius ='°C';
-const String tempInFahrenheit ='°F';
-const String bpUnits ='mmHg';
+const String tempInCelsius = '°C';
+const String tempInFahrenheit = '°F';
+const String bpUnits = 'mmHg';
 
-const String tempAPIInCelsius ='C';
-const String tempAPIInFahrenheit ='F';
-const String hrTimeMinutes ='bpm';
+const String tempAPIInCelsius = 'C';
+const String tempAPIInFahrenheit = 'F';
+const String hrTimeMinutes = 'bpm';
 
 const String okText = 'OK';
 const String cancelText = 'Cancel';
@@ -78,9 +78,10 @@ const String textSecondsShort = 'sec';
 const String textKcal = 'kcal';
 const String textKm = 'km';
 const String textBluetoothRequired = 'Bluetooth 4.0 required';
-const String textGoal= 'Goal';
-const String textSmartProfile= 'Smart Profile';
-const String textNoWeatherData = 'Weather data is not available yet. Sync your band or check location permissions.';
+const String textGoal = 'Goal';
+const String textSmartProfile = 'Smart Profile';
+const String textNoWeatherData =
+    'Weather data is not available yet. Sync your band or check location permissions.';
 const String textRecommendDialFace = 'Recommended';
 const String textSearchDialOnline = 'Online';
 const String textDialFaces = 'Dial faces';
@@ -202,8 +203,7 @@ const String textDNDDisableReminder = 'Disable message reminders';
 const String textDNDDisableReminderMsg =
     'Messages will not be sent to your band during this period';
 const String textDNDDisableBandVibration = 'Disable band vibration';
-const String textDNDDisableBandVibrationMsg =
-    'This also disables Find Band';
+const String textDNDDisableBandVibrationMsg = 'This also disables Find Band';
 const String textSelSameTimings = 'Same start and end time';
 const String textSelSameTimingsMsg =
     "Start time and end time can't be the same. Please choose different times.";
@@ -223,18 +223,18 @@ const String textTempNotSupported = 'Temperature not supported';
 const String textTempNotSupportedMsg =
     'Your device does not support temperature measurement.';
 
-
-
 //const String okTextStr = 'OK';
 //const String tempString = 'The normal body temperature of the human body averages between 36~37°C (96.8~98.6°F). The body temperature changes physiologically within a day, which can vary with day and night, age, gender, activity, medicine etc. Physiological changes occur,but the range of changes is very small.';
-const String tempString = 'Our normal body temperature averages between 36 - 37 °C (96.8 - 98.6 °F). On a daily basis, the human body sees slight changes in body temperature depending on the time of day, age, gender, activity, etc.';
+const String tempString =
+    'Our normal body temperature averages between 36 - 37 °C (96.8 - 98.6 °F). On a daily basis, the human body sees slight changes in body temperature depending on the time of day, age, gender, activity, etc.';
 
 //const String tempDisclaimer = 'Declaration: All data or results are for reference only,and it is not recommended as a formal basis for medical or health conditions.';
 const String tempDisclaimer =
     'Disclaimer: All data and readings are for reference only. They are not medical measurements and should not be used to diagnose or treat any health condition.';
 
 //const String sleepToLateString = '''The best time to fall asleep before 22 o'clock,long-term stay up late may make the body's immune system decreased,accelerated aging.''';
-const String sleepToLateString = '''Sleeping on time (best before 22:00) is a healthy habit. It keeps the body’s immune system balanced.''';
+const String sleepToLateString =
+    '''Sleeping on time (best before 22:00) is a healthy habit. It keeps the body’s immune system balanced.''';
 
 const String sleepEarlyWakeUpString =
     '''After a good night’s rest, waking up early helps you feel refreshed and ready for the day.''';
@@ -250,10 +250,8 @@ const String addSmartWatchText =
 const String goalTextTitle =
     'The World Health Organization recommends at least 8,000 steps per day to stay active.\nSelect your daily goal.';
 
-
-const String raiseHandWakeUpText = 'The device lights up automatically when you raise your hand.';
-
-
+const String raiseHandWakeUpText =
+    'The device lights up automatically when you raise your hand.';
 
 const String noDeviceFoundHead = 'No device found';
 const String textBluetooth = 'Bluetooth';
@@ -303,13 +301,20 @@ const String textLoadMore = 'Load more';
 const String healthStatusNormal = 'Normal';
 const String healthStatusConsultDoctor = 'Consult your doctor';
 
-
 // const String secondaryReminderMsg = 'In case of continuous time without exercise, the device will vibrate for reminding';
 // const String smsReminderMsg = 'The phone needs to be connected to the device, do not turn off Bluetooth';
 // const String callReminderMsg = 'The phone needs to be connected to the device, do not turn off Bluetooth';
 
-
-enum Activity { steps, cal, distance, heartRate, bp, oxygen, temperature, sleepDuration }
+enum Activity {
+  steps,
+  cal,
+  distance,
+  heartRate,
+  bp,
+  oxygen,
+  temperature,
+  sleepDuration
+}
 
 extension ActivityExtension on Activity {
   String get name {
@@ -327,7 +332,7 @@ extension ActivityExtension on Activity {
 }
 
 extension ActivityTextLabel on Activity {
-   String get textLabel {
+  String get textLabel {
     return [
       'Steps show how much you move each day and help you spot changes in your activity.',
       'Your body burns calories at rest and during activity. This is an estimate of your total daily burn.',
@@ -367,7 +372,6 @@ List<String> calWeeks = [
   'Sat',
   'Sun',
 ];
-
 
 List<String> screenOffSecondsList = [
   '5',
@@ -421,10 +425,7 @@ List<String> totalGoalsList = [
   '35000',
 ];
 
-List<String> temperatureUnitsList = [
-  tempInCelsius,
-  tempInFahrenheit
-];
+List<String> temperatureUnitsList = [tempInCelsius, tempInFahrenheit];
 
 /// List of data types available on iOS
 ///

@@ -39,7 +39,8 @@ class AppleGoogleBindBody extends GetView<AppleGoogleBindController> {
               Center(
                 child: Text(
                   Platform.isIOS ? textAppleHealth : textGoogleFit,
-                  style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                      fontSize: 21, fontWeight: FontWeight.w500),
                 ),
               ),
               const SizedBox(height: 20),
@@ -76,7 +77,9 @@ class AppleGoogleBindBody extends GetView<AppleGoogleBindController> {
                         () => Row(
                           children: [
                             Text(
-                              controller.isBounded.value ? textLinked : textLink,
+                              controller.isBounded.value
+                                  ? textLinked
+                                  : textLink,
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.blueGrey.withValues(alpha: 0.7),

@@ -18,9 +18,8 @@ class VitalStartButtonBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final onAccent = accentColor.computeLuminance() > 0.4
-        ? Colors.black87
-        : Colors.white;
+    final onAccent =
+        accentColor.computeLuminance() > 0.4 ? Colors.black87 : Colors.white;
 
     return SafeArea(
       top: false,

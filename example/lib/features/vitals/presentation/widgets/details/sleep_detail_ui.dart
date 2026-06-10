@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_band_fit_app/core/constants/widget_keys.dart';
 import 'package:flutter_band_fit_app/core/constants/global_constants.dart';
 import 'package:flutter_band_fit_app/core/utils/global_methods.dart';
 import 'package:flutter_band_fit_app/features/vitals/data/models/band_data_model.dart';
@@ -44,7 +45,9 @@ class SleepStatSummaryGrid extends StatelessWidget {
           childAspectRatio: 1.55,
         ),
         itemCount: stats.length,
-        itemBuilder: (context, index) => SleepStatCard(stat: stats[index]),
+        itemBuilder: (context, index) => SleepStatCard(
+            key: Key('${WidgetKeys.sleepStatCard}_$index'),
+            stat: stats[index]),
       ),
     );
   }
@@ -96,6 +99,7 @@ class SleepStatCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     SleepDurationValueRow(
+                      key: const Key(WidgetKeys.sleepDurationValueRow),
                       hours: stat.hours,
                       minutes: stat.minutes,
                     ),
@@ -228,7 +232,9 @@ TrackballBehavior sleepTrackballBehavior(BuildContext context) {
       }
 
       final dataSource = series.dataSource as List<dynamic>?;
-      if (dataSource == null || pointIndex < 0 || pointIndex >= dataSource.length) {
+      if (dataSource == null ||
+          pointIndex < 0 ||
+          pointIndex >= dataSource.length) {
         return const SizedBox.shrink();
       }
 

@@ -32,9 +32,8 @@ class DetailDateNavigator extends StatelessWidget {
           onPressed: isNextDisabled ? null : onNext,
           icon: Icon(
             Icons.arrow_forward_ios_outlined,
-            color: isNextDisabled
-                ? onSurface.withValues(alpha: 0.35)
-                : onSurface,
+            color:
+                isNextDisabled ? onSurface.withValues(alpha: 0.35) : onSurface,
           ),
         ),
       ],

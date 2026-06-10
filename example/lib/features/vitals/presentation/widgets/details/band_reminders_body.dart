@@ -1,4 +1,5 @@
 import 'package:flutter_band_fit_app/core/exports/band_exports.dart';
+import 'package:flutter_band_fit_app/core/constants/widget_keys.dart';
 import 'package:flutter_band_fit_app/core/widgets/fixed_section_list.dart';
 import 'package:flutter_band_fit_app/core/widgets/settings_widgets.dart';
 import 'package:flutter_band_fit_app/core/widgets/app_ui_components.dart';
@@ -12,15 +13,20 @@ class BandRemindersBody extends GetView<BandRemindersController> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return SettingsPageScaffold(
+      key: const Key(WidgetKeys.settingsPageScaffold),
       title: textSmartBandReminders,
       onBack: GlobalMethods.navigatePopBack,
       onSave: GlobalMethods.navigatePopBack,
       body: FixedSectionListView(
+        key: const Key(WidgetKeys.fixedSectionListView),
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 88),
         sections: [
-          const DetailInfoBanner(text: textBluetoothReminderNotice),
+          const DetailInfoBanner(
+              key: Key(WidgetKeys.detailInfoBanner),
+              text: textBluetoothReminderNotice),
           const SizedBox(height: 12),
           SettingsSectionCard(
+            key: const Key(WidgetKeys.settingsSectionCard),
             children: [
               SettingsSwitchTile(
                 icon: Icons.directions_walk_rounded,

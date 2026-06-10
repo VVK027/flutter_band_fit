@@ -1,4 +1,5 @@
 import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
+import 'package:flutter_band_fit_app/core/constants/widget_keys.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/activities_details_controller.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/details/activities_chart_shared.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/details/activities_detail_ui.dart';
@@ -19,6 +20,7 @@ class ActivitiesDayTab extends GetView<ActivitiesDetailsController> {
           mainAxisSize: MainAxisSize.min,
           children: [
             DetailDateNavigator(
+              key: const Key(WidgetKeys.detailDateNavigator),
               dateTitle: controller.dayDateTitle,
               isNextDisabled: controller.dayNextDisable,
               onPrevious: () async {
@@ -27,7 +29,8 @@ class ActivitiesDayTab extends GetView<ActivitiesDetailsController> {
                 controller.dayNextDisable = false;
                 controller.currentDateTime = time;
                 controller.notifyChartTab();
-                await controller.setCurrentDateTitle(controller.currentDateTime);
+                await controller
+                    .setCurrentDateTitle(controller.currentDateTime);
               },
               onNext: controller.dayNextDisable
                   ? null
@@ -49,7 +52,8 @@ class ActivitiesDayTab extends GetView<ActivitiesDetailsController> {
                     },
             ),
             Container(
-              margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+              margin:
+                  const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
               padding: const EdgeInsets.all(4.0),
               width: double.infinity,
               height: 180,
@@ -93,7 +97,8 @@ class ActivitiesDayTab extends GetView<ActivitiesDetailsController> {
                     labelFormat: '{value}',
                     labelStyle: activitiesChartAxisLabelStyle(context),
                   ),
-                  series: activitiesDaySeries(controller, controller.currentDateTime),
+                  series: activitiesDaySeries(
+                      controller, controller.currentDateTime),
                   tooltipBehavior: controller.tooltipDayBehavior,
                   trackballBehavior: TrackballBehavior(
                     enable: true,
@@ -297,6 +302,7 @@ class ActivitiesWeekTab extends GetView<ActivitiesDetailsController> {
           mainAxisSize: MainAxisSize.min,
           children: [
             DetailDateNavigator(
+              key: const Key(WidgetKeys.detailDateNavigator),
               dateTitle: controller.weekDateTitle,
               isNextDisabled: controller.weekNextDisable,
               onPrevious: () async {
@@ -308,7 +314,8 @@ class ActivitiesWeekTab extends GetView<ActivitiesDetailsController> {
                 controller.weekNextDisable = false;
                 controller.currentWeekDateTime = pastNextWeek;
                 controller.notifyChartTab();
-                await controller.setWeekDateTitle(controller.currentWeekDateTime);
+                await controller
+                    .setWeekDateTitle(controller.currentWeekDateTime);
               },
               onNext: controller.weekNextDisable
                   ? null
@@ -333,7 +340,8 @@ class ActivitiesWeekTab extends GetView<ActivitiesDetailsController> {
                     },
             ),
             Container(
-              margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+              margin:
+                  const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
               padding: const EdgeInsets.all(4.0),
               width: double.infinity,
               height: 200,
@@ -350,7 +358,8 @@ class ActivitiesWeekTab extends GetView<ActivitiesDetailsController> {
                     labelStyle: activitiesChartAxisLabelStyle(context),
                   ),
                   primaryYAxis: NumericAxis(
-                    majorTickLines: const MajorTickLines(color: Colors.transparent),
+                    majorTickLines:
+                        const MajorTickLines(color: Colors.transparent),
                     labelFormat: '{value}',
                     minimum: 0,
                     axisLine: const AxisLine(width: 0),
@@ -366,6 +375,7 @@ class ActivitiesWeekTab extends GetView<ActivitiesDetailsController> {
               ),
             ),
             ActivityStatSummaryGrid(
+              key: const Key(WidgetKeys.activityStatSummaryGrid),
               stats: [
                 ActivitySummaryStat(
                   label: textTotalSteps,
@@ -408,6 +418,7 @@ class ActivitiesMonthTab extends GetView<ActivitiesDetailsController> {
           mainAxisSize: MainAxisSize.min,
           children: [
             DetailDateNavigator(
+              key: const Key(WidgetKeys.detailDateNavigator),
               dateTitle: controller.monthlyDateTitle,
               isNextDisabled: controller.monthNextDisable,
               onPrevious: () async {
@@ -446,7 +457,8 @@ class ActivitiesMonthTab extends GetView<ActivitiesDetailsController> {
                     },
             ),
             Container(
-              margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
+              margin:
+                  const EdgeInsets.symmetric(vertical: 2.0, horizontal: 2.0),
               padding: const EdgeInsets.all(4.0),
               width: double.infinity,
               height: 180,
@@ -468,7 +480,8 @@ class ActivitiesMonthTab extends GetView<ActivitiesDetailsController> {
                     labelStyle: activitiesChartAxisLabelStyle(context),
                   ),
                   primaryYAxis: NumericAxis(
-                    majorTickLines: const MajorTickLines(color: Colors.transparent),
+                    majorTickLines:
+                        const MajorTickLines(color: Colors.transparent),
                     minimum: 0,
                     axisLine: const AxisLine(width: 0),
                     labelFormat: '{value}',
@@ -503,6 +516,7 @@ class ActivitiesMonthTab extends GetView<ActivitiesDetailsController> {
               ),
             ),
             ActivityStatSummaryGrid(
+              key: const Key(WidgetKeys.activityStatSummaryGrid),
               stats: [
                 ActivitySummaryStat(
                   label: textTotalSteps,

@@ -4,7 +4,8 @@ import 'package:flutter_band_fit_app/features/vitals/domain/usecases/reconnect_v
 
 /// Pauses main BLE listeners while BP/SpO₂/temperature test listeners are active.
 mixin BleTestListenerMixin on GetxController {
-  ActivityServiceProvider get bleProvider => Get.find<ActivityServiceProvider>();
+  ActivityServiceProvider get bleProvider =>
+      Get.find<ActivityServiceProvider>();
   ReconnectVitalsDeviceUseCase get _reconnectUseCase =>
       Get.find<ReconnectVitalsDeviceUseCase>();
 

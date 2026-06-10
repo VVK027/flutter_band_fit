@@ -147,7 +147,7 @@ class OxygenDetailController extends GetxController
         final dataPoint = double.parse(element.value);
         if (dataPoint > largestValue) largestValue = dataPoint;
         if (dataPoint < smallestValue) smallestValue = dataPoint;
-       // sumOfDataPoints += dataPoint;
+        // sumOfDataPoints += dataPoint;
         dataRepList.add(
           CommonDataResult(
             time: pointTime,

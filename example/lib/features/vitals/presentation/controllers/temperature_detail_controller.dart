@@ -97,7 +97,8 @@ class TemperatureDetailController extends GetxController
           }
         }
       },
-      onError: (error) => debugPrintI('receiveTemperatureListenersError>> $error'),
+      onError: (error) =>
+          debugPrintI('receiveTemperatureListenersError>> $error'),
       onDone: () {},
     );
     bleProvider.resumeBPListeners();
@@ -146,7 +147,8 @@ class TemperatureDetailController extends GetxController
 
       final average = sumOfDataPoints / smartTempList.length;
       chartPoints.assignAll(dataRepList);
-      recentTemperature.value = double.tryParse(currentValue)!.toStringAsFixed(1);
+      recentTemperature.value =
+          double.tryParse(currentValue)!.toStringAsFixed(1);
       avgTemperature.value = average.toStringAsFixed(1);
       minTemperature.value = smallestValue.toStringAsFixed(1);
       maxTemperature.value = largestValue.toStringAsFixed(1);
@@ -195,7 +197,7 @@ class TemperatureDetailController extends GetxController
       }
       if (status == BandFitConstants.SC_NOT_SUPPORTED) {
         endTestLoading();
-        if(ctx.mounted) {
+        if (ctx.mounted) {
           temperatureNotSupported(ctx);
         }
       }

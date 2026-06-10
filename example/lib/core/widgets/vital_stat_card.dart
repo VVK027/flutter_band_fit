@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_band_fit_app/core/constants/widget_keys.dart';
 import 'package:flutter_band_fit_app/app/theme/app_theme_extension.dart';
 
 class VitalStatItem {
@@ -35,7 +36,12 @@ class VitalStatCard extends StatelessWidget {
                     thickness: 1,
                     color: theme.dividerColor,
                   ),
-                Expanded(child: _StatCell(item: items[i])),
+                Expanded(
+                  child: _StatCell(
+                    key: Key('${WidgetKeys.vitalStatCardStatCell}_$i'),
+                    item: items[i],
+                  ),
+                ),
               ],
             ],
           ),
@@ -46,7 +52,7 @@ class VitalStatCard extends StatelessWidget {
 }
 
 class _StatCell extends StatelessWidget {
-  const _StatCell({required this.item});
+  const _StatCell({super.key, required this.item});
 
   final VitalStatItem item;
 

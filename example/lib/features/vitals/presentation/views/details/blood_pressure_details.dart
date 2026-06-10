@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_band_fit_app/core/constants/widget_keys.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/blood_pressure_detail_controller.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/details/blood_pressure_detail_body.dart';
 import 'package:get/get.dart';
@@ -20,7 +21,9 @@ class BloodPressureDetails extends StatelessWidget {
         displayTitle: displayTitle,
         activityLabel: activityLabel,
       ),
-      builder: (_) => const BloodPressureDetailBody(),
+      builder: (_) => const BloodPressureDetailBody(
+        key: Key(WidgetKeys.bloodPressureDetailBody),
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
+import 'package:flutter_band_fit_app/core/constants/widget_keys.dart';
 import 'package:flutter_band_fit_app/core/widgets/fixed_section_list.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/sleep_details_controller.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/details/sleep_detail_ui.dart';
@@ -14,25 +15,46 @@ class SleepDayTab extends GetView<SleepDetailsController> {
     return GetBuilder<SleepDetailsController>(
       id: SleepDetailsController.chartTabId,
       builder: (_) => FixedSectionListView(
+        key: const Key(WidgetKeys.fixedSectionListView),
         padding: sleepListBottomPadding(context),
         sections: const [
-          SleepDayDateNavigator(),
+          SleepDayDateNavigator(
+            key: Key(WidgetKeys.sleepDayDateNavigator),
+          ),
           SizedBox(height: 4),
-          SleepDaySummaryHeader(),
+          SleepDaySummaryHeader(
+            key: Key(WidgetKeys.sleepDaySummaryHeader),
+          ),
           SizedBox(height: 4),
-          SleepDayStageBar(),
-          SleepDayBeginEndRow(),
-          SleepDayStageDivider(),
+          SleepDayStageBar(
+            key: Key(WidgetKeys.sleepDayStageBar),
+          ),
+          SleepDayBeginEndRow(
+            key: Key(WidgetKeys.sleepDayBeginEndRow),
+          ),
+          SleepDayStageDivider(
+            key: Key(WidgetKeys.sleepDayStageDivider),
+          ),
           SizedBox(height: 4),
-          SleepDayStageStatsRow(),
+          SleepDayStageStatsRow(
+            key: Key(WidgetKeys.sleepDayStageStatsRow),
+          ),
           SizedBox(height: 21),
-          SleepDayQualityTitle(),
+          SleepDayQualityTitle(
+            key: Key(WidgetKeys.sleepDayQualityTitle),
+          ),
           SizedBox(height: 21),
-          SleepDayQualityNotLateSection(),
+          SleepDayQualityNotLateSection(
+            key: Key(WidgetKeys.sleepDayQualityNotLateSection),
+          ),
           SizedBox(height: 10),
-          SleepDayQualityLackSection(),
+          SleepDayQualityLackSection(
+            key: Key(WidgetKeys.sleepDayQualityLackSection),
+          ),
           SizedBox(height: 10),
-          SleepDayQualityWakeEarlySection(),
+          SleepDayQualityWakeEarlySection(
+            key: Key(WidgetKeys.sleepDayQualityWakeEarlySection),
+          ),
         ],
       ),
     );
@@ -45,10 +67,12 @@ class SleepDayDateNavigator extends GetView<SleepDetailsController> {
   @override
   Widget build(BuildContext context) {
     return DetailDateNavigator(
+      key: const Key(WidgetKeys.detailDateNavigator),
       dateTitle: controller.dayDateTitle,
       isNextDisabled: controller.dayNextDisable,
       onPrevious: () async {
-        final time = GlobalMethods.getOneDayBackward(controller.currentDateTime);
+        final time =
+            GlobalMethods.getOneDayBackward(controller.currentDateTime);
         controller.dayNextDisable = false;
         controller.currentDateTime = time;
         controller.notifyChartTab();
@@ -533,6 +557,7 @@ class SleepWeekTab extends GetView<SleepDetailsController> {
       builder: (_) => Column(
         children: [
           DetailDateNavigator(
+            key: const Key(WidgetKeys.detailDateNavigator),
             dateTitle: controller.weekDateTitle,
             isNextDisabled: controller.weekNextDisable,
             onPrevious: () async {
@@ -569,9 +594,12 @@ class SleepWeekTab extends GetView<SleepDetailsController> {
                   },
           ),
           SleepRangeChart(
+            key: const Key(WidgetKeys.sleepRangeChart),
             series: sleepWeekRangeSeries(controller),
           ),
-          SleepStatSummaryGrid(stats: weekSleepStats(controller)),
+          SleepStatSummaryGrid(
+              key: const Key(WidgetKeys.sleepStatSummaryGrid),
+              stats: weekSleepStats(controller)),
         ],
       ),
     );
@@ -588,6 +616,7 @@ class SleepMonthTab extends GetView<SleepDetailsController> {
       builder: (_) => Column(
         children: [
           DetailDateNavigator(
+            key: const Key(WidgetKeys.detailDateNavigator),
             dateTitle: controller.monthlyDateTitle,
             isNextDisabled: controller.monthNextDisable,
             onPrevious: () async {
@@ -626,10 +655,13 @@ class SleepMonthTab extends GetView<SleepDetailsController> {
                   },
           ),
           SleepRangeChart(
+            key: const Key(WidgetKeys.sleepRangeChart),
             categoryInterval: 2,
             series: sleepMonthRangeSeries(controller),
           ),
-          SleepStatSummaryGrid(stats: monthSleepStats(controller)),
+          SleepStatSummaryGrid(
+              key: const Key(WidgetKeys.sleepStatSummaryGrid),
+              stats: monthSleepStats(controller)),
         ],
       ),
     );

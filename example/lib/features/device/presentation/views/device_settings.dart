@@ -21,12 +21,17 @@ class DeviceSettings extends GetView<DeviceSettingsController> {
       },
       child: Scaffold(
         appBar: AppBrandAppBar(
+          key: const Key(WidgetKeys.appBrandAppBar),
           title: textSetOptions,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
             onPressed: controller.goDashboardPage,
           ),
-          actions: const [ThemeToggleButton()],
+          actions: const [
+            ThemeToggleButton(
+              key: Key(WidgetKeys.themeToggleButton),
+            )
+          ],
         ),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -39,6 +44,7 @@ class DeviceSettings extends GetView<DeviceSettingsController> {
                 GetBuilder<ActivityServiceProvider>(
                   id: ActivityServiceProvider.dashboardVitalsId,
                   builder: (provider) => DeviceSettingsConnectionSection(
+                    key: const Key(WidgetKeys.deviceSettingsConnectionSection),
                     provider: provider,
                     controller: controller,
                     activityServiceProvider: _activityServiceProvider,
@@ -46,6 +52,7 @@ class DeviceSettings extends GetView<DeviceSettingsController> {
                 ),
                 GetBuilder<ActivityServiceProvider>(
                   builder: (provider) => DeviceSettingsOptionsSection(
+                    key: const Key(WidgetKeys.deviceSettingsOptionsSection),
                     provider: provider,
                     controller: controller,
                   ),

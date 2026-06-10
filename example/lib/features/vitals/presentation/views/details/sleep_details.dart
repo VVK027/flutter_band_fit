@@ -4,7 +4,8 @@ import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/detail
 import 'package:get/get.dart';
 
 class SleepDetails extends StatelessWidget {
-  const SleepDetails({super.key, required this.displayTitle, required this.activityLabel});
+  const SleepDetails(
+      {super.key, required this.displayTitle, required this.activityLabel});
 
   final String displayTitle;
   final String activityLabel;
@@ -12,7 +13,8 @@ class SleepDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<SleepDetailsController>(
-      init: SleepDetailsController(displayTitle: displayTitle, activityLabel: activityLabel),
+      init: SleepDetailsController(
+          displayTitle: displayTitle, activityLabel: activityLabel),
       builder: (_) => const SleepDetailsBody(),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
+import 'package:flutter_band_fit_app/core/constants/widget_keys.dart';
 import 'package:flutter_band_fit_app/core/widgets/scoped_loading_overlay.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/blood_pressure_detail_controller.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/vitals_chart_styles.dart';
@@ -13,6 +14,7 @@ class BloodPressureDetailBody extends GetView<BloodPressureDetailController> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: VitalColoredAppBar(
+        key: const Key(WidgetKeys.vitalColoredAppBar),
         title: controller.displayTitle,
         accentColor: bpColor,
         actions: [
@@ -31,6 +33,7 @@ class BloodPressureDetailBody extends GetView<BloodPressureDetailController> {
       ),
       bottomNavigationBar: Obx(
         () => VitalStartButtonBar(
+          key: const Key(WidgetKeys.vitalStartButtonBar),
           accentColor: bpColor,
           enabled: !controller.isTestRunning.value,
           onPressed: () => controller.onStartTest(context),
@@ -38,6 +41,7 @@ class BloodPressureDetailBody extends GetView<BloodPressureDetailController> {
       ),
       body: Obx(
         () => ScopedLoadingOverlay(
+          key: const Key(WidgetKeys.scopedLoadingOverlay),
           visible: controller.isTestRunning.value,
           message: textMeasuring,
           subtitle: textMeasuringVitalMsg,
@@ -46,9 +50,12 @@ class BloodPressureDetailBody extends GetView<BloodPressureDetailController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                DetailActivityHeader(label: controller.activityLabel),
+                DetailActivityHeader(
+                    key: const Key(WidgetKeys.detailActivityHeader),
+                    label: controller.activityLabel),
                 Obx(
                   () => DetailDateNavigator(
+                    key: const Key(WidgetKeys.detailDateNavigator),
                     dateTitle: controller.dateTitle.value,
                     isNextDisabled: controller.isNextDisable.value,
                     onPrevious: () =>
@@ -58,9 +65,11 @@ class BloodPressureDetailBody extends GetView<BloodPressureDetailController> {
                         : () => controller.navigateNext(controller.loadDay),
                   ),
                 ),
-                _BpChart(controller: controller),
+                _BpChart(
+                    key: const Key(WidgetKeys.bpChart), controller: controller),
                 Obx(
                   () => VitalStatCard(
+                    key: const Key(WidgetKeys.vitalStatCard),
                     items: [
                       VitalStatItem(
                         label: textHighPressure,
@@ -73,7 +82,9 @@ class BloodPressureDetailBody extends GetView<BloodPressureDetailController> {
                     ],
                   ),
                 ),
-                const _BpReadingsSection(),
+                const _BpReadingsSection(
+                  key: Key(WidgetKeys.bpReadingsSection),
+                ),
               ],
             ),
           ),
@@ -84,7 +95,7 @@ class BloodPressureDetailBody extends GetView<BloodPressureDetailController> {
 }
 
 class _BpReadingsSection extends GetView<BloodPressureDetailController> {
-  const _BpReadingsSection();
+  const _BpReadingsSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +107,7 @@ class _BpReadingsSection extends GetView<BloodPressureDetailController> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           VitalSectionHeader(
+            key: const Key(WidgetKeys.vitalSectionHeader),
             title: '$textTodayData (${controller.bpDataList.length})',
             icon: Icons.auto_graph_outlined,
             iconColor: Colors.amber.shade700,
@@ -148,7 +160,7 @@ class _BpReadingRow extends StatelessWidget {
 }
 
 class _BpChart extends StatelessWidget {
-  const _BpChart({required this.controller});
+  const _BpChart({super.key, required this.controller});
 
   final BloodPressureDetailController controller;
 

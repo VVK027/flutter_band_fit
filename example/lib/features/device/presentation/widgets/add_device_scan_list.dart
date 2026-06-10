@@ -11,11 +11,15 @@ class AddDeviceScanList extends GetView<AddDeviceController> {
         return SizedBox(
           width: double.infinity,
           height: MediaQuery.sizeOf(context).height * 0.45,
-          child: const _SearchingIndicator(),
+          child: const _SearchingIndicator(
+            key: Key(WidgetKeys.searchingIndicator),
+          ),
         );
       }
       if (controller.smartDevicesList.isEmpty) {
-        return _EmptyMessage(message: controller.showMessage.value);
+        return _EmptyMessage(
+            key: const Key(WidgetKeys.emptyMessage),
+            message: controller.showMessage.value);
       }
       return ListView.separated(
         shrinkWrap: true,
@@ -29,7 +33,7 @@ class AddDeviceScanList extends GetView<AddDeviceController> {
 }
 
 class _SearchingIndicator extends StatelessWidget {
-  const _SearchingIndicator();
+  const _SearchingIndicator({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +65,7 @@ class _SearchingIndicator extends StatelessWidget {
 }
 
 class _EmptyMessage extends StatelessWidget {
-  const _EmptyMessage({required this.message});
+  const _EmptyMessage({super.key, required this.message});
 
   final String message;
 

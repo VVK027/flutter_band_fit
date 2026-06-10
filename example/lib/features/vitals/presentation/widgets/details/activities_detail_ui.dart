@@ -37,8 +37,7 @@ class ActivityStatSummaryGrid extends StatelessWidget {
           childAspectRatio: 1.55,
         ),
         itemCount: stats.length,
-        itemBuilder: (context, index) =>
-            _ActivityStatCard(stat: stats[index]),
+        itemBuilder: (context, index) => _ActivityStatCard(stat: stats[index]),
       ),
     );
   }
