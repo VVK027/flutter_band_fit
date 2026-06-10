@@ -29,6 +29,9 @@ class DevicePresentationRepositoryImpl implements DevicePresentationRepository {
   }
 
   @override
+  void cancelEventListeners() => _provider.cancelEventListeners();
+
+  @override
   Future<void> updateUserParamsWatch(bool isDisconnected) {
     return _provider.updateUserParamsWatch(isDisconnected);
   }
@@ -66,7 +69,8 @@ class DevicePresentationRepositoryImpl implements DevicePresentationRepository {
   }
 
   @override
-  Future<void> updateEventResult(Map<String, dynamic> eventData, BuildContext context) {
+  Future<void> updateEventResult(
+      Map<String, dynamic> eventData, BuildContext context) {
     return _provider.updateEventResult(eventData, context);
   }
 
@@ -96,7 +100,8 @@ class DevicePresentationRepositoryImpl implements DevicePresentationRepository {
   }
 
   @override
-  Future<void> updateDeviceBandLanguage() => _provider.updateDeviceBandLanguage();
+  Future<void> updateDeviceBandLanguage() =>
+      _provider.updateDeviceBandLanguage();
 
   @override
   Future<bool> connectSmartDevice(BandDeviceModel device) {

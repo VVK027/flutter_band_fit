@@ -29,7 +29,8 @@ mixin VitalDetailDateMixin on GetxController {
         b.toString().substring(0, 10).trim();
   }
 
-  Future<void> navigatePrevious(Future<void> Function(DateTime day) loadDay) async {
+  Future<void> navigatePrevious(
+      Future<void> Function(DateTime day) loadDay) async {
     final time = GlobalMethods.getOneDayBackward(currentDateTime.value);
     isNextDisable.value = false;
     currentDateTime.value = time;

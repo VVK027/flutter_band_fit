@@ -21,7 +21,8 @@ class VitalsDataRepositoryImpl implements VitalsDataRepository {
   String getTargetedSteps() => _provider.getTargetedSteps;
 
   @override
-  Future<List<BandHRModel>> getCurrentDayHRData(dynamic hr24Data, String calender) {
+  Future<List<BandHRModel>> getCurrentDayHRData(
+      dynamic hr24Data, String calender) {
     return _provider.getCurrentDayHRData(hr24Data, calender);
   }
 

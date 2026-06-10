@@ -15,10 +15,12 @@ class ShouldSyncVitalsUseCase {
 
     DateTime parsedLastSync;
     try {
-      parsedLastSync = DateFormat(defaultLastSyncDateTimeFormat).parse(
-        lastSyncTime,
-        true,
-      ).toLocal();
+      parsedLastSync = DateFormat(defaultLastSyncDateTimeFormat)
+          .parse(
+            lastSyncTime,
+            true,
+          )
+          .toLocal();
     } catch (_) {
       // If stored sync timestamp is malformed, force a sync.
       return true;

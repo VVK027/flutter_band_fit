@@ -30,7 +30,8 @@ class AppleGoogleBindController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    final repository = HealthBindRepositoryImpl(Get.find<ActivityServiceProvider>());
+    final repository =
+        HealthBindRepositoryImpl(Get.find<ActivityServiceProvider>());
     _unbindHealthDeviceUseCase = UnbindHealthDeviceUseCase(repository);
     _isBoundToDeviceUseCase = IsBoundToDeviceUseCase(repository);
     _health.configure();
@@ -87,7 +88,8 @@ class AppleGoogleBindController extends GetxController {
       HealthDataType.BLOOD_PRESSURE_DIASTOLIC,
       HealthDataType.WORKOUT,
     ];
-    final permissions = List<HealthDataAccess>.filled(12, HealthDataAccess.READ);
+    final permissions =
+        List<HealthDataAccess>.filled(12, HealthDataAccess.READ);
 
     const sleepTypes = [
       HealthDataType.SLEEP_ASLEEP,
