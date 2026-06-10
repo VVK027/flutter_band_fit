@@ -16,7 +16,7 @@ Flutter plugin for **UTE smart band / fitness watch** BLE connectivity on Androi
 
 <img width="1000" height="667" alt="flutter_band_fit_preview" src="https://github.com/user-attachments/assets/7999a352-5b7f-4ecc-b006-2dc8d5973547" />
 
-## Demo
+## Live Demo
 
 https://github.com/user-attachments/assets/715b9c82-4345-4bde-9d9d-4706b03ee25d
 
