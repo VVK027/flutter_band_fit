@@ -98,12 +98,12 @@ class GlobalMethods {
 
   //Related to GFit
   static List<DateTime> calReqDataDateTimeList(String lastSyncDate) {
-    debugPrint('lastSyncDate>>> $lastSyncDate');
+    debugPrintI('lastSyncDate>>> $lastSyncDate');
     // lastSyncDate = '20220224';
     List<DateTime> reqDataDT = [];
     DateTime currDT = DateTime.now();
     var myLastSyncDT = DateTime.parse(lastSyncDate);
-    debugPrint('lastSyncGap>>> ${currDT.difference(myLastSyncDT).inDays}');
+    debugPrintI('lastSyncGap>>> ${currDT.difference(myLastSyncDT).inDays}');
     int myLastSuncGap = currDT.difference(myLastSyncDT).inDays;
     // if (myLastSuncGap > 3) {
     //   myLastSuncGap = 3;
@@ -135,8 +135,8 @@ class GlobalMethods {
   }
 
   static String getBPConditions(int systolic, int diastolic) {
-    debugPrint('_mySys>>> $systolic');
-    debugPrint('_myDia>>> $diastolic');
+    debugPrintI('_mySys>>> $systolic');
+    debugPrintI('_myDia>>> $diastolic');
     String myBPCondition = '';
     if ((systolic < 110 || systolic > 140) || (diastolic < 70 || diastolic > 90)) {
       myBPCondition = healthStatusConsultDoctor;
@@ -147,7 +147,7 @@ class GlobalMethods {
   }
 
   static String getHeartRateConditions(int todayTotalNoBpm) {
-    debugPrint('todayTotalNoBpm>>> $todayTotalNoBpm');
+    debugPrintI('todayTotalNoBpm>>> $todayTotalNoBpm');
     String myHRCondition = '';
     if((todayTotalNoBpm < 60 || todayTotalNoBpm > 85)) {
       myHRCondition = healthStatusConsultDoctor;
@@ -158,7 +158,7 @@ class GlobalMethods {
   }
 
   static String getSleepingConditions(int sleepingHr) {
-    debugPrint('sleepingHr>>> $sleepingHr');
+    debugPrintI('sleepingHr>>> $sleepingHr');
     String myCondition = '';
     if((sleepingHr < 4)) {
       myCondition = healthStatusConsultDoctor;
@@ -169,7 +169,7 @@ class GlobalMethods {
   }
 
   static String getSpo2Conditions(int spo2Value) {
-    debugPrint('spo2Value>>> $spo2Value');
+    debugPrintI('spo2Value>>> $spo2Value');
     String myCondition = '';
     if((spo2Value < 88)) {
       myCondition = healthStatusConsultDoctor;
@@ -180,7 +180,7 @@ class GlobalMethods {
   }
 
   static String getTempConditions(int myBodyTemp) {
-    debugPrint('myBodyTemp>>> $myBodyTemp');
+    debugPrintI('myBodyTemp>>> $myBodyTemp');
     String myHRCondition = '';
     if((myBodyTemp < 36 || myBodyTemp > 38)) {
       myHRCondition = healthStatusConsultDoctor;
@@ -191,7 +191,7 @@ class GlobalMethods {
   }
 
   static MaterialColor getConditionColor(String status) {
-    debugPrint('status>>> $status');
+    debugPrintI('status>>> $status');
     if (status.trim() == healthStatusConsultDoctor) {
       return Colors.red;
     } else if (status.trim() == healthStatusNormal) {
@@ -226,7 +226,7 @@ class GlobalMethods {
       int age = DateTime.now().year - dateOfBirth.year;
       return age;
     } catch (error) {
-      debugPrint("age error $error");
+      debugPrintI("age error $error");
       return 18;
     }
   }
@@ -247,8 +247,8 @@ class GlobalMethods {
   }
 
   static Future<String> selectGoalSteps(BuildContext context, String tempSelectedSteps) async {
-    debugPrint('inside goals');
-    debugPrint('tempSelectedSteps>> $tempSelectedSteps');
+    debugPrintI('inside goals');
+    debugPrintI('tempSelectedSteps>> $tempSelectedSteps');
     // goalTextTitle
     String? selectedSteps = await showThemedPickerBottomSheet<String>(
       context: context,
@@ -351,17 +351,17 @@ class GlobalMethods {
       sevenWeekDays.add(DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day).add(Duration(days: i)));
       i++;
     }
-    debugPrint('$sevenWeekDays');
+    debugPrintI('$sevenWeekDays');
     return sevenWeekDays;
   }
 
   static Future<List<DateTime>> getWeekDatesListByTime(DateTime dateTime) async {
-    //  debugPrint('inside>> $dateTime');
+    //  debugPrintI('inside>> $dateTime');
     // pass the current date time or past week time
     DateTime firstDate = findFirstDateOfTheWeek(dateTime);
-    // debugPrint('firstDate>> $firstDate');
+    // debugPrintI('firstDate>> $firstDate');
     DateTime lastDate = findLastDateOfTheWeek(dateTime);
-    //  debugPrint('lastDate>> $lastDate');
+    //  debugPrintI('lastDate>> $lastDate');
     List<DateTime> weekDays = [];
     if (firstDate.day > lastDate.day) {
       //27 > 3
@@ -376,7 +376,7 @@ class GlobalMethods {
       }
     }
 
-    debugPrint('$weekDays');
+    debugPrintI('$weekDays');
     return weekDays;
   }
 
@@ -384,12 +384,12 @@ class GlobalMethods {
     // below code is used for the current month
 
     // pass the current date time or past week time
-    // debugPrint('inside>> $dateTime');
+    // debugPrintI('inside>> $dateTime');
     // pass the current date time or past week time
     DateTime firstDate = findFirstDateOfTheMonth(dateTime);
-    // debugPrint('firstDate>> $firstDate');
+    // debugPrintI('firstDate>> $firstDate');
     DateTime lastDate = findLastDateOfTheMonth(dateTime);
-    // debugPrint('lastDate>> $lastDate');
+    // debugPrintI('lastDate>> $lastDate');
 
     List<DateTime> monthDays = [];
 
@@ -408,8 +408,8 @@ class GlobalMethods {
     // or
     //String date = dateToday.toString().substring(0,10);
 
-    debugPrint('first date : >> ${firstDate.day}');
-    debugPrint('last date : >> ${lastDate.day}');
+    debugPrintI('first date : >> ${firstDate.day}');
+    debugPrintI('last date : >> ${lastDate.day}');
 
     List<String> weekDays = [];
 
@@ -421,7 +421,7 @@ class GlobalMethods {
           .trim());
     }
 
-    debugPrint('$weekDays');
+    debugPrintI('$weekDays');
 
     List<String> weekDays12 = [];
 
@@ -437,7 +437,7 @@ class GlobalMethods {
           .trim());
     }
 
-    debugPrint('$weekDays12');
+    debugPrintI('$weekDays12');
 
     List<String> weekDays23 = [];
 
@@ -453,7 +453,7 @@ class GlobalMethods {
           .trim());
     }
 
-    debugPrint('$weekDays23');
+    debugPrintI('$weekDays23');
 
     return weekDays;
   }*/
@@ -532,7 +532,7 @@ class GlobalMethods {
       final nextMonth = calMonths[lastMonth - 1];
       return '$firstDay $prevMonth ~ $lastDay $nextMonth'.trim();
     } catch (e) {
-      debugPrint('formatWeekTitleLabelExp: $e');
+      debugPrintI('formatWeekTitleLabelExp: $e');
       return '';
     }
   }

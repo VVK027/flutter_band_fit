@@ -111,7 +111,7 @@ class HeartRateDetailController extends GetxController
       );
       chartPoints.assignAll(dataRepList);
     } catch (e) {
-      debugPrint('HeartRateDetailController.loadDay>> $e');
+      debugPrintI('HeartRateDetailController.loadDay>> $e');
       _clearChart();
     }
   }

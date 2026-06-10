@@ -14,75 +14,94 @@ class VitalMain extends GetView<VitalMainController> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ActivityServiceProvider>(
-      builder: (provider) {
-        return PopScope(
-          canPop: false,
-          onPopInvokedWithResult: (didPop, _) {
-            if (!didPop) controller.goBack();
-          },
-          child: Scaffold(
-            appBar: AppBrandAppBar(
-              title: textBandFit,
-              leading: Platform.isIOS
-                  ? IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-                      onPressed: controller.goBack,
-                    )
-                  : null,
-              actions: [
-                const ThemeToggleButton(),
-                IconButton(
-                  tooltip: textSettings,
-                  icon: Image.asset(
-                    'assets/fit/watch_selected.png',
-                    width: 28,
-                    height: 28,
-                  ),
-                  onPressed: () =>
-                      GlobalMethods.navigateTo(const DeviceSettings()),
-                ),
-                const SizedBox(width: 4),
-              ],
-            ),
-            body: Obx(
-              () => controller.isLoadingProgress.value
-                  ? const Center(child: CircularProgressIndicator())
-                  : ListView(
-                      children: [
-                        const SizedBox(height: 8),
-                        VitalMainStepsCard(
-                          provider: provider,
-                          onOpenSteps: openStepsDetail,
-                          onOpenWeather: openWeatherDetails,
-                          isSyncBlocked: () => provider.isSyncProgress,
-                          onSyncNow: () => controller.handleSyncNow(context),
-                        ),
-                        if (!provider.isSyncProgress &&
-                            !provider.getDeviceConnected &&
-                            provider.getOverAllStepsData.isEmpty &&
-                            provider.getSteps <= 0)
-                          VitalMainAddDeviceBanner(
-                            onTap: () =>
-                                GlobalMethods.navigateTo(const AddDevice()),
-                          ),
-                        if (provider.isSyncProgress)
-                          VitalMainSyncingBanner(
-                            rotation: controller.syncController,
-                            onTap: () =>
-                                GlobalMethods.navigateTo(const AddDevice()),
-                          ),
-                        VitalMainVitalList(
-                          provider: provider,
-                          isSyncBlocked: () => provider.isSyncProgress,
-                          onSyncBlockedTap: controller.showSyncMessage,
-                        ),
-                      ],
-                    ),
-            ),
-          ),
-        );
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) controller.goBack();
       },
+      child: Scaffold(
+        appBar: AppBrandAppBar(
+          title: textBandFit,
+          leading: Platform.isIOS
+              ? IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+                  onPressed: controller.goBack,
+                )
+              : null,
+          actions: [
+            const ThemeToggleButton(),
+            IconButton(
+              tooltip: textSettings,
+              icon: Image.asset(
+                'assets/fit/watch_selected.png',
+                width: 28,
+                height: 28,
+              ),
+              onPressed: () => GlobalMethods.navigateTo(const DeviceSettings()),
+            ),
+            const SizedBox(width: 4),
+          ],
+        ),
+        body: Obx(
+          () => controller.isLoadingProgress.value
+              ? const Center(
+                  child: RepaintBoundary(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              : const _VitalMainBody(),
+        ),
+      ),
+    );
+  }
+}
+
+/// Provider-driven dashboard sections — scoped below the app bar so chrome does not rebuild.
+class _VitalMainBody extends GetView<VitalMainController> {
+  const _VitalMainBody();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: [
+        GetBuilder<ActivityServiceProvider>(
+          id: ActivityServiceProvider.dashboardStepsId,
+          builder: (provider) => VitalMainStepsCard(
+            provider: provider,
+            onOpenSteps: openStepsDetail,
+            onOpenWeather: openWeatherDetails,
+            isSyncBlocked: () => provider.isSyncProgress,
+            onSyncNow: () => controller.handleSyncNow(context),
+          ),
+        ),
+        GetBuilder<ActivityServiceProvider>(
+          id: ActivityServiceProvider.dashboardBannersId,
+          builder: (provider) {
+            if (provider.isSyncProgress) {
+              return VitalMainSyncingBanner(
+                rotation: controller.syncController,
+                onTap: () => GlobalMethods.navigateTo(const AddDevice()),
+              );
+            }
+            if (!provider.getDeviceConnected &&
+                provider.getOverAllStepsData.isEmpty &&
+                provider.getSteps <= 0) {
+              return VitalMainAddDeviceBanner(
+                onTap: () => GlobalMethods.navigateTo(const AddDevice()),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
+        GetBuilder<ActivityServiceProvider>(
+          id: ActivityServiceProvider.dashboardVitalsId,
+          builder: (provider) => VitalMainVitalList(
+            provider: provider,
+            isSyncBlocked: () => provider.isSyncProgress,
+            onSyncBlockedTap: controller.showSyncMessage,
+          ),
+        ),
+      ],
     );
   }
 }

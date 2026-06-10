@@ -97,7 +97,7 @@ class TemperatureDetailController extends GetxController
           }
         }
       },
-      onError: (error) => debugPrint('receiveTemperatureListenersError>> $error'),
+      onError: (error) => debugPrintI('receiveTemperatureListenersError>> $error'),
       onDone: () {},
     );
     bleProvider.resumeBPListeners();
@@ -151,7 +151,7 @@ class TemperatureDetailController extends GetxController
       minTemperature.value = smallestValue.toStringAsFixed(1);
       maxTemperature.value = largestValue.toStringAsFixed(1);
     } catch (e) {
-      debugPrint('TemperatureDetailController.loadDay>> $e');
+      debugPrintI('TemperatureDetailController.loadDay>> $e');
       _clearChart();
     }
   }

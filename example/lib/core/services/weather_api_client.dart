@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter_band_fit/flutter_band_fit.dart' show debugPrintI;
 import 'package:flutter_band_fit_app/core/constants/weather_config.dart';
 import 'package:http/http.dart' as http;
 
@@ -20,7 +20,7 @@ class WeatherApiClient {
   }) async {
     const apiKey = WeatherConfig.openWeatherApiKey;
     if (apiKey.isEmpty) {
-      debugPrint(
+      debugPrintI(
         'WeatherApiClient: set OPEN_WEATHER_API_KEY via --dart-define=OPEN_WEATHER_API_KEY=...',
       );
       return null;
@@ -42,7 +42,7 @@ class WeatherApiClient {
     try {
       final response = await _client.get(uri).timeout(const Duration(seconds: 15));
       if (response.statusCode != 200) {
-        debugPrint('WeatherApiClient: HTTP ${response.statusCode}');
+        debugPrintI('WeatherApiClient: HTTP ${response.statusCode}');
         return null;
       }
       final decoded = jsonDecode(response.body);
@@ -51,7 +51,7 @@ class WeatherApiClient {
       }
       return decoded;
     } catch (e, st) {
-      debugPrint('WeatherApiClient: $e\n$st');
+      debugPrintI('WeatherApiClient: $e\n$st');
       return null;
     }
   }

@@ -56,7 +56,7 @@ class AddDeviceController extends GetxController {
 
     showProgress.value = true;
     final initResult = await _deviceRepository.initializeDeviceConnection();
-    debugPrint('initResult $initResult');
+    debugPrintI('initResult $initResult');
 
     final ctx = Get.context;
     if (ctx == null) return;
@@ -85,7 +85,7 @@ class AddDeviceController extends GetxController {
     _deviceRepository.receiveEventsFrom(
       onDataUpdate: (data) async {
         final eventData = JsonUtils.asMap(jsonDecode(data as String));
-        debugPrint('addDeviceListener>> $data');
+        debugPrintI('addDeviceListener>> $data');
         final result = eventData['result'].toString();
         final status = eventData['status'].toString();
 
@@ -197,15 +197,15 @@ class AddDeviceController extends GetxController {
           }
         }
       },
-      onError: (error) => debugPrint('receiveEventsFromError::>> $error'),
+      onError: (error) => debugPrintI('receiveEventsFromError::>> $error'),
       onDone: () {},
     );
   }
 
   Future<bool> checkDeviceConnectReset() async {
-    debugPrint('getLastMacAddressId>> ${_deviceRepository.getLastMacAddressId()}');
+    debugPrintI('getLastMacAddressId>> ${_deviceRepository.getLastMacAddressId()}');
     final address = await _deviceRepository.getConnectedLastDeviceAddress();
-    debugPrint('address>> $address');
+    debugPrintI('address>> $address');
     return false;
   }
 

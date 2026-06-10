@@ -129,7 +129,7 @@ class AppleGoogleBindController extends GetxController {
         appState.value = HealthBindAppState.noData;
       }
     } catch (e) {
-      debugPrint('AppleGoogleBindController.fetchData>> $e');
+      debugPrintI('AppleGoogleBindController.fetchData>> $e');
       appState.value = HealthBindAppState.dataNotFetched;
     }
   }
@@ -149,7 +149,7 @@ class AppleGoogleBindController extends GetxController {
 
   void goBack() {
     if (_isBoundToDeviceUseCase(deviceTypeName)) {
-      debugPrint('goDashboard_inside_if');
+      debugPrintI('goDashboard_inside_if');
     } else {
       Get.back<void>();
     }

@@ -7,4 +7,5 @@ export 'package:flutter/material.dart';
 export 'package:flutter/services.dart';
 export 'package:get/get.dart' hide HeaderValue;
 
+export 'package:flutter_band_fit/flutter_band_fit.dart' show debugPrintI;
 export 'package:flutter_band_fit_app/core/utils/json_utils.dart';

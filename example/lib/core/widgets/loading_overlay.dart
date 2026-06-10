@@ -43,12 +43,14 @@ class LoadingOverlay extends StatelessWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            SizedBox(
-                              width: 48,
-                              height: 48,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 3,
-                                color: theme.colorScheme.primary,
+                            RepaintBoundary(
+                              child: SizedBox(
+                                width: 48,
+                                height: 48,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                  color: theme.colorScheme.primary,
+                                ),
                               ),
                             ),
                             if (message != null) ...[

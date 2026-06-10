@@ -1,4 +1,5 @@
 import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
+import 'package:flutter_band_fit_app/core/widgets/scoped_loading_overlay.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/blood_pressure_detail_controller.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/vitals_chart_styles.dart';
 import 'package:intl/intl.dart';
@@ -9,34 +10,38 @@ class BloodPressureDetailBody extends GetView<BloodPressureDetailController> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Obx(
-      () => LoadingOverlay(
-        visible: controller.isTestRunning.value,
-        message: textMeasuring,
-        subtitle: textMeasuringVitalMsg,
-        child: Scaffold(
-          backgroundColor: theme.scaffoldBackgroundColor,
-          appBar: VitalColoredAppBar(
-            title: controller.displayTitle,
-            accentColor: bpColor,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.calendar_today),
-                onPressed: controller.isTestRunning.value
-                    ? null
-                    : () => controller.pickCalendarDay(
-                          context,
-                          controller.loadDay,
-                        ),
-              ),
-            ],
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: VitalColoredAppBar(
+        title: controller.displayTitle,
+        accentColor: bpColor,
+        actions: [
+          Obx(
+            () => IconButton(
+              icon: const Icon(Icons.calendar_today),
+              onPressed: controller.isTestRunning.value
+                  ? null
+                  : () => controller.pickCalendarDay(
+                        context,
+                        controller.loadDay,
+                      ),
+            ),
           ),
-          bottomNavigationBar: VitalStartButtonBar(
-            accentColor: bpColor,
-            enabled: !controller.isTestRunning.value,
-            onPressed: () => controller.onStartTest(context),
-          ),
-          body: SingleChildScrollView(
+        ],
+      ),
+      bottomNavigationBar: Obx(
+        () => VitalStartButtonBar(
+          accentColor: bpColor,
+          enabled: !controller.isTestRunning.value,
+          onPressed: () => controller.onStartTest(context),
+        ),
+      ),
+      body: Obx(
+        () => ScopedLoadingOverlay(
+          visible: controller.isTestRunning.value,
+          message: textMeasuring,
+          subtitle: textMeasuringVitalMsg,
+          child: SingleChildScrollView(
             padding: const EdgeInsets.only(bottom: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -68,38 +73,75 @@ class BloodPressureDetailBody extends GetView<BloodPressureDetailController> {
                     ],
                   ),
                 ),
-                Obx(() {
-                  if (controller.bpDataList.isEmpty) {
-                    return const SizedBox.shrink();
-                  }
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      VitalSectionHeader(
-                        title: '$textTodayData (${controller.bpDataList.length})',
-                        icon: Icons.auto_graph_outlined,
-                        iconColor: Colors.amber.shade700,
-                      ),
-                      VitalDataTable(
-                        columns: const [textTime, textHighPressure, textLowPressure],
-                        rows: controller.bpDataList
-                            .map(
-                              (item) => [
-                                DateFormat.jm().format(item.time),
-                                '${item.highPressure} $bpUnits',
-                                '${item.lowPressure} $bpUnits',
-                              ],
-                            )
-                            .toList(),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-                  );
-                }),
+                const _BpReadingsSection(),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _BpReadingsSection extends GetView<BloodPressureDetailController> {
+  const _BpReadingsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      if (controller.bpDataList.isEmpty) {
+        return const SizedBox.shrink();
+      }
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          VitalSectionHeader(
+            title: '$textTodayData (${controller.bpDataList.length})',
+            icon: Icons.auto_graph_outlined,
+            iconColor: Colors.amber.shade700,
+          ),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemExtent: 40,
+            itemCount: controller.bpDataList.length,
+            itemBuilder: (context, index) {
+              final item = controller.bpDataList[index];
+              return _BpReadingRow(
+                time: DateFormat.jm().format(item.time),
+                high: '${item.highPressure} $bpUnits',
+                low: '${item.lowPressure} $bpUnits',
+              );
+            },
+          ),
+          const SizedBox(height: 8),
+        ],
+      );
+    });
+  }
+}
+
+class _BpReadingRow extends StatelessWidget {
+  const _BpReadingRow({
+    required this.time,
+    required this.high,
+    required this.low,
+  });
+
+  final String time;
+  final String high;
+  final String low;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Row(
+        children: [
+          Expanded(child: Text(time)),
+          Expanded(child: Text(high, textAlign: TextAlign.center)),
+          Expanded(child: Text(low, textAlign: TextAlign.end)),
+        ],
       ),
     );
   }

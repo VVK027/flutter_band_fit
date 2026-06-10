@@ -15,6 +15,38 @@ import 'package:intl/intl.dart';
 /// UI controllers should prefer feature repositories/use cases where they exist;
 /// this class remains the integration point for [FlutterBandFit] events and storage.
 class ActivityServiceProvider extends GetxController {
+  /// Scoped [GetBuilder] ids for the vitals dashboard (see [VitalMain]).
+  static const dashboardStepsId = 'dashboard_steps';
+  static const dashboardBannersId = 'dashboard_banners';
+  static const dashboardVitalsId = 'dashboard_vitals';
+
+  void notifyDashboardSteps() => update([dashboardStepsId]);
+  void notifyDashboardBanners() => update([dashboardBannersId]);
+  void notifyDashboardVitals() => update([dashboardVitalsId]);
+  void notifyDashboardAll() => update([
+        dashboardStepsId,
+        dashboardBannersId,
+        dashboardVitalsId,
+      ]);
+
+  bool _propagatingDashboardUpdate = false;
+
+  /// Global [update] also refreshes dashboard [GetBuilder]s that use [dashboardStepsId],
+  /// [dashboardBannersId], and [dashboardVitalsId] (connection, sync, persisted load).
+  @override
+  void update([List<Object>? ids, bool condition = true]) {
+    super.update(ids, condition);
+    if (!_propagatingDashboardUpdate && ids == null) {
+      _propagatingDashboardUpdate = true;
+      super.update([
+        dashboardStepsId,
+        dashboardBannersId,
+        dashboardVitalsId,
+      ], condition);
+      _propagatingDashboardUpdate = false;
+    }
+  }
+
   /// True after [fetchLocalDataAssign] finishes loading persisted vitals.
   final isLocalDataLoaded = false.obs;
 
@@ -242,7 +274,7 @@ class ActivityServiceProvider extends GetxController {
   /// Loads profile, device flags, and cached vitals from [SharedService], then hydrates the dashboard.
   Future<void> initializeProvider() async {
     await fetchLocalDataAssign();
-    debugPrint("inside initializeProvider");
+    debugPrintI("inside initializeProvider");
     update();
   }
 
@@ -279,7 +311,7 @@ class ActivityServiceProvider extends GetxController {
     batteryPercentage = int.parse(sharedService.getBatteryStatus());
 
     tempCelsius = sharedService.getIsTempCelsius();
-    debugPrint('123>>tempCelsius>> $tempCelsius');
+    debugPrintI('123>>tempCelsius>> $tempCelsius');
     raiseHandWakeUp = sharedService.getRaiseWakeUp();
 
     overAllStepsData = sharedService.getOverAllSteps();
@@ -296,8 +328,8 @@ class ActivityServiceProvider extends GetxController {
     lastSyncDateTime = sharedService.getLastSyncDateTime();
 
     update();
-    debugPrint('deviceSWNameLast>>$deviceSWName');
-    debugPrint('deviceMacAddressLast>>$deviceMacAddress');
+    debugPrintI('deviceSWNameLast>>$deviceSWName');
+    debugPrintI('deviceMacAddressLast>>$deviceMacAddress');
 
     String weatherResponse = '';
     if (sharedService.getDeviceCityName() != null && sharedService.getLatitude() != null) {
@@ -308,7 +340,7 @@ class ActivityServiceProvider extends GetxController {
       weatherResponse = sharedService.getWeatherResponseData()!;
     }
 
-    debugPrint("isSmartMConnected>> $deviceConnected");
+    debugPrintI("isSmartMConnected>> $deviceConnected");
     update();
     await addRecentDataUI(weatherResponse);
     updateBMIWithHeightWeight(getUserHeight, getUserWeight, false);
@@ -321,7 +353,7 @@ class ActivityServiceProvider extends GetxController {
       await _hydrateDashboardFromStoredVitals();
       await _applyStoredWeatherResponse(weatherResponse);
     } catch (e) {
-      debugPrint('addRecentDataUIException: $e');
+      debugPrintI('addRecentDataUIException: $e');
     }
   }
 
@@ -477,7 +509,7 @@ class ActivityServiceProvider extends GetxController {
         daily,
       );
     } catch (e) {
-      debugPrint('_parseWeatherResponse: $e');
+      debugPrintI('_parseWeatherResponse: $e');
       return null;
     }
   }
@@ -507,14 +539,14 @@ class ActivityServiceProvider extends GetxController {
   }
 
   Future<void> setDefaultUserProfile(String uId, String gender, String dob) async {
-    debugPrint("inside setWatchProfile");
+    debugPrintI("inside setWatchProfile");
 
     userGender = gender;
     userDOB = dob;
     userAge = GlobalMethods.getAgeFromDOB(dob).toString();
     update();
     await sharedService.setInitialParams(userGender, userAge, userDOB);
-    debugPrint("updated setWatchProfile");
+    debugPrintI("updated setWatchProfile");
   }
 
   Future<void> setDefaultHeightWeight(int height, int weight) async {
@@ -533,7 +565,7 @@ class ActivityServiceProvider extends GetxController {
     update();
     await sharedService.setInitialParams(userGender, userAge, userDOB);
     await sharedService.setInitialHeightWeight(getUserHeight, getUserWeight);
-    debugPrint("updated updateWatchProfile");
+    debugPrintI("updated updateWatchProfile");
   }
 
 
@@ -542,14 +574,14 @@ class ActivityServiceProvider extends GetxController {
     userBMIStatus = bmiStatus;
     update();
     sharedService.updateBMIStatus(getUserBMI, getUserBMIStatus);
-    debugPrint("updated updateBMIStatus");
+    debugPrintI("updated updateBMIStatus");
   }
 
   Future<void> updateTargetedSteps(String updatedSteps) async {
     targetedSteps = updatedSteps;
     update();
     await sharedService.setTargetedSteps(targetedSteps);
-    debugPrint("updated updateTargetedSteps2");
+    debugPrintI("updated updateTargetedSteps2");
   }
 
   Future<void> setScreenOffTime(String time) async {
@@ -588,13 +620,13 @@ class ActivityServiceProvider extends GetxController {
 
   void updateDialDownloadProgress(int progress) {
     _dialDownloadProgress = progress;
-    debugPrint('_dialDownloadProgress>> $_dialDownloadProgress');
+    debugPrintI('_dialDownloadProgress>> $_dialDownloadProgress');
     update();
   }
 
   void updateDialSyncingProgress(int progress) {
     _syncDialProgress = progress;
-    debugPrint('_syncDialProgress>> $_syncDialProgress');
+    debugPrintI('_syncDialProgress>> $_syncDialProgress');
     update();
   }
 
@@ -659,7 +691,7 @@ class ActivityServiceProvider extends GetxController {
     //}
     update();
     await sharedService.setTemperature24HrEnabled(getTemperature24Enabled);
-    debugPrint('updateTemperature24Enabled>> $isEnabled');
+    debugPrintI('updateTemperature24Enabled>> $isEnabled');
   }
 
   void updateDeviceStats(String steps, String distance, String calories) {
@@ -668,7 +700,7 @@ class ActivityServiceProvider extends GetxController {
     distanceValue = distance;
 
     progressPercentage = (stepsValue * 100) / int.parse(targetedSteps);
-    update();
+    notifyDashboardSteps();
   }
 
   void updateHearRate(String hr, String dateTime) {
@@ -681,16 +713,16 @@ class ActivityServiceProvider extends GetxController {
     }else{
       hrDateTime = dateTime;
     }
-    debugPrint('after_update>> $heartRateValue');
-    debugPrint('after_update>> $hrDateTime');
-    update();
+    debugPrintI('after_update>> $heartRateValue');
+    debugPrintI('after_update>> $hrDateTime');
+    notifyDashboardVitals();
   }
 
   void update24HrHearRate(String maxHr, String minHr, String avgHr) {
     maxHrValue = maxHr;
     minHrValue = minHr;
     avgHrValue = avgHr;
-    update();
+    notifyDashboardVitals();
   }
 
   void updateBloodPressure(String bp, String dateTime) {
@@ -702,14 +734,14 @@ class ActivityServiceProvider extends GetxController {
     }else{
       bpDateTime = dateTime;
     }
-    update();
+    notifyDashboardVitals();
   }
 
   Future<void> updateBPressureData(String high, String low, String calender, String time, dynamic bpData) async {
-    debugPrint('calender12>>$calender');
-    debugPrint('time12>>$time');
+    debugPrintI('calender12>>$calender');
+    debugPrintI('time12>>$time');
     String dateTime = getTimeByCalenderTime(calender, time);
-    debugPrint('dateTime>>$dateTime');
+    debugPrintI('dateTime>>$dateTime');
 
     String bpValue = '$high /$low';
     bloodPressureValue = bpValue;
@@ -722,7 +754,7 @@ class ActivityServiceProvider extends GetxController {
       bpDateTime = dateTime;
     }
     overAllBPData = jsonEncode(bpData);
-    update();
+    notifyDashboardVitals();
     await sharedService.setOverAllBP(getOverAllBPData);
   }
 
@@ -736,7 +768,7 @@ class ActivityServiceProvider extends GetxController {
     String outputDate = outputFormat.format(parseDate);
 
     sleepHrsDateTime = outputDate;
-    update();
+    notifyDashboardVitals();
   }
 
   void updateTemperature(String inCelsius, String inFahrenheit, String dateTime) {
@@ -752,7 +784,7 @@ class ActivityServiceProvider extends GetxController {
     }else{
       temperatureDateTime = dateTime;
     }
-    update();
+    notifyDashboardVitals();
   }
 
   void updateOxygenSaturation(String oxyValue, String dateTime) {
@@ -764,7 +796,7 @@ class ActivityServiceProvider extends GetxController {
     }else{
       oxygenDateTime = dateTime;
     }
-    update();
+    notifyDashboardVitals();
   }
 
   Future<void> updateTemperatureWithData(dynamic jsonData, dynamic temperatureData, DateTime dateTimeSend) async {
@@ -803,7 +835,7 @@ class ActivityServiceProvider extends GetxController {
         final version = JsonUtils.asString(
           JsonUtils.asMap(jsonData)['deviceVersion'],
         );
-        debugPrint('deviceVersion>>$version');
+        debugPrintI('deviceVersion>>$version');
         if (version.isNotEmpty) {
           await setDeviceVersion(version);
         }
@@ -811,7 +843,7 @@ class ActivityServiceProvider extends GetxController {
 
       case BandFitConstants.BATTERY_STATUS:
         String batteryStat = jsonData['batteryStatus'].toString();
-        debugPrint('batteryStatus>>$batteryStat');
+        debugPrintI('batteryStatus>>$batteryStat');
         setBatteryPercentage(batteryStat, true);
         break;
 
@@ -821,7 +853,7 @@ class ActivityServiceProvider extends GetxController {
           if (resultStatus.isNotEmpty) {
             if (resultStatus == "119") {
               String resultValue = jsonData['value'].toString();
-              debugPrint('resultValue>> $resultValue');
+              debugPrintI('resultValue>> $resultValue');
               if (Platform.isIOS) {
                 if (resultValue.isNotEmpty) {
                   if(resultValue == "70"){
@@ -835,15 +867,15 @@ class ActivityServiceProvider extends GetxController {
               }else{
                 final decimalData = JsonUtils.asList(jsonData['decimal']);
                 if (decimalData.isNotEmpty) {
-                  debugPrint('decimalData>> $decimalData');
+                  debugPrintI('decimalData>> $decimalData');
                   String result = decimalData[0].toString();
-                  debugPrint('result>> $result');
+                  debugPrintI('result>> $result');
                   if (result == "66" || result == "2") {
                     await updateDoNotDisturbEnable(false, getMotorVibrateEnabled, getMessagesOnEnabled);
                   } else if (result == "74" || result == "10") {
                     await updateDoNotDisturbEnable(true, getMotorVibrateEnabled, getMessagesOnEnabled);
                   } else {
-                    debugPrint('resultNothingToDo>> $result');
+                    debugPrintI('resultNothingToDo>> $result');
                   }
                 }
               }
@@ -853,24 +885,24 @@ class ActivityServiceProvider extends GetxController {
         break;
 
       case BandFitConstants.DND_CLOSED:
-        debugPrint('DND_CLOSED');
+        debugPrintI('DND_CLOSED');
         if (status == BandFitConstants.SC_SUCCESS) {
           String resultStatus = jsonData['result'].toString();
           if (resultStatus.isNotEmpty) {
             if (resultStatus == "85") {
               String resultValue = jsonData['value'].toString();
-              debugPrint('resultValue>> $resultValue');
+              debugPrintI('resultValue>> $resultValue');
               List<dynamic> hexList = jsonData['hex'] as List<dynamic>;
               List<dynamic> decimalList = jsonData['decimal'] as List<dynamic>;
-              debugPrint('hexList>> $hexList');
-              debugPrint('decimalList>> $decimalList');
+              debugPrintI('hexList>> $hexList');
+              debugPrintI('decimalList>> $decimalList');
 
               String dndResult = hexList[0].toString();
-              debugPrint('dndResult>> $dndResult');
+              debugPrintI('dndResult>> $dndResult');
               if (dndResult.isNotEmpty) {
                 if (dndResult == "D7") {
                   String dndValue = hexList[1].toString();
-                  debugPrint('dndValue>> $dndValue');
+                  debugPrintI('dndValue>> $dndValue');
                   if (dndValue == "0A") {
                     await updateDoNotDisturbEnable(getDndEnabled, true, getMessagesOnEnabled);
                   } else if (dndValue == "08") {
@@ -888,24 +920,24 @@ class ActivityServiceProvider extends GetxController {
         break;
 
       case BandFitConstants.DND_OPENED:
-        debugPrint('DND_OPENED');
+        debugPrintI('DND_OPENED');
         if (status == BandFitConstants.SC_SUCCESS) {
           String resultStatus = jsonData['result'].toString();
           if (resultStatus.isNotEmpty) {
             if (resultStatus == "84") {
               String resultValue = jsonData['value'].toString();
-              debugPrint('resultValue>> $resultValue');
+              debugPrintI('resultValue>> $resultValue');
               List<dynamic> hexList = jsonData['hex'] as List<dynamic>;
               List<dynamic> decimalList = jsonData['decimal'] as List<dynamic>;
-              debugPrint('hexList>> $hexList');
-              debugPrint('decimalList>> $decimalList');
+              debugPrintI('hexList>> $hexList');
+              debugPrintI('decimalList>> $decimalList');
 
               String dndResult = hexList[0].toString();
-              debugPrint('dndResult>> $dndResult');
+              debugPrintI('dndResult>> $dndResult');
               if (dndResult.isNotEmpty) {
                 if (dndResult == "D7") {
                   String dndValue = hexList[1].toString();
-                  debugPrint('dndValue>> $dndValue');
+                  debugPrintI('dndValue>> $dndValue');
                   if (dndValue == "08") {
                     await updateDoNotDisturbEnable(true, getMotorVibrateEnabled, getMessagesOnEnabled);
                   } else if (dndValue == "0C") {
@@ -915,7 +947,7 @@ class ActivityServiceProvider extends GetxController {
                   } else if (dndValue == "0E") {
                     await updateDoNotDisturbEnable(true, true, true);
                   } else {
-                    debugPrint('dndNothingValue>> $dndValue');
+                    debugPrintI('dndNothingValue>> $dndValue');
                   }
                 }
               }
@@ -999,13 +1031,13 @@ class ActivityServiceProvider extends GetxController {
 
       case BandFitConstants.SYNC_OXYGEN_FINISH:
         if (status == BandFitConstants.SC_SUCCESS) {
-          debugPrint("all_data_sync_is_done");
-          debugPrint("all_data_sync_is_done>>> $jsonData");
+          debugPrintI("all_data_sync_is_done");
+          debugPrintI("all_data_sync_is_done>>> $jsonData");
           //await fetchOverAllDeviceData();
           if (Platform.isIOS) {
             if (jsonData != null) {
               final oxyData = JsonUtils.asList(jsonData);
-              debugPrint("oxyData>>> $oxyData");
+              debugPrintI("oxyData>>> $oxyData");
               if (oxyData.isNotEmpty) {
                 await updateOxygenSyncSDKData(oxyData);
               }
@@ -1025,7 +1057,7 @@ class ActivityServiceProvider extends GetxController {
           String steps = jsonData['steps'].toString();
           String distance = jsonData['distance'].toString();
           String calories = jsonData['calories'].toString();
-          debugPrint('real_steps: $steps, distance: $distance, calories: $calories');
+          debugPrintI('real_steps: $steps, distance: $distance, calories: $calories');
           //String formattedSteps = GlobalMethods.formatNumber(int.parse(steps));
           updateDeviceStats(steps, distance, calories);
         }
@@ -1035,7 +1067,7 @@ class ActivityServiceProvider extends GetxController {
       // real time sync as well as the daily sync
         if (status == BandFitConstants.SC_SUCCESS) {
           String hr = jsonData['hr'].toString();
-          debugPrint('inside hr $hr');
+          debugPrintI('inside hr $hr');
           updateHearRate(hr, getHRDateTime);
         }
         break;
@@ -1047,7 +1079,7 @@ class ActivityServiceProvider extends GetxController {
           String minHr = jsonData['minHr'].toString();
           String avgHr = jsonData['avgHr'].toString();
           String rtValue = jsonData['rtValue'].toString();
-          debugPrint('inside maxHr $maxHr -- $rtValue');
+          debugPrintI('inside maxHr $maxHr -- $rtValue');
           //if (rtValue =='true') {
           update24HrHearRate(maxHr, minHr, avgHr);
           //}
@@ -1055,7 +1087,7 @@ class ActivityServiceProvider extends GetxController {
         break;
 
       case BandFitConstants.SYNC_STATUS_24_HOUR_RATE_OPEN:
-        debugPrint('SYNC_STATUS_24_HOUR_RATE_OPEN');
+        debugPrintI('SYNC_STATUS_24_HOUR_RATE_OPEN');
         String status = jsonData['status'].toString();
         if (status.isNotEmpty) {
           await updateHeartRate24Enabled(status);
@@ -1064,16 +1096,16 @@ class ActivityServiceProvider extends GetxController {
         break;
 
       case BandFitConstants.SYNC_STATUS_24_HOUR_OXYGEN_OPEN:
-        debugPrint('SYNC_STATUS_24_HOUR_OXYGEN_OPEN');
+        debugPrintI('SYNC_STATUS_24_HOUR_OXYGEN_OPEN');
         String status = jsonData['status'].toString();
-        debugPrint('SYNC_STATUS>> $status');
+        debugPrintI('SYNC_STATUS>> $status');
         if (status.isNotEmpty) {
           await updateOxygen24Enabled(status);
         }
         break;
 
       case BandFitConstants.SYNC_TEMPERATURE_24_HOUR_AUTOMATIC:
-        debugPrint('SYNC_TEMPERATURE_24_HOUR_AUTOMATIC');
+        debugPrintI('SYNC_TEMPERATURE_24_HOUR_AUTOMATIC');
         String status = jsonData['status'].toString();
         if (status.isNotEmpty) {
           //if (getTemperature24Enabled) {
@@ -1083,10 +1115,10 @@ class ActivityServiceProvider extends GetxController {
         break;
       case BandFitConstants.CALLBACK_EXCEPTION:
       // something went wrong, which falls in the exception
-        debugPrint('event_exception_occurred');
+        debugPrintI('event_exception_occurred');
         break;
       default:
-        debugPrint('no_event_exception');
+        debugPrintI('no_event_exception');
         break;
     }
   }
@@ -1216,7 +1248,7 @@ class ActivityServiceProvider extends GetxController {
     _autoReconnectInProgress = true;
 
     try {
-      debugPrint('autoReconnect: attempting for $mac');
+      debugPrintI('autoReconnect: attempting for $mac');
       if (Platform.isAndroid) {
         await flutterBandFit.clearGattDisconnect();
         await Future<void>.delayed(const Duration(milliseconds: 800));
@@ -1247,7 +1279,7 @@ class ActivityServiceProvider extends GetxController {
       if (connected) {
         clearAutoReconnectGuard();
       }
-      debugPrint('autoReconnect: result=$connected');
+      debugPrintI('autoReconnect: result=$connected');
       return connected;
     } finally {
       _autoReconnectInProgress = false;
@@ -1303,8 +1335,8 @@ class ActivityServiceProvider extends GetxController {
     deviceMacAddress = sharedService.getDeviceMacAddress();
     final mac = getDeviceMacAddress.isNotEmpty ? getDeviceMacAddress : deviceMacAddress;
     final name = getDeviceSWName.isNotEmpty ? getDeviceSWName : deviceSWName;
-    debugPrint('reconnecting_with_name>>$name');
-    debugPrint('reconnecting_with_mac>>$mac');
+    debugPrintI('reconnecting_with_name>>$name');
+    debugPrintI('reconnecting_with_mac>>$mac');
     update();
 
     if (mac.isEmpty) {
@@ -1335,7 +1367,7 @@ class ActivityServiceProvider extends GetxController {
 
     if (result == BandFitConstants.SC_INIT) {
       final connected = await flutterBandFit.connectDevice(deviceModel);
-      debugPrint('connect_with_mac_status $connected');
+      debugPrintI('connect_with_mac_status $connected');
       if (connected) return true;
     }
 
@@ -1343,14 +1375,14 @@ class ActivityServiceProvider extends GetxController {
         result == BandFitConstants.SC_RE_INIT ||
         result == BandFitConstants.SC_BLE_RE_INIT) {
       final reconnected = await reConnectSmartDevice(deviceModel);
-      debugPrint('reconnect_smart_device_status $reconnected');
+      debugPrintI('reconnect_smart_device_status $reconnected');
       if (reconnected) return true;
     }
 
     if (await checkIsDeviceConnected()) return true;
 
     final lastAddress = await connectWithLastDeviceAddress();
-    debugPrint('connect_last_device_status $lastAddress');
+    debugPrintI('connect_last_device_status $lastAddress');
     return lastAddress;
   }
 
@@ -1366,14 +1398,14 @@ class ActivityServiceProvider extends GetxController {
       deviceType: "",
       rssi: ""
     );
-    debugPrint("name: ${deviceModel.name}  deviceMacAddress: ${deviceModel.address} ");
+    debugPrintI("name: ${deviceModel.name}  deviceMacAddress: ${deviceModel.address} ");
 
     String result = await initializeDeviceConnection();
     if (result != null) {
       if (result.toString() ==  BandFitConstants.SC_INIT) {
-        debugPrint("connectDeviceWithMacAddress inside initiations ");
+        debugPrintI("connectDeviceWithMacAddress inside initiations ");
         bool resultConnected = await _mobileSmartWatch.connectDevice(deviceModel);
-        debugPrint("connect_status $resultConnected");
+        debugPrintI("connect_status $resultConnected");
         if(resultConnected){
           deviceConnected = true;
           healthConnected = false;
@@ -1381,15 +1413,15 @@ class ActivityServiceProvider extends GetxController {
           deviceMacAddress = sharedService.getDeviceMacAddress();
         }else{
           //device is not connected
-          debugPrint("else connectDeviceWithMacAddress inside disconnected ");
+          debugPrintI("else connectDeviceWithMacAddress inside disconnected ");
         }
       } else if (result.toString() == BandFitConstants.SC_DISCONNECTED) {
-        debugPrint("connectDeviceWithMacAddress inside SC_DISCONNECTED ");
+        debugPrintI("connectDeviceWithMacAddress inside SC_DISCONNECTED ");
 
       } else if (result.toString() == BandFitConstants.SC_CANCELED) {
-        debugPrint("connectDeviceWithMacAddress inside SC_CANCELED ");
+        debugPrintI("connectDeviceWithMacAddress inside SC_CANCELED ");
       } else  {
-        debugPrint("connectDeviceWithMacAddress inside else ");
+        debugPrintI("connectDeviceWithMacAddress inside else ");
       }
     }
     return false;
@@ -1397,22 +1429,22 @@ class ActivityServiceProvider extends GetxController {
 
 
   Future<bool> reConnectSmartDevice(BandDeviceModel deviceModel) async {
-    debugPrint('BandDeviceModel>> $deviceModel');
+    debugPrintI('BandDeviceModel>> $deviceModel');
     bool resultReconnected = await flutterBandFit.reConnectDevice(deviceModel);
-    debugPrint("resultReconnected: $resultReconnected");
+    debugPrintI("resultReconnected: $resultReconnected");
     return resultReconnected;
   }
 
   Future<bool> connectSmartDevice(BandDeviceModel deviceModel) async {
     bool resultConnected = await flutterBandFit.connectDevice(deviceModel);
-    debugPrint("resultConnected: $resultConnected");
+    debugPrintI("resultConnected: $resultConnected");
     return resultConnected;
   }
 
   Future<bool> disconnectDevice() async {
     markUserInitiatedDisconnect();
     bool disconnectStatus = await flutterBandFit.disconnectDevice();
-    debugPrint('disconnectStatus>> $disconnectStatus');
+    debugPrintI('disconnectStatus>> $disconnectStatus');
     await updateUserDeviceConnection(false, false, '', '');
     await clearResetLocalData();
     return disconnectStatus;
@@ -1462,7 +1494,7 @@ class ActivityServiceProvider extends GetxController {
   /// GetStorage was cleared or never persisted (common after hot restart).
   Future<void> syncPairedDeviceFromBle() async {
     final bleConnected = await checkIsDeviceConnected();
-    debugPrint('syncPairedDeviceFromBle bleConnected=$bleConnected');
+    debugPrintI('syncPairedDeviceFromBle bleConnected=$bleConnected');
     if (!bleConnected) {
       return;
     }
@@ -1484,7 +1516,7 @@ class ActivityServiceProvider extends GetxController {
     if (deviceSWName.isNotEmpty) {
       await sharedService.setDeviceName(deviceSWName);
     }
-    debugPrint(
+    debugPrintI(
       'syncPairedDeviceFromBle name=$deviceSWName mac=$deviceMacAddress',
     );
     await fetchDeviceVersion();
@@ -1507,7 +1539,7 @@ class ActivityServiceProvider extends GetxController {
               deviceMacAddress = nativeMac;
             }
           } catch (e) {
-            debugPrint('_ensureDeviceIdentityFromStorageOrNative mac: $e');
+            debugPrintI('_ensureDeviceIdentityFromStorageOrNative mac: $e');
           }
         }
       }
@@ -1525,13 +1557,13 @@ class ActivityServiceProvider extends GetxController {
     try {
       final Map<String, dynamic> response =
           await flutterBandFit.fetchDeviceDataInfo();
-      debugPrint('device_res>>$response');
+      debugPrintI('device_res>>$response');
       final String status = response['status'].toString();
       if (status == BandFitConstants.SC_SUCCESS) {
         return response;
       }
     } catch (e) {
-      debugPrint('fetchDeviceDataInfo error>> $e');
+      debugPrintI('fetchDeviceDataInfo error>> $e');
     }
     return null;
   }
@@ -1569,7 +1601,7 @@ class ActivityServiceProvider extends GetxController {
     await sharedService.setOverAllBP("");
     await sharedService.setOverAllTemperature("");
     await sharedService.setOverAllOxygenData("");
-    debugPrint('clearDataExecuted');
+    debugPrintI('clearDataExecuted');
   }
 
   Future<void> updateUserDeviceConnection(bool isHealthConnected, bool isDeviceConnected, String deviceName, String deviceAddress) async {
@@ -1585,7 +1617,7 @@ class ActivityServiceProvider extends GetxController {
       oxygenAvailable = false;
       showSyncProgress = false;
       if (isDeviceConnected) {
-        //debugPrint('getDeviceMacAddress>>$getDeviceMacAddress');
+        //debugPrintI('getDeviceMacAddress>>$getDeviceMacAddress');
         if (deviceName.toString().trim().isEmpty) {
           deviceSWName = '';
           deviceMacAddress = '';
@@ -1610,11 +1642,11 @@ class ActivityServiceProvider extends GetxController {
       }
     }
 
-    debugPrint('deviceName>> $deviceName');
-    debugPrint('deviceMacAddress>> $deviceAddress');
+    debugPrintI('deviceName>> $deviceName');
+    debugPrintI('deviceMacAddress>> $deviceAddress');
     update();
-    debugPrint('getDeviceSWNameNotify>> $getDeviceSWName');
-    debugPrint('getDeviceMacAddressNotify>> $getDeviceMacAddress');
+    debugPrintI('getDeviceSWNameNotify>> $getDeviceSWName');
+    debugPrintI('getDeviceMacAddressNotify>> $getDeviceMacAddress');
     sharedService.setSmartMConnected(getDeviceConnected);
     sharedService.setDeviceName(getDeviceSWName);
     sharedService.setDeviceMacAddress(getDeviceMacAddress);
@@ -1678,9 +1710,9 @@ class ActivityServiceProvider extends GetxController {
       "raiseHandWakeUp": sharedService.getRaiseWakeUp().toString(),
       //"false", //true or false -- send true to wake up bright light switch
     };
-    debugPrint('userParamsUpdate>>>$userParams');
+    debugPrintI('userParamsUpdate>>>$userParams');
     String status = await flutterBandFit.setUserParameters(userParams);
-    debugPrint('userParamsStatus>>>$status');
+    debugPrintI('userParamsStatus>>>$status');
     if (enableHRTemperature) {
       if (status.toString().trim() == BandFitConstants.SC_INIT) {
         // await Future.delayed(const Duration(milliseconds: 500));
@@ -1700,7 +1732,7 @@ class ActivityServiceProvider extends GetxController {
 
   Future<void> set24HrHeartRate(bool enable) async {
     String status = await flutterBandFit.set24HeartRate(enable);
-    debugPrint('set24HeartRateStatus>>>$status');
+    debugPrintI('set24HeartRateStatus>>>$status');
     hr24Enabled = enable;
     update();
     // await fetchDeviceVersion();
@@ -1709,7 +1741,7 @@ class ActivityServiceProvider extends GetxController {
 
   Future<void> set24HrOxygen(bool enable) async {
     String status = await flutterBandFit.set24BloodOxygen(enable);
-    debugPrint('set24OxygenStatus>>>$status');
+    debugPrintI('set24OxygenStatus>>>$status');
     oxygen24Enabled = enable;
     update();
     await sharedService.setOxygen24HrEnabled(getOxygen24Enabled);
@@ -1718,7 +1750,7 @@ class ActivityServiceProvider extends GetxController {
   Future<void> set24HrTemperatureTest(bool isEnabled) async {
     // setting 1 hour as interval
     String status = await flutterBandFit.set24HrTemperatureTest('24', isEnabled);
-    debugPrint('set24HrTemperatureTest>>>$status');
+    debugPrintI('set24HrTemperatureTest>>>$status');
     // this.temperature24Enabled = isEnabled;
     // this.update();
     temperature24Enabled = isEnabled;
@@ -1728,7 +1760,7 @@ class ActivityServiceProvider extends GetxController {
 
   Future<void> setDoNotDisturbEnable({required bool isMessageOn,required bool isMotorOn,required bool disturbTimeSwitch,required String fromHr,required String fromMin,required String toHour,required String toMin}) async {
     String status = await flutterBandFit.setDoNotDisturb(isMessageOn, isMotorOn, disturbTimeSwitch, fromHr, fromMin, toHour, toMin);
-    debugPrint('setDoNotDisturbEnable>>>$status');
+    debugPrintI('setDoNotDisturbEnable>>>$status');
 
     dndEnabled = disturbTimeSwitch;
     messagesOnEnabled = isMessageOn;
@@ -1768,14 +1800,14 @@ class ActivityServiceProvider extends GetxController {
   Future<void> setWeatherInfoSevenDays() async {
     if (getJsonWeatherData.isNotEmpty) {
       String status = await flutterBandFit.setWeatherInfoSevenDays(getJsonWeatherData);
-      debugPrint('setWeatherInfoSevenDays>>>$status');
+      debugPrintI('setWeatherInfoSevenDays>>>$status');
     }
   }
 
   Future<void> callQuickSwitchSettingStatus() async {
     //await Future.delayed(const Duration(milliseconds: 500));
     String resultStatus = await flutterBandFit.callQuickSwitchSettingStatus();
-    debugPrint('resultCallStatus>>>$resultStatus');
+    debugPrintI('resultCallStatus>>>$resultStatus');
   }
 
 
@@ -1788,7 +1820,7 @@ class ActivityServiceProvider extends GetxController {
       return;
     }
     final result = await flutterBandFit.getBatteryStatus();
-    debugPrint('fetchBatteryStatus>>>$result');
+    debugPrintI('fetchBatteryStatus>>>$result');
   }
 
   Future<void> fetchDeviceVersion({int maxAttempts = 2}) async {
@@ -1808,7 +1840,7 @@ class ActivityServiceProvider extends GetxController {
       }
 
       final resultVersionStatus = await flutterBandFit.getDeviceVersion();
-      debugPrint(
+      debugPrintI(
         'fetchDeviceVersion status>>>$resultVersionStatus attempt=$attempt',
       );
 
@@ -1832,7 +1864,8 @@ class ActivityServiceProvider extends GetxController {
 
   void updateSyncingView(bool updateView) {
     showSyncProgress = updateView;
-    update();
+    notifyDashboardBanners();
+    notifyDashboardSteps();
   }
 
   /// Hides sync UI and records last successful sync timestamp.
@@ -1842,21 +1875,21 @@ class ActivityServiceProvider extends GetxController {
 
     final outputDate =
         DateFormat(defaultLastSyncDateTimeFormat).format(DateTime.now());
-    debugPrint('last_sync_date>> $outputDate');
+    debugPrintI('last_sync_date>> $outputDate');
     lastSyncDated = outputDate;
     lastSyncDateTime = DateTime.now().toIso8601String();
 
     await sharedService.setLastMacAddressId(lastMacAddressId);
     await sharedService.setLastSyncDate(lastSyncDated);
     await sharedService.setLastSyncDateTime(lastSyncDateTime);
-    update();
+    notifyDashboardAll();
   }
 
 
 
   /// Starts the sequential BLE vitals sync (steps first; further types chain via events).
   Future<void> syncOverAllData() async {
-    debugPrint('initiated_syncing');
+    debugPrintI('initiated_syncing');
     showSyncProgress = true;
     update();
     await syncStepsData();
@@ -1911,14 +1944,14 @@ class ActivityServiceProvider extends GetxController {
     if (!Platform.isAndroid) return;
     try {
       final result = await flutterBandFit.fetchAllSleepData();
-      debugPrint('fetchAllSleepData>> $result');
+      debugPrintI('fetchAllSleepData>> $result');
       if (result['status']?.toString() != BandFitConstants.SC_SUCCESS) return;
       final sleepData = JsonUtils.asList(result['data']);
       if (sleepData.isNotEmpty) {
         await updateSleepSyncSDKData(sleepData);
       }
     } catch (e) {
-      debugPrint('fetchAllSleepDataSyncExp: $e');
+      debugPrintI('fetchAllSleepDataSyncExp: $e');
     }
   }
 
@@ -1927,7 +1960,7 @@ class ActivityServiceProvider extends GetxController {
     try {
       final resultOverAllDeviceData =
           await flutterBandFit.fetchOverAllDeviceData();
-      debugPrint('resultOverAllDeviceData>>$resultOverAllDeviceData');
+      debugPrintI('resultOverAllDeviceData>>$resultOverAllDeviceData');
       final status = resultOverAllDeviceData['status'].toString();
       if (status != BandFitConstants.SC_SUCCESS) {
         return;
@@ -1960,7 +1993,7 @@ class ActivityServiceProvider extends GetxController {
         await updateOxygenSyncSDKData(oxygenData);
       }
     } catch (e) {
-      debugPrint('fetchExp: $e');
+      debugPrintI('fetchExp: $e');
     }
   }
 
@@ -1990,8 +2023,8 @@ class ActivityServiceProvider extends GetxController {
 
         totalStepsValue = totalStepsValue + int.parse(stepsDataModel.step);
 
-        //  debugPrint('stepsDataModel.calories>> ${double.parse(stepsDataModel.calories).toStringAsFixed(2)}');
-        // debugPrint('stepsDataModel.distance>> ${double.parse(stepsDataModel.distance).round()}');
+        //  debugPrintI('stepsDataModel.calories>> ${double.parse(stepsDataModel.calories).toStringAsFixed(2)}');
+        // debugPrintI('stepsDataModel.distance>> ${double.parse(stepsDataModel.distance).round()}');
 
         totalCal = totalCal + double.parse(stepsDataModel.calories);
         totalDistance = totalDistance + double.parse(stepsDataModel.distance);
@@ -2000,17 +2033,17 @@ class ActivityServiceProvider extends GetxController {
     }
     if (stepsSelectedList.isNotEmpty) {
 
-      debugPrint('totalCal>> $totalCal');
-      debugPrint('totalDistance>> $totalDistance');
+      debugPrintI('totalCal>> $totalCal');
+      debugPrintI('totalDistance>> $totalDistance');
 
-      // debugPrint('stepsDataModel.distance>> ${totalDistance.round()}');
-      // debugPrint('stepsDataModel.distance>> ${totalDistance.roundToDouble()}');
+      // debugPrintI('stepsDataModel.distance>> ${totalDistance.round()}');
+      // debugPrintI('stepsDataModel.distance>> ${totalDistance.roundToDouble()}');
 
       if (totalDistance > 0.0) {
         totalDistance = totalDistance.roundToDouble() / 1000; //Converting in kM
       }
 
-      // debugPrint('totalDistance12>> $totalDistance');
+      // debugPrintI('totalDistance12>> $totalDistance');
       // if (totalCal > 0.0) {
       //   totalCal = totalCal.roundToDouble() / 1000; //Converting in kCal
       // }
@@ -2021,7 +2054,7 @@ class ActivityServiceProvider extends GetxController {
           distance: totalDistance.toStringAsFixed(2),
           calories: totalCal.toStringAsFixed(2)));
     }
-    //  debugPrint('return_stepsList>>$stepsList');
+    //  debugPrintI('return_stepsList>>$stepsList');
     return stepsMainList;
   }
 
@@ -2037,16 +2070,16 @@ class ActivityServiceProvider extends GetxController {
 
     List<StepsMainModel> stepsList = [];
     for (final data in JsonUtils.asList(overAllStepsData)) {
-      //debugPrint('step_data>> $data');
+      //debugPrintI('step_data>> $data');
       if (data['calender'].toString().trim() == findCalenderTime) {
 
-        debugPrint('stepsDataModel.calories>> ${data['calories']}');
-        debugPrint('stepsDataModel.distance>> ${data['distance']}');
+        debugPrintI('stepsDataModel.calories>> ${data['calories']}');
+        debugPrintI('stepsDataModel.distance>> ${data['distance']}');
 
         stepsList.add(StepsMainModel.fromJson(JsonUtils.asMap(data)));
       }
     }
-    //  debugPrint('return_stepsList>>$stepsList');
+    //  debugPrintI('return_stepsList>>$stepsList');
     return stepsList;
   }
 
@@ -2118,12 +2151,12 @@ class ActivityServiceProvider extends GetxController {
   Future<List<StepsMainModel>> getStepsBySelectedWeek(dynamic overAllStepsData, List<String> weekList) async {
     List<StepsMainModel> stepsList = [];
     for (final data in JsonUtils.asList(overAllStepsData)) {
-      //debugPrint('step_data>> $data');
+      //debugPrintI('step_data>> $data');
       if (weekList.contains(data['calender'].toString().trim())) {
         stepsList.add(StepsMainModel.fromJson(JsonUtils.asMap(data)));
       }
     }
-    //debugPrint('return_weekList>>$stepsList');
+    //debugPrintI('return_weekList>>$stepsList');
     return stepsList;
   }
 
@@ -2148,7 +2181,7 @@ class ActivityServiceProvider extends GetxController {
     for (final data in JsonUtils.asList(overAllSleepData)) {
       if (data['calender'].toString().trim() == findCalenderTime) {
         // deep sleep: 0, Light sleep: 1,  awake: 2
-        debugPrint('sleepData>> $data');
+        debugPrintI('sleepData>> $data');
         BandSleepModel sleepModel = BandSleepModel.fromJson(JsonUtils.asMap(data));
 
         DateTime startDateTime = DateTime.parse(sleepModel.startDateTime);
@@ -2158,7 +2191,7 @@ class ActivityServiceProvider extends GetxController {
         int inMinutes = endDateTime.difference(startDateTime).inMinutes;
         //int diffNum =  inMinutes;
 
-        debugPrint("diffNum>> $inMinutes");
+        debugPrintI("diffNum>> $inMinutes");
         totalNum = totalNum + inMinutes;
 
         if (sleepModel.state == "0") {
@@ -2186,10 +2219,10 @@ class ActivityServiceProvider extends GetxController {
       BandSleepModel beginModel = dataList[0];
       BandSleepModel endModel = dataList[dataList.length - 1];
 
-      //debugPrint("deepHours>> $deepHours");
-      //debugPrint("lightHours>> $lightHours");
-      //debugPrint("awakeHours>> $awakeHours");
-      //debugPrint("totalHours>> $totalHours");
+      //debugPrintI("deepHours>> $deepHours");
+      //debugPrintI("lightHours>> $lightHours");
+      //debugPrintI("awakeHours>> $awakeHours");
+      //debugPrintI("totalHours>> $totalHours");
 
       sleepMainList.add(SleepMainModel(
         calender: findCalenderTime,
@@ -2232,7 +2265,7 @@ class ActivityServiceProvider extends GetxController {
 
       if (sleepDataList.isNotEmpty) {
         for (var element in sleepDataList) {
-          // debugPrint('sleep_element>> $element');
+          // debugPrintI('sleep_element>> $element');
           try{
             DateTime startDateTime = DateTime.parse(element['startDateTime'].toString());//.toLocal();
             DateTime endDateTime = DateTime.parse(element['endDateTime'].toString());//.toLocal();
@@ -2240,7 +2273,7 @@ class ActivityServiceProvider extends GetxController {
             //int inHours = endDateTime.difference(startDateTime).inHours;
             int inMinutes = endDateTime.difference(startDateTime).inMinutes;
             //int inSeconds = endDateTime.difference(startDateTime).inSeconds;
-            //debugPrint('inHours>> $inHours, inMinutes>> $inMinutes');
+            //debugPrintI('inHours>> $inHours, inMinutes>> $inMinutes');
             // int diffNum =  inMinutes;
             if (element['state'].toString() == "0") {//deep
               totalDeepNum = totalDeepNum + inMinutes;
@@ -2253,7 +2286,7 @@ class ActivityServiceProvider extends GetxController {
             }
             totalHrsNum = totalHrsNum + inMinutes;
           }catch(e){
-            debugPrint('sleep_exp>> $e');
+            debugPrintI('sleep_exp>> $e');
           }
           //int startNum = int.parse(element['startTimeNum'].toString());
           // int endNum = int.parse(element['endTimeNum'].toString());
@@ -2330,7 +2363,7 @@ class ActivityServiceProvider extends GetxController {
     }
     List<SleepMainModel> sleepList = [];
     for (final data in JsonUtils.asList(overAllSleepData)) {
-      //debugPrint('sleep_data >> $data');
+      //debugPrintI('sleep_data >> $data');
       if (data['calender'].toString().trim() == findCalenderTime) {
         sleepList.add(SleepMainModel.fromJson(JsonUtils.asMap(data)));
       }
@@ -2341,12 +2374,12 @@ class ActivityServiceProvider extends GetxController {
   Future<List<SleepMainModel>> getSleepBySelectedWeek(dynamic overAllSleepData, List<String> weekList) async {
     List<SleepMainModel> sleepList = [];
     for (final data in JsonUtils.asList(overAllSleepData)) {
-      //debugPrint('step_data>> $data');
+      //debugPrintI('step_data>> $data');
       if (weekList.contains(data['calender'].toString().trim())) {
         sleepList.add(SleepMainModel.fromJson(JsonUtils.asMap(data)));
       }
     }
-    //debugPrint('return_weekList>>$stepsList');
+    //debugPrintI('return_weekList>>$stepsList');
     return sleepList;
   }
 
@@ -2362,13 +2395,13 @@ class ActivityServiceProvider extends GetxController {
     List<BandHRModel> hrList = [];
     try {
       for (final data in JsonUtils.asList(overAllHrData)) {
-        //debugPrint('hr_data >> $data');
+        //debugPrintI('hr_data >> $data');
         if (data['calender'].toString().trim() == findCalenderTime) {
           hrList.add(BandHRModel.fromJson(JsonUtils.asMap(data)));
         }
       }
     } catch (e) {
-      debugPrint('inside_exp: $e');
+      debugPrintI('inside_exp: $e');
     }
     return hrList;
   }
@@ -2382,10 +2415,10 @@ class ActivityServiceProvider extends GetxController {
       String currentCalTime = GlobalMethods.convertBandReadableCalender(DateTime.now());
       findCalenderTime = currentCalTime;
     }
-    debugPrint('findCalenderTime>> $findCalenderTime');
+    debugPrintI('findCalenderTime>> $findCalenderTime');
     List<BandBPModel> bpList = [];
     for (final data in JsonUtils.asList(overAllBPData)) {
-      // debugPrint('bp_data >> $data');
+      // debugPrintI('bp_data >> $data');
       if (data['calender'].toString().trim() == findCalenderTime) {
         bpList.add(BandBPModel.fromJson(JsonUtils.asMap(data)));
       }
@@ -2402,7 +2435,7 @@ class ActivityServiceProvider extends GetxController {
       String currentCalTime = GlobalMethods.convertBandReadableCalender(DateTime.now());
       findCalenderTime = currentCalTime;
     }
-    debugPrint('findCalenderTime>> $findCalenderTime');
+    debugPrintI('findCalenderTime>> $findCalenderTime');
     List<BandOxygenModel> oxyList = [];
     for (final data in JsonUtils.asList(oxyData)) {
       if (data['calender'].toString().trim() == findCalenderTime) {
@@ -2421,12 +2454,12 @@ class ActivityServiceProvider extends GetxController {
       String currentCalTime = GlobalMethods.convertBandReadableCalender(DateTime.now());
       findCalenderTime = currentCalTime;
     }
-    debugPrint('findCalenderTime>> $findCalenderTime');
+    debugPrintI('findCalenderTime>> $findCalenderTime');
     List<BandTempModel> tempList = [];
     for (final data in JsonUtils.asList(temperatureData)) {
-      //debugPrint('temp_data >> $data');
+      //debugPrintI('temp_data >> $data');
       if (data['calender'].toString().trim() == findCalenderTime) {
-        // debugPrint('todayTempData>> $data');
+        // debugPrintI('todayTempData>> $data');
         tempList.add(BandTempModel.fromJson(JsonUtils.asMap(data)));
       }
     }
@@ -2435,7 +2468,7 @@ class ActivityServiceProvider extends GetxController {
 
   String verifyTimeMinutes(String inputTime) {
     String timeString ='';
-    debugPrint('inputTime>> $inputTime');
+    debugPrintI('inputTime>> $inputTime');
     try{
       if (inputTime.isNotEmpty) {
         List<String> times = inputTime.trim().split(':');
@@ -2460,7 +2493,7 @@ class ActivityServiceProvider extends GetxController {
         return timeString;
       }
     }catch(e){
-      debugPrint('verifyTimeMinutes>>> $e');
+      debugPrintI('verifyTimeMinutes>>> $e');
       return timeString;
     }
   }
@@ -2472,10 +2505,10 @@ class ActivityServiceProvider extends GetxController {
       if (calender.isNotEmpty) {
         DateTime parseDate = DateTime.parse(calender);
         //DateTime parseDate = new DateFormat('yyyyMMdd').parse(calender);
-        //debugPrint('parseDate>>> $parseDate');
+        //debugPrintI('parseDate>>> $parseDate');
         var outputFormat = DateFormat(defaultDateFormat);
         String outputDate = outputFormat.format(parseDate);
-        // debugPrint('outputFormat>>> $outputDate'+' '+time);
+        // debugPrintI('outputFormat>>> $outputDate'+' '+time);
         //return outputDate+' '+ time.trim();
         String timeStr ='';
         if (time.isNotEmpty) {
@@ -2496,66 +2529,66 @@ class ActivityServiceProvider extends GetxController {
         return '';
       }
     } catch (e) {
-      debugPrint('getTimeByCalenderTimeError>>> $e');
+      debugPrintI('getTimeByCalenderTimeError>>> $e');
       return '';
     }
   }
 
   Future<void> syncStepsData() async {
     String stepsStatus = await flutterBandFit.syncStepsData();
-    debugPrint('syncStepsStatus>> $stepsStatus');
+    debugPrintI('syncStepsStatus>> $stepsStatus');
   }
 
   Future<void> syncHeartRate() async {
     String syncBPStatus = await flutterBandFit.syncRateData();
-    debugPrint('syncHeartRate>> $syncBPStatus');
+    debugPrintI('syncHeartRate>> $syncBPStatus');
   }
 
   Future<void> syncSleepData() async {
     String stepsStatus = await flutterBandFit.syncSleepData();
-    debugPrint('syncSleepStatus>> $stepsStatus');
+    debugPrintI('syncSleepStatus>> $stepsStatus');
   }
 
   Future<void> syncBloodPressure() async {
     String syncBPStatus = await flutterBandFit.syncBloodPressure();
-    debugPrint('syncBloodPressure>> $syncBPStatus');
+    debugPrintI('syncBloodPressure>> $syncBPStatus');
   }
 
   Future<void> syncTemperature() async {
     String syncTempStatus = await flutterBandFit.syncTemperature();
-    debugPrint('syncTemperature>> $syncTempStatus');
+    debugPrintI('syncTemperature>> $syncTempStatus');
   }
 
   Future<void> syncOxygen() async {
     String syncBPStatus = await flutterBandFit.syncOxygenSaturation();
-    debugPrint('syncOxygen>> $syncBPStatus');
+    debugPrintI('syncOxygen>> $syncBPStatus');
   }
 
   Future<String> startBloodPressure() async {
     String startBPStatus = await flutterBandFit.startBloodPressure();
-    debugPrint('startBloodPressure>> $startBPStatus');
+    debugPrintI('startBloodPressure>> $startBPStatus');
     return startBPStatus;
   }
 
   Future<void> stopBloodPressure() async {
     String stopBPStatus = await flutterBandFit.stopBloodPressure();
-    debugPrint('stopBloodPressure>> $stopBPStatus');
+    debugPrintI('stopBloodPressure>> $stopBPStatus');
   }
 
   Future<String> startOxygenTest() async {
     String startBPStatus = await flutterBandFit.startOxygenTest();
-    debugPrint('startOxygenTest>> $startBPStatus');
+    debugPrintI('startOxygenTest>> $startBPStatus');
     return startBPStatus;
   }
 
   Future<void> stopOxygenTest() async {
     String stopBPStatus = await flutterBandFit.stopOxygenTest();
-    debugPrint('stopOxygenTest>> $stopBPStatus');
+    debugPrintI('stopOxygenTest>> $stopBPStatus');
   }
 
   Future<String> startTestTempData() async {
     String testTempDataStatus = await flutterBandFit.testTempData();
-    debugPrint('testTempDataStatus>> $testTempDataStatus');
+    debugPrintI('testTempDataStatus>> $testTempDataStatus');
     return testTempDataStatus;
   }
 
@@ -2575,9 +2608,9 @@ class ActivityServiceProvider extends GetxController {
 
   Future<void> updateDeviceBandLanguage() async {
     final lang = AppLanguageUtils.bandLanguageCode;
-    debugPrint('update_lang>> $lang');
+    debugPrintI('update_lang>> $lang');
     final result = await flutterBandFit.setDeviceBandLanguage(lang);
-    debugPrint('update_lang_result>> $result');
+    debugPrintI('update_lang_result>> $result');
 
     if (!_hasValidWeatherCoordinates) {
       return;
@@ -2602,11 +2635,11 @@ class ActivityServiceProvider extends GetxController {
     final latitude = double.tryParse(lat);
     final longitude = double.tryParse(lon);
     if (latitude == null || longitude == null) {
-      debugPrint('callWeatherForecast: invalid coordinates');
+      debugPrintI('callWeatherForecast: invalid coordinates');
       return;
     }
     if (latitude == 0 && longitude == 0) {
-      debugPrint('callWeatherForecast: coordinates are zero');
+      debugPrintI('callWeatherForecast: coordinates are zero');
       return;
     }
 
@@ -2637,7 +2670,7 @@ class ActivityServiceProvider extends GetxController {
     required double longitude,
   }) async {
     final lang = await AppLanguageUtils.getLanguage();
-    debugPrint('fetching_lang>> $lang');
+    debugPrintI('fetching_lang>> $lang');
 
     final response = await WeatherApiClient.instance.fetchOneCall(
       lat: latitude,
@@ -2652,7 +2685,7 @@ class ActivityServiceProvider extends GetxController {
     final currentData = response['current'];
     final dailyList = response['daily'];
     if (currentData is! Map || dailyList is! List) {
-      debugPrint('callWeatherForecast: unexpected API shape');
+      debugPrintI('callWeatherForecast: unexpected API shape');
       return;
     }
 
@@ -2666,7 +2699,7 @@ class ActivityServiceProvider extends GetxController {
       cityName: getDeviceCityName,
     );
     if (bandPayload == null) {
-      debugPrint(
+      debugPrintI(
         'callWeatherForecast: need 7 daily entries, got ${dailyWeatherList.length}',
       );
       return;
@@ -2700,7 +2733,7 @@ class ActivityServiceProvider extends GetxController {
 
   Future<void> fetchAllJudgement() async {
     Map<String, dynamic> resultJudgeData = await flutterBandFit.fetchAllJudgement();
-    debugPrint('fetchAllJudgementResultJudgeData>>$resultJudgeData');
+    debugPrintI('fetchAllJudgementResultJudgeData>>$resultJudgeData');
     String status = resultJudgeData['status'].toString();
     if (status == BandFitConstants.SC_SUCCESS) {
       final resultData = JsonUtils.asMap(resultJudgeData['data']);
@@ -2715,17 +2748,17 @@ class ActivityServiceProvider extends GetxController {
       final isSupportHorVer = JsonUtils.asBool(resultData['isSupportHorVer']);
       final isSupport24HrRate = JsonUtils.asBool(resultData['isSupport24HrRate']);
       final isSupportOxygen = JsonUtils.asBool(resultData['isSupportOxygen']);
-      debugPrint('rkPlatform>>>$rkPlatform');
-      debugPrint('isSupportNewParams>>>$isSupportNewParams');
-      debugPrint('isBandLostFunction>>>$isBandLostFunction');
-      debugPrint('isBraceletLangSwitch>>>$isBraceletLangSwitch');
-      debugPrint('isTempUnitSwitch>>>$isTempUnitSwitch');
-      debugPrint('isMinHRAlarm>>>$isMinHRAlarm');
-      debugPrint('isTempTest>>>$isTempTest');
-      debugPrint('isTempCalibration>>>$isTempCalibration');
-      debugPrint('isSupportHorVer>>>$isSupportHorVer');
-      debugPrint('isSupport24HrRate>>>$isSupport24HrRate');
-      debugPrint('isSupportOxygen>>>$isSupportOxygen');
+      debugPrintI('rkPlatform>>>$rkPlatform');
+      debugPrintI('isSupportNewParams>>>$isSupportNewParams');
+      debugPrintI('isBandLostFunction>>>$isBandLostFunction');
+      debugPrintI('isBraceletLangSwitch>>>$isBraceletLangSwitch');
+      debugPrintI('isTempUnitSwitch>>>$isTempUnitSwitch');
+      debugPrintI('isMinHRAlarm>>>$isMinHRAlarm');
+      debugPrintI('isTempTest>>>$isTempTest');
+      debugPrintI('isTempCalibration>>>$isTempCalibration');
+      debugPrintI('isSupportHorVer>>>$isSupportHorVer');
+      debugPrintI('isSupport24HrRate>>>$isSupport24HrRate');
+      debugPrintI('isSupportOxygen>>>$isSupportOxygen');
 
       updateOxygenAvailability(isSupportOxygen);
     } else if (status == BandFitConstants.SC_DISCONNECTED) {
@@ -2733,7 +2766,7 @@ class ActivityServiceProvider extends GetxController {
     } else if (status == BandFitConstants.SC_FAILURE) {
       // something went wrong
     }
-    debugPrint('resultJudgeData>> $resultJudgeData');
+    debugPrintI('resultJudgeData>> $resultJudgeData');
   }
 
 }

@@ -29,7 +29,7 @@ class DeviceSettingsController extends GetxController {
     }
 
     final isConnected = await _checkDeviceConnectionUseCase();
-    debugPrint('fetchDeviceData>>isConnected>> $isConnected');
+    debugPrintI('fetchDeviceData>>isConnected>> $isConnected');
     if (isConnected || _deviceRepository.getDeviceConnected()) {
       if (Platform.isAndroid) {
         await Future<void>.delayed(const Duration(milliseconds: 300));
@@ -47,7 +47,7 @@ class DeviceSettingsController extends GetxController {
       reconnectText,
       () async {
         final statusReconnect = await _reconnectSavedDeviceUseCase(context);
-        debugPrint('statusReconnect>>$statusReconnect');
+        debugPrintI('statusReconnect>>$statusReconnect');
         if (!statusReconnect && context.mounted) {
           GlobalMethods.showAlertDialog(
             context,
@@ -69,7 +69,7 @@ class DeviceSettingsController extends GetxController {
   }
 
   Future<void> refreshPage([bool isDisconnected = false]) async {
-    debugPrint('refreshPage ${_deviceRepository.getDeviceConnected()}');
+    debugPrintI('refreshPage ${_deviceRepository.getDeviceConnected()}');
     if (isDisconnected) {
       GlobalMethods.navigatePopBack();
     }

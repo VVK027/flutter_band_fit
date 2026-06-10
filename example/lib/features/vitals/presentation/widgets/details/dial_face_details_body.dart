@@ -90,13 +90,21 @@ class DialFaceDetailsBody extends GetView<DialFaceDetailsController> {
                 const Divider(height: 1),
                 Padding(
                   padding: const EdgeInsets.all(16),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: CachedNetworkImage(
-                      imageUrl: item.preview,
+                  child: CachedNetworkImage(
+                    imageUrl: item.preview,
+                    width: 220,
+                    height: 220,
+                    fit: BoxFit.contain,
+                    imageBuilder: (context, imageProvider) => Container(
                       width: 220,
                       height: 220,
-                      fit: BoxFit.contain,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        image: DecorationImage(
+                          image: imageProvider,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                     ),
                   ),
                 ),

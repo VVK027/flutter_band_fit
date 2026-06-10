@@ -1,4 +1,5 @@
 import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
+import 'package:flutter_band_fit_app/core/widgets/scoped_loading_overlay.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/oxygen_detail_controller.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/vitals_chart_styles.dart';
 
@@ -8,34 +9,38 @@ class OxygenDetailBody extends GetView<OxygenDetailController> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Obx(
-      () => LoadingOverlay(
-        visible: controller.isTestRunning.value,
-        message: textMeasuring,
-        subtitle: textMeasuringVitalMsg,
-        child: Scaffold(
-          backgroundColor: theme.scaffoldBackgroundColor,
-          appBar: VitalColoredAppBar(
-            title: controller.displayTitle,
-            accentColor: oxygenColorDark,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.calendar_today),
-                onPressed: controller.isTestRunning.value
-                    ? null
-                    : () => controller.pickCalendarDay(
-                          context,
-                          controller.loadDay,
-                        ),
-              ),
-            ],
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: VitalColoredAppBar(
+        title: controller.displayTitle,
+        accentColor: oxygenColorDark,
+        actions: [
+          Obx(
+            () => IconButton(
+              icon: const Icon(Icons.calendar_today),
+              onPressed: controller.isTestRunning.value
+                  ? null
+                  : () => controller.pickCalendarDay(
+                        context,
+                        controller.loadDay,
+                      ),
+            ),
           ),
-          bottomNavigationBar: VitalStartButtonBar(
-            accentColor: oxygenColorDark,
-            enabled: !controller.isTestRunning.value,
-            onPressed: () => controller.onStartTest(context),
-          ),
-          body: SingleChildScrollView(
+        ],
+      ),
+      bottomNavigationBar: Obx(
+        () => VitalStartButtonBar(
+          accentColor: oxygenColorDark,
+          enabled: !controller.isTestRunning.value,
+          onPressed: () => controller.onStartTest(context),
+        ),
+      ),
+      body: Obx(
+        () => ScopedLoadingOverlay(
+          visible: controller.isTestRunning.value,
+          message: textMeasuring,
+          subtitle: textMeasuringVitalMsg,
+          child: SingleChildScrollView(
             padding: const EdgeInsets.only(bottom: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,

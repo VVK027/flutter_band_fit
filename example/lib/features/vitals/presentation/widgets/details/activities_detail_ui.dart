@@ -13,27 +13,35 @@ class ActivitySummaryStat {
 }
 
 /// Compact 2-column summary grid for steps / distance / calories.
-Widget buildActivityStatSummaryGrid(
-  BuildContext context,
-  List<ActivitySummaryStat> stats,
-) {
-  return Padding(
-    padding: EdgeInsets.fromLTRB(
-      12,
-      4,
-      12,
-      MediaQuery.paddingOf(context).bottom + 8,
-    ),
-    child: GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      mainAxisSpacing: 8,
-      crossAxisSpacing: 8,
-      childAspectRatio: 1.55,
-      children: stats.map((s) => _ActivityStatCard(stat: s)).toList(),
-    ),
-  );
+class ActivityStatSummaryGrid extends StatelessWidget {
+  const ActivityStatSummaryGrid({super.key, required this.stats});
+
+  final List<ActivitySummaryStat> stats;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        12,
+        4,
+        12,
+        MediaQuery.paddingOf(context).bottom + 8,
+      ),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+          childAspectRatio: 1.55,
+        ),
+        itemCount: stats.length,
+        itemBuilder: (context, index) =>
+            _ActivityStatCard(stat: stats[index]),
+      ),
+    );
+  }
 }
 
 class _ActivityStatCard extends StatelessWidget {

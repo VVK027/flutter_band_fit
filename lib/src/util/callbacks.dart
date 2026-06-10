@@ -7,10 +7,10 @@ part of '../../flutter_band_fit.dart';
 // Map<String, MultiUseCallback> _callbacksById = <String, void Function(dynamic)> {};
 
 /*Future<void> _methodCallHandler(MethodCall call) async {
-  print('methodCallHandler method: ${call.method}');
-  print('methodCallHandler argument : ${jsonDecode(call.arguments)}');
+  debugPrintI('methodCallHandler method: ${call.method}');
+  debugPrintI('methodCallHandler argument : ${jsonDecode(call.arguments)}');
   dynamic callMap = jsonDecode(call.arguments);
-  //print('methodCallHandler callMap : ${callMap}');
+  //debugPrintI('methodCallHandler callMap : ${callMap}');
   switch (call.method) {
     case BandFitConstants.CALL_LISTENER:
       //_callbacksById[call.arguments["id"]](call.arguments["args"]);
@@ -18,7 +18,7 @@ part of '../../flutter_band_fit.dart';
       _callbacksById[callMap["id"]]!(callMap);
       break;
     default:
-      print('_methodCallHandlerExp: Ignoring invoke from native. This normally shouldn\'t happen.');
+      debugPrintI('_methodCallHandlerExp: Ignoring invoke from native. This normally shouldn\'t happen.');
       break;
   }
 }*/
