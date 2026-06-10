@@ -39,6 +39,15 @@ Light theme dashboard:
 
 ![Vitals dashboard (light theme)](screenshots/vital_main_light.png)
 
+## Preview
+
+<img width="1000" height="667" alt="flutter_band_fit_preview" src="https://github.com/user-attachments/assets/7999a352-5b7f-4ecc-b006-2dc8d5973547" />
+
+## Live Demo
+
+https://github.com/user-attachments/assets/715b9c82-4345-4bde-9d9d-4706b03ee25d
+
+
 ## BLE connection workflow
 
 Typical integration order (aligned with the native UTE / GloryFit BLE flow):
