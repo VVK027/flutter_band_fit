@@ -23,14 +23,19 @@ class Popover extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildHandle(context),
+          const _PopoverHandle(),
           Expanded(child: child),
         ],
       ),
     );
   }
+}
 
-  Widget _buildHandle(BuildContext context) {
+class _PopoverHandle extends StatelessWidget {
+  const _PopoverHandle();
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return FractionallySizedBox(
       widthFactor: 0.25,

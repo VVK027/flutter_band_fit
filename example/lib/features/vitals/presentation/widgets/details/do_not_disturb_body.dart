@@ -1,4 +1,5 @@
 import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
+import 'package:flutter_band_fit_app/core/widgets/fixed_section_list.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/do_not_disturb_controller.dart';
 
 class DoNotDisturbBody extends GetView<DoNotDisturbController> {
@@ -10,9 +11,9 @@ class DoNotDisturbBody extends GetView<DoNotDisturbController> {
       title: textDoNotDisturb,
       onBack: GlobalMethods.navigatePopBack,
       onSave: () => controller.save(context),
-      body: ListView(
+      body: FixedSectionListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 88),
-        children: [
+        sections: [
           const DetailInfoBanner(text: textDoNotDisturbLabel),
           const SizedBox(height: 12),
           SettingsSectionCard(

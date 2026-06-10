@@ -1,4 +1,5 @@
 import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
+import 'package:flutter_band_fit_app/core/widgets/fixed_section_list.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/heart_rate_detail_controller.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/vitals_chart_styles.dart';
 
@@ -19,8 +20,8 @@ class HeartRateDetailBody extends GetView<HeartRateDetailController> {
           ),
         ],
       ),
-      body: ListView(
-        children: [
+      body: FixedSectionListView(
+        sections: [
           DetailActivityHeader(label: controller.activityLabel),
           Obx(
             () => DetailDateNavigator(

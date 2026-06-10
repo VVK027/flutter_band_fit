@@ -54,12 +54,12 @@ class VitalMainController extends GetxController
 
   Future<void> listenReceiveEvents() async {
     _activityServiceProvider.receiveEventsFrom(onDataUpdate: (data) {
-      debugPrint("receiveEventsFromMainScreen>> $data");
+      debugPrintI("receiveEventsFromMainScreen>> $data");
       onDataUpdated(data);
     }, onError: (error) {
-      debugPrint("receiveEventsFromError::>> $error");
+      debugPrintI("receiveEventsFromError::>> $error");
     }, onDone: () {
-      debugPrint("receiveEventsFromOnDone::>> ");
+      debugPrintI("receiveEventsFromOnDone::>> ");
     });
     Map<Permission, PermissionStatus> statuses;
     if (Platform.isAndroid) {
@@ -77,7 +77,7 @@ class VitalMainController extends GetxController
     } else {
       statuses = await [Permission.bluetooth, Permission.location, Permission.locationAlways, Permission.locationWhenInUse].request();
     }
-    debugPrint('statuses>> $statuses');
+    debugPrintI('statuses>> $statuses');
   }
 
   Future<void> listenFitBandUpdates() async {
@@ -95,7 +95,7 @@ class VitalMainController extends GetxController
   }
   Future<void> checkConnectionValidate() async {
     bool isDeviceConnected = await _checkVitalsDeviceConnectionUseCase();
-    debugPrint('isDeviceConnected>> $isDeviceConnected');
+    debugPrintI('isDeviceConnected>> $isDeviceConnected');
     if (Get.context == null) return;
 
     if (isDeviceConnected) {
@@ -154,9 +154,9 @@ class VitalMainController extends GetxController
   Future<void> validateTimeAndSync() async {
     // var outputFormat = new DateFormat('yyyy-MM-dd hh:mm:ss a');
     // String outputDate = outputFormat.format(DateTime.now());
-    // debugPrint('syncStartedTime>> $outputDate');
+    // debugPrintI('syncStartedTime>> $outputDate');
     bool doSync = await calculateSyncTimeDifference();
-    debugPrint('doSync>> $doSync ');
+    debugPrintI('doSync>> $doSync ');
     _activityServiceProvider.updateSyncingView(doSync);
     if (doSync) {
       await performOverAllSyncOperation();
@@ -165,20 +165,20 @@ class VitalMainController extends GetxController
 
   Future<bool> calculateWeatherSyncTimeDifference() async {
     String lastWeatherSyncTime = _activityServiceProvider.getWeatherSyncDateTime;
-    debugPrint('lastWeatherSyncTime>> $lastWeatherSyncTime');
+    debugPrintI('lastWeatherSyncTime>> $lastWeatherSyncTime');
     //int timeDifference =0;
     if (lastWeatherSyncTime.isNotEmpty) {
       DateTime lastSyncTime = DateTime.parse(lastWeatherSyncTime);
       var currentDateTime = DateTime.now();
-      debugPrint('currentWeaTime>> $currentDateTime');
+      debugPrintI('currentWeaTime>> $currentDateTime');
       int diffDays = currentDateTime.difference(lastSyncTime).inDays;
-      debugPrint('diffWeaDays>> $diffDays');
+      debugPrintI('diffWeaDays>> $diffDays');
       if (diffDays >= 1) {
         return false;
       }else {
         if(diffDays < 1) {
           int timeDifference = currentDateTime.difference(lastSyncTime).inHours;
-          debugPrint('diffWeaTime>> $timeDifference');
+          debugPrintI('diffWeaTime>> $timeDifference');
           if (timeDifference >= 2) {
             return false;
           }else{
@@ -210,9 +210,9 @@ class VitalMainController extends GetxController
         String swName = _activityServiceProvider.getDeviceSWName;
         String macAddress = _activityServiceProvider.getDeviceMacAddress;
 
-        debugPrint('swName>>$swName');
-        debugPrint('macAddress>>$macAddress');
-        debugPrint('deviceDataList>>$deviceDataList');
+        debugPrintI('swName>>$swName');
+        debugPrintI('macAddress>>$macAddress');
+        debugPrintI('deviceDataList>>$deviceDataList');
         if (swName.isEmpty) {
           swName = SharedService().getDeviceName();
         }
@@ -228,43 +228,43 @@ class VitalMainController extends GetxController
             }
           }
         }
-        debugPrint('deviceModel>>$deviceModel');
+        debugPrintI('deviceModel>>$deviceModel');
         if (deviceModel != null ) {
           bool isDeviceReconnected = await _activityServiceProvider.reConnectSmartDevice(deviceModel);
-          debugPrint("isDeviceReconnected>>> $isDeviceReconnected");
+          debugPrintI("isDeviceReconnected>>> $isDeviceReconnected");
           if (isDeviceReconnected) {
     isReConnectStatus = true;
               reConnectMacAddress = _activityServiceProvider.getDeviceMacAddress;
     update();
           }
         }
-        debugPrint('reConnectMacAddress>>$reConnectMacAddress');
+        debugPrintI('reConnectMacAddress>>$reConnectMacAddress');
 
       }
 
     }
 
     else if (result == BandFitConstants.DEVICE_CONNECTED) {
-      debugPrint("receiveEventsFromMainScreen>> Device Connected");
+      debugPrintI("receiveEventsFromMainScreen>> Device Connected");
       _activityServiceProvider.clearAutoReconnectGuard();
       notifiedDisconnected = false;
       if (status == BandFitConstants.SC_SUCCESS) {
         //await Future.delayed(const Duration(milliseconds: 500));
         //await _activityServiceProvider.updateUserParamsWatch(false);
         // syncFailureTimeOut == 0 > Successfully Got Connected with profile update.
-        debugPrint('syncFailureTimeOut>>$syncFailureTimeOut');
+        debugPrintI('syncFailureTimeOut>>$syncFailureTimeOut');
         if(Platform.isIOS){
           await _activityServiceProvider.updateUserParamsWatch(false);
         }
       }
     } else if (result == BandFitConstants.SYNC_TIME_OK) {
-      //debugPrint("addDeviceListener>> SYNC_TIME_OK");
+      //debugPrintI("addDeviceListener>> SYNC_TIME_OK");
       if (status == BandFitConstants.SC_SUCCESS) {
         await Future<void>.delayed(const Duration(milliseconds: 500));
         await _activityServiceProvider.updateUserParamsWatch(false);
 
         isDeviceConnected = true;
-        debugPrint('syncFailureTimeOut>>$syncFailureTimeOut');
+        debugPrintI('syncFailureTimeOut>>$syncFailureTimeOut');
         if(Platform.isAndroid){
           if (syncFailureTimeOut > 1) {
             // something went wrong
@@ -291,7 +291,7 @@ class VitalMainController extends GetxController
       if (status == BandFitConstants.SC_SUCCESS) {
         syncFailureTimeOut++;
         update();
-        debugPrint('syncFailureTimeOut>> $syncFailureTimeOut');
+        debugPrintI('syncFailureTimeOut>> $syncFailureTimeOut');
         if (syncFailureTimeOut == 3) {
           if (deviceConnectedBleWriteStatus) {
             GlobalMethods.showAlertDialogWithFunction(Get.context!,syncFailed, syncFailedMsg, retryText, () async {
@@ -312,9 +312,9 @@ class VitalMainController extends GetxController
     else if (result == BandFitConstants.DEVICE_DISCONNECTED) {
       if (status == BandFitConstants.SC_SUCCESS) {
         final bleConnected = await _checkVitalsDeviceConnectionUseCase();
-        debugPrint('deviceConnectedStatus>> $bleConnected');
-        debugPrint('isReConnectStatus>> $isReConnectStatus');
-        debugPrint('_activityServiceProvider.isSyncProgress>> ${_activityServiceProvider.isSyncProgress}');
+        debugPrintI('deviceConnectedStatus>> $bleConnected');
+        debugPrintI('isReConnectStatus>> $isReConnectStatus');
+        debugPrintI('_activityServiceProvider.isSyncProgress>> ${_activityServiceProvider.isSyncProgress}');
         if (_activityServiceProvider.isSyncProgress) {
           _activityServiceProvider.updateSyncingView(false);
         }
@@ -355,9 +355,9 @@ class VitalMainController extends GetxController
     await _activityServiceProvider.fetchDeviceVersion();
     await _activityServiceProvider.fetchBatteryStatus();
     await _activityServiceProvider.updateDeviceBandLanguage();
-    debugPrint('isReConnectStatus>> $isReConnectStatus');
+    debugPrintI('isReConnectStatus>> $isReConnectStatus');
     if(isReConnectStatus){
-      debugPrint('nav_pop>>440');
+      debugPrintI('nav_pop>>440');
       GlobalMethods.navigatePopBack();
     isReConnectStatus = false;
     update();
@@ -388,11 +388,11 @@ class VitalMainController extends GetxController
 
     if (isReConnectStatus) {
       final address = await _activityServiceProvider.getConnectedLastDeviceAddress();
-      debugPrint('last_address $address');
+      debugPrintI('last_address $address');
       if (address.trim() == reConnectMacAddress.trim()) {
         final lastInitStatus =
             await _activityServiceProvider.connectWithLastDeviceAddress();
-        debugPrint('last_connected_status>> $lastInitStatus');
+        debugPrintI('last_connected_status>> $lastInitStatus');
         if (lastInitStatus) {
           return;
         }
@@ -427,12 +427,12 @@ class VitalMainController extends GetxController
 
   void retryConnection(BuildContext context) {
     GlobalMethods.showAlertDialogWithFunction(Get.context!, deviceDisconnected, deviceDisconnectedMsg, reconnectText, () async {
-      debugPrint("pressed_ok");
+      debugPrintI("pressed_ok");
       final ctx = Get.context;
       if (ctx == null) return;
       bool statusReconnect = await _reconnectVitalsDeviceUseCase(ctx);
       //await Future.delayed(const Duration(milliseconds: 500));
-      debugPrint("statusReconnect>> $statusReconnect");
+      debugPrintI("statusReconnect>> $statusReconnect");
       if (statusReconnect) {
     isReConnectStatus = true;
           reConnectMacAddress = _activityServiceProvider.getDeviceMacAddress;
@@ -441,7 +441,7 @@ class VitalMainController extends GetxController
       } else {
         final lastInitStatus =
             await _activityServiceProvider.connectWithLastDeviceAddress();
-        debugPrint('last_connected_status>> $lastInitStatus');
+        debugPrintI('last_connected_status>> $lastInitStatus');
         if (lastInitStatus) {
           isReConnectStatus = true;
           reConnectMacAddress = _activityServiceProvider.getDeviceMacAddress;
@@ -460,7 +460,7 @@ class VitalMainController extends GetxController
     await _syncOverallVitalsUseCase();
 
     /*bool isConnected = await _activityServiceProvider.checkIsDeviceConnected();
-    debugPrint('performOverAllSyncOperation_isConnected>> $isConnected');
+    debugPrintI('performOverAllSyncOperation_isConnected>> $isConnected');
     if (isConnected) {
       //check the sync time from preference, if > 1 min then start syncing all the listeners
       await _activityServiceProvider.syncOverAllData();
@@ -483,7 +483,7 @@ class VitalMainController extends GetxController
         // upperBound: 1.0,
         duration: const Duration(milliseconds: 800))
       ..addStatusListener((status) {
-        debugPrint('anim status $status');
+        debugPrintI('anim status $status');
       });
 
     syncController = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat();
@@ -491,7 +491,7 @@ class VitalMainController extends GetxController
 
   Future<void> progressUpdate() async {
     double progressPercent = (_activityServiceProvider.getSteps * 100) / int.parse(_activityServiceProvider.getTargetedSteps);
-    debugPrint('progressPercentage>> ${progressPercent.toString()}');
+    debugPrintI('progressPercentage>> ${progressPercent.toString()}');
     updateProgress(progressPercent);
   }
 
@@ -511,7 +511,7 @@ class VitalMainController extends GetxController
     tween.animate(progressController);
     // progressController.value = progressPercentage;
     progressController.forward();
-    debugPrint('progressController.value>> ${progressController.value.toString()}');
+    debugPrintI('progressController.value>> ${progressController.value.toString()}');
   }
 
   @override
@@ -521,26 +521,26 @@ class VitalMainController extends GetxController
     switch (state) {
       case AppLifecycleState.resumed:
       // widget is resumed
-        debugPrint('AppLifecycleState.resumed');
+        debugPrintI('AppLifecycleState.resumed');
         _activityServiceProvider.resumeEventListeners();
         unawaited(_reconnectIfNeededOnResume());
         break;
       case AppLifecycleState.inactive:
       // widget is inactive
-        debugPrint('AppLifecycleState.inactive');
+        debugPrintI('AppLifecycleState.inactive');
         // when device gets lock screen
 
         break;
       case AppLifecycleState.paused:
       // widget is paused
-        debugPrint('AppLifecycleState.paused');
+        debugPrintI('AppLifecycleState.paused');
         break;
       case AppLifecycleState.detached:
       // widget is detached
-        debugPrint('AppLifecycleState.detached');
+        debugPrintI('AppLifecycleState.detached');
         break;
       case AppLifecycleState.hidden:
-        debugPrint('AppLifecycleState.hidden');
+        debugPrintI('AppLifecycleState.hidden');
         break;
     }
   }
@@ -554,7 +554,7 @@ class VitalMainController extends GetxController
   }
 
   void goBack() {
-    debugPrint('inside_go_back');
+    debugPrintI('inside_go_back');
     GlobalMethods.navigatePopBack();
     // Get.offAll(const VitalMain());
   }
@@ -627,14 +627,14 @@ class VitalMainController extends GetxController
     _weekDdata = await ws.fiveDayForecastByLocation(lat, lon);
 
     List<int> weatherForcastingDaysList = GlobalMethods.getWeakDayList(2);
-    debugPrint('weatherForcastingDaysList>>17> ${weatherForcastingDaysList.length}');
+    debugPrintI('weatherForcastingDaysList>>17> ${weatherForcastingDaysList.length}');
     getFilteredData(weatherForcastingDaysList);
 
-    debugPrint('_weekDdata>894>> ${_weekDdata}');
+    debugPrintI('_weekDdata>894>> ${_weekDdata}');
     _data = [weather];
-    debugPrint('_data>>> ${_data}');
+    debugPrintI('_data>>> ${_data}');
     currentTempWeather = _data[0].temperature.celsius;
-     debugPrint('currentTempWeather>> ${currentTempWeather}');
+     debugPrintI('currentTempWeather>> ${currentTempWeather}');
     update();
   }*/
 
@@ -647,7 +647,7 @@ class VitalMainController extends GetxController
   }
 
   Weather getSortedWeather(int forcastingDay) {
-    debugPrint('forcastingDay>> ${forcastingDay}');
+    debugPrintI('forcastingDay>> ${forcastingDay}');
     Weather currentWeather;
     for(int i=0;i<_weekDdata.length;i++){
       int dateTo = _weekDdata[i].date.day;

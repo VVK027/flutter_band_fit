@@ -1,4 +1,5 @@
 import 'package:flutter_band_fit_app/core/exports/band_exports.dart';
+import 'package:flutter_band_fit_app/core/widgets/fixed_section_list.dart';
 import 'package:flutter_band_fit_app/core/widgets/settings_widgets.dart';
 import 'package:flutter_band_fit_app/core/widgets/app_ui_components.dart';
 import 'package:flutter_band_fit_app/core/widgets/vital_detail_scaffold.dart';
@@ -13,9 +14,9 @@ class ActivityMonitorBody extends GetView<ActivityMonitorController> {
       title: textMonitoringOptions,
       onBack: GlobalMethods.navigatePopBack,
       onSave: controller.saveAndClose,
-      body: ListView(
+      body: FixedSectionListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 88),
-        children: [
+        sections: [
           const DetailInfoBanner(text: textConfigureMonitoring),
           const SizedBox(height: 12),
           SettingsSectionCard(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_band_fit_app/core/widgets/fixed_section_list.dart';
 import 'package:flutter_band_fit_app/app/theme/app_colors.dart';
 import 'package:flutter_band_fit_app/core/widgets/app_ui_components.dart';
 import 'package:flutter_band_fit_app/core/widgets/settings_widgets.dart';
@@ -215,8 +216,8 @@ class VitalDetailBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
+    return FixedSectionListView(
+      sections: [
         DetailActivityHeader(label: activityLabel),
         DetailDateNavigator(
           dateTitle: dateTitle,

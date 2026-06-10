@@ -20,7 +20,7 @@ class AddDeviceScanList extends GetView<AddDeviceController> {
       return ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        separatorBuilder: (_, __) => const Divider(),
+        separatorBuilder: (_, __) => const Divider(height: 1),
         itemCount: controller.smartDevicesList.length,
         itemBuilder: (context, index) => _DeviceListTile(index: index),
       );
@@ -40,8 +40,10 @@ class _SearchingIndicator extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: CircularProgressIndicator(
-              color: theme.colorScheme.primary,
+            child: RepaintBoundary(
+              child: CircularProgressIndicator(
+                color: theme.colorScheme.primary,
+              ),
             ),
           ),
           const SizedBox(height: 8),

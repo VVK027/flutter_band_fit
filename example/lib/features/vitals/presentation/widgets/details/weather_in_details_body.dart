@@ -1,4 +1,5 @@
 import 'package:flutter_band_fit_app/core/exports/band_exports.dart';
+import 'package:flutter_band_fit_app/features/vitals/data/models/weather_model.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/weather_in_details_controller.dart';
 import 'package:intl/intl.dart';
 
@@ -173,50 +174,64 @@ class _WeatherContent extends StatelessWidget {
         ),
         Flexible(
           child: ListView.builder(
-            shrinkWrap: true,
             itemCount: controller.weatherData.length,
-            itemBuilder: (context, index) {
-              final day = controller.weatherData[index];
-              final isToday = day.date.day == DateTime.now().day;
-              return Column(
-                children: [
-                  Container(
-                    margin: const EdgeInsets.all(10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          isToday
-                              ? textToday
-                              : DateFormat.E().format(day.date),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12,
-                          ),
-                        ),
-                        Text(
-                          day.description.toUpperCase(),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12,
-                          ),
-                        ),
-                        Text(
-                          '${day.temperatureData.min.toStringAsFixed(2)} $unit ~ ${day.temperatureData.max.toStringAsFixed(2)} $unit',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Divider(height: 0.5),
-                ],
-              );
-            },
+            itemExtent: 52,
+            itemBuilder: (context, index) => _WeatherForecastRow(
+              day: controller.weatherData[index],
+              unit: unit,
+            ),
           ),
         ),
+      ],
+    );
+  }
+}
+
+class _WeatherForecastRow extends StatelessWidget {
+  const _WeatherForecastRow({
+    required this.day,
+    required this.unit,
+  });
+
+  final WeatherDailyData day;
+  final String unit;
+
+  @override
+  Widget build(BuildContext context) {
+    final isToday = day.date.day == DateTime.now().day;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          margin: const EdgeInsets.all(10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Text(
+                isToday ? textToday : DateFormat.E().format(day.date),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 12,
+                ),
+              ),
+              Text(
+                day.description.toUpperCase(),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 12,
+                ),
+              ),
+              Text(
+                '${day.temperatureData.min.toStringAsFixed(2)} $unit ~ ${day.temperatureData.max.toStringAsFixed(2)} $unit',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Divider(height: 0.5),
       ],
     );
   }

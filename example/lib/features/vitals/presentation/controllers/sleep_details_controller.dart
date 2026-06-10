@@ -12,6 +12,12 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
 
   int selectedPage = 0;
 
+  /// Rebuild scope for D/W/M tab bodies only (not the full scaffold).
+  static const chartTabId = 'chartTab';
+
+  void notifyChartTab() => update([chartTabId]);
+
+
   final VitalsDataRepository _vitalsDataRepository = Get.find<VitalsDataRepository>();
   List<dynamic> overAllSleepData = [];
 
@@ -97,7 +103,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
 
   Future<void> initializeData() async {
     _reloadStoredSleepData();
-    update();
+    notifyChartTab();
     await setCurrentDateTitle(todayTime);
     //week
     currentWeekDateTime = await GlobalMethods.getWeekDatesListByTime(todayTime);
@@ -105,13 +111,13 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
     //month
     currentMonthDateTime = await GlobalMethods.getMonthyDatesListByTime(todayTime);
     await setMonthDateTitle(currentMonthDateTime);
-    update();
+    notifyChartTab();
   }
 
   Future<void> setCurrentDateTitle(DateTime dateTime) async {
     _reloadStoredSleepData();
     dayDateTitle = _formatDayTitle(dateTime);
-    update();
+    notifyChartTab();
     try {
       String calender = GlobalMethods.convertBandReadableCalender(dateTime);
       List<SleepMainModel> sleepMainModelList = [];
@@ -121,10 +127,10 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
         sleepMainModelList = await _vitalsDataRepository.getCurrentDaySleepData(overAllSleepData, calender);
       }
 
-      debugPrint('sleepMainModelList>>  ${sleepMainModelList.length}');
+      debugPrintI('sleepMainModelList>>  ${sleepMainModelList.length}');
       if (sleepMainModelList.isNotEmpty) {
         SleepMainModel sleepMainModel = sleepMainModelList[0];
-        debugPrint('sleepMainModel.calender>>  ${sleepMainModel.calender}');
+        debugPrintI('sleepMainModel.calender>>  ${sleepMainModel.calender}');
         List<String> total = sleepMainModel.total.split(':');
         List<String> light = sleepMainModel.light.split(':');
         List<String> awake = sleepMainModel.awake.split(':');
@@ -134,7 +140,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
         List<String> endTime = sleepMainModel.endTime.split(':');
 
         // List<SmartSleepModel> sleepDataList = sleepMainModel.dataList;
-        // print("sleepDataList>> ${sleepDataList.length} == ${sleepDataList}");
+        // debugPrintI("sleepDataList>> ${sleepDataList.length} == ${sleepDataList}");
 
         int totalNumber = int.tryParse(sleepMainModel.totalNum)!;
         int deepNumber = int.tryParse(sleepMainModel.deepNum)!;
@@ -159,7 +165,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
           deepPercentage = getCalculatePercentage(deepNumber, totalNumber);
           lightPercentage = getCalculatePercentage(lightNumber, totalNumber);
           awakePercentage = getCalculatePercentage(awakeNumber, totalNumber);
-    update();
+    notifyChartTab();
         // } else {
         //     //sleepDayDataList = [];
         //     dayTotalHours = '0';
@@ -197,10 +203,10 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
           deepPercentage =0;
           lightPercentage =0;
           awakePercentage =0;
-    update();
+    notifyChartTab();
       }
     } catch (e) {
-      debugPrint('setSleepTitleException:: $e');
+      debugPrintI('setSleepTitleException:: $e');
     }
   }
 
@@ -228,7 +234,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
       String title = await GlobalMethods.getWeekTitleLabel(context, weekList);
       
         weekDateTitle = title;
-    update();
+    notifyChartTab();
       List<String> calenderList = [];
       for (var element in weekList) {
         calenderList.add(GlobalMethods.convertBandReadableCalender(element));
@@ -264,7 +270,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
 
             weekTotalAwakeHours = awake[0];
             weekTotalAwakeMin = awake[1];
-    update();
+    notifyChartTab();
 
         }
         else{
@@ -278,13 +284,13 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
             weekTotalLightMin = '0';
             weekTotalAwakeHours = '0';
             weekTotalAwakeMin = '0';
-    update();
+    notifyChartTab();
 
         }
 
       }else{
         List<SleepMainModel> sleepWeekModelList = await _vitalsDataRepository.getSleepBySelectedWeek(overAllSleepData, calenderList);
-        debugPrint('sleepWeekModelList>>  ${sleepWeekModelList.length}');
+        debugPrintI('sleepWeekModelList>>  ${sleepWeekModelList.length}');
         if (sleepWeekModelList.isNotEmpty) {
           List<WeeklySleepData> weekDataList = [];
 
@@ -298,7 +304,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
             List<String> beginTime = element.beginTime.split(':');
             List<String> endTime = element.endTime.split(':');
             String week = calWeeks[dateTime.weekday - 1];
-            //debugPrint( 'startTimeNum >> ${element.beginTimeNum} --endTimeNum>> ${element.endTimeNum}');
+            //debugPrintI( 'startTimeNum >> ${element.beginTimeNum} --endTimeNum>> ${element.endTimeNum}');
             totalHours = totalHours + int.tryParse(element.totalNum)!;
             totalDeep = totalDeep + int.tryParse(element.deepNum)!;
             totalLight = totalLight + int.tryParse(element.lightNum)!;
@@ -331,7 +337,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
 
             weekTotalAwakeHours = awake[0];
             weekTotalAwakeMin = awake[1];
-    update();
+    notifyChartTab();
         } else {
             weekSleepDataList = [];
             weekTotalSleepHours = '0';
@@ -342,7 +348,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
             weekTotalLightMin = '0';
             weekTotalAwakeHours = '0';
             weekTotalAwakeMin = '0';
-    update();
+    notifyChartTab();
         }
       }
     } else {
@@ -355,7 +361,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
         weekTotalLightMin = '0';
         weekTotalAwakeHours = '0';
         weekTotalAwakeMin = '0';
-    update();
+    notifyChartTab();
     }
   }
 
@@ -377,7 +383,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
       //String lastDay = monthList[monthList.length - 1].day.toString();
       String month = calMonths[monthList[0].month - 1];
         monthlyDateTitle =   '$month $year';
-    update();
+    notifyChartTab();
 
       List<String> calenderList = [];
       for (var element in monthList) {
@@ -410,7 +416,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
 
             monthTotalAwakeHours = awake[0];
             monthTotalAwakeMin = awake[1];
-    update();
+    notifyChartTab();
         }
         else{
             monthSleepDataList = [];
@@ -422,11 +428,11 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
             monthTotalLightMin = '0';
             monthTotalAwakeHours = '0';
             monthTotalAwakeMin = '0';
-    update();
+    notifyChartTab();
         }
       }else{
         List<SleepMainModel> sleepMonthModelList = await _vitalsDataRepository.getSleepBySelectedWeek(overAllSleepData, calenderList);
-        debugPrint('sleepMonthModelList>>  ${sleepMonthModelList.length}');
+        debugPrintI('sleepMonthModelList>>  ${sleepMonthModelList.length}');
 
         if (sleepMonthModelList.isNotEmpty) {
 
@@ -443,7 +449,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
             List<String> beginTime = element.beginTime.split(':');
             List<String> endTime = element.endTime.split(':');
             //String week = tempCalenderWeek[dateTime.weekday - 1];
-            //debugPrint( 'startTimeNum >> ${element.beginTimeNum} --endTimeNum>> ${element.endTimeNum}');
+            //debugPrintI( 'startTimeNum >> ${element.beginTimeNum} --endTimeNum>> ${element.endTimeNum}');
             totalHours = totalHours + int.tryParse(element.totalNum)!;
             totalDeep = totalDeep + int.tryParse(element.deepNum)!;
             totalLight = totalLight + int.tryParse(element.lightNum)!;
@@ -475,7 +481,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
 
             monthTotalAwakeHours = awake[0];
             monthTotalAwakeMin = awake[1];
-    update();
+    notifyChartTab();
 
         }else{
             monthSleepDataList = [];
@@ -487,7 +493,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
             monthTotalLightMin = '0';
             monthTotalAwakeHours = '0';
             monthTotalAwakeMin = '0';
-    update();
+    notifyChartTab();
         }
       }
     } else {
@@ -500,7 +506,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
         monthTotalLightMin = '0';
         monthTotalAwakeHours = '0';
         monthTotalAwakeMin = '0';
-    update();
+    notifyChartTab();
     }
   }
 

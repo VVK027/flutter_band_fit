@@ -68,7 +68,7 @@ class ProfileUpdateBody extends StatelessWidget {
                       // _textEditingController.text = pickedDate.toString();
                     
                     controller.update();                  }
-                  debugPrint('_selectedGender>> $controller.selectedGender');
+                  debugPrintI('_selectedGender>> $controller.selectedGender');
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
@@ -95,9 +95,9 @@ class ProfileUpdateBody extends StatelessWidget {
                       // _textEditingController.text = pickedDate.toString();
                     
                     controller.update();                  }
-                  debugPrint('controller.selectedDate>> $controller.selectedDate');
+                  debugPrintI('controller.selectedDate>> $controller.selectedDate');
 
-                  debugPrint('data>> $data');
+                  debugPrintI('data>> $data');
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 2.0),
@@ -128,7 +128,7 @@ class ProfileUpdateBody extends StatelessWidget {
                       // _textEditingController.text = pickedDate.toString();
                     
                     controller.update();                  }
-                  debugPrint('controller.selectedHeight>> $controller.selectedHeight');
+                  debugPrintI('controller.selectedHeight>> $controller.selectedHeight');
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(
@@ -160,7 +160,7 @@ class ProfileUpdateBody extends StatelessWidget {
                       // _textEditingController.text = pickedDate.toString();
                     
                     controller.update();                  }
-                  debugPrint('controller.selectedWeight>> $controller.selectedWeight');
+                  debugPrintI('controller.selectedWeight>> $controller.selectedWeight');
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(
@@ -233,7 +233,7 @@ class ProfileUpdateBody extends StatelessWidget {
                       // _textEditingController.text = pickedDate.toString();
                     
                     controller.update();                  }
-                  debugPrint('selectedGoal>> $controller.selectedSteps');
+                  debugPrintI('selectedGoal>> $controller.selectedSteps');
                   // DateTime tempPickedDate =  DateTime.now();
                   /*DateTime data = await selectDate(controller.selectedDate);
                   if (data != DateTime.now()) {
@@ -242,8 +242,8 @@ class ProfileUpdateBody extends StatelessWidget {
                       // _textEditingController.text = pickedDate.toString();
                     
                     controller.update();                  }
-                  debugPrint('controller.selectedDate>> $controller.selectedDate');*/
-                  //debugPrint('data>> $data');
+                  debugPrintI('controller.selectedDate>> $controller.selectedDate');*/
+                  //debugPrintI('data>> $data');
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(
@@ -276,7 +276,7 @@ class ProfileUpdateBody extends StatelessWidget {
                       // _textEditingController.text = pickedDate.toString();
                     
                     controller.update();                  }
-                  debugPrint('_selectedRaiseUpSecs>> $controller.selectedScreenOffSecs');
+                  debugPrintI('_selectedRaiseUpSecs>> $controller.selectedScreenOffSecs');
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(
@@ -309,7 +309,7 @@ class ProfileUpdateBody extends StatelessWidget {
                       // _textEditingController.text = pickedDate.toString();
                     
                     controller.update();                  }
-                  debugPrint('controller.selectedTemperatureUnits>> $controller.selectedTemperatureUnits');
+                  debugPrintI('controller.selectedTemperatureUnits>> $controller.selectedTemperatureUnits');
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(
@@ -383,18 +383,18 @@ class ProfileUpdateBody extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
           mini: true,
           onPressed: () async {
-            debugPrint('H: $controller.selectedHeight, W: $controller.selectedWeight,DOB: $controller.selectedDate, G: $controller.selectedGender');
-            debugPrint('gender: ${controller.gender}, dob: ${controller.dob}');
+            debugPrintI('H: $controller.selectedHeight, W: $controller.selectedWeight,DOB: $controller.selectedDate, G: $controller.selectedGender');
+            debugPrintI('gender: ${controller.gender}, dob: ${controller.dob}');
 
             String submitDateOfBirth = '';
             try{
               if (controller.dob  != 'N/A'  &&  controller.dob.isNotEmpty){
                 DateTime pastDOB = DateTime.parse(controller.dob).toLocal();
                 DateTime currentDOB = DateTime(controller.selectedDate.year, controller.selectedDate.month, controller.selectedDate.day);
-                //debugPrint('pastDOB>> $pastDOB');
-                //debugPrint('currentDOB>> $currentDOB');
+                //debugPrintI('pastDOB>> $pastDOB');
+                //debugPrintI('currentDOB>> $currentDOB');
                 int duration = pastDOB.difference(currentDOB).inDays;
-                debugPrint('duration>> $duration');
+                debugPrintI('duration>> $duration');
                 if (duration < 0 ) {
                   submitDateOfBirth = currentDOB.toString();
                 }else if (duration > 0 ) {
@@ -406,9 +406,9 @@ class ProfileUpdateBody extends StatelessWidget {
               }else{
                 submitDateOfBirth = controller.selectedDate.toString();
               }
-              //debugPrint('submitDateOfBirth>> $submitDateOfBirth');
+              //debugPrintI('submitDateOfBirth>> $submitDateOfBirth');
             }catch(exp){
-              debugPrint('dateOfBirthExp>> $exp');
+              debugPrintI('dateOfBirthExp>> $exp');
             }
 
             bool isConnected = await controller.activityProvider.checkIsDeviceConnected();
@@ -437,7 +437,7 @@ class ProfileUpdateBody extends StatelessWidget {
               await controller.activityProvider.updateUserParamsWatch(false);
             }
             await sharedService.setProfileUpdate(true);
-            debugPrint('profilecontroller.activityProvider.getDeviceSWName>> ${controller.activityProvider.getDeviceSWName}');
+            debugPrintI('profilecontroller.activityProvider.getDeviceSWName>> ${controller.activityProvider.getDeviceSWName}');
             if (controller.activityProvider.getDeviceSWName != googleFitKey &&
                 controller.activityProvider.getDeviceSWName !=
                     appleHealthKey &&
@@ -458,14 +458,14 @@ class ProfileUpdateBody extends StatelessWidget {
     String dobUpdate ='';
     String genderUpdate ='';
     if (dateOfBirth.isNotEmpty) {
-      //debugPrint('dateOfBirth12>> $dateOfBirth');
+      //debugPrintI('dateOfBirth12>> $dateOfBirth');
       dobUpdate = DateTime.parse(dateOfBirth).toUtc().toIso8601String();
     }
     if (gender.isNotEmpty) {
       genderUpdate = gender.toUpperCase();
     }
-    debugPrint('dateOfBirthUpdate>> $dobUpdate');
-    debugPrint('gender>> $genderUpdate');
+    debugPrintI('dateOfBirthUpdate>> $dobUpdate');
+    debugPrintI('gender>> $genderUpdate');
   }
 
   Future<DateTime?> selectDate(DateTime tempPickedDate) async {
@@ -559,7 +559,7 @@ class ProfileUpdateBody extends StatelessWidget {
                     useMagnifier: true,
                     squeeze: 1.25,
                     onSelectedItemChanged: (value) {
-                      debugPrint('value>> $value');
+                      debugPrintI('value>> $value');
                       //tempSelectedDate
                       if (value == 1) {
                         tempSelectedDate = 'female';
@@ -631,7 +631,7 @@ class ProfileUpdateBody extends StatelessWidget {
                     useMagnifier: true,
                     squeeze: 1.25,
                     onSelectedItemChanged: (value) {
-                      debugPrint('value_index>> $value');
+                      debugPrintI('value_index>> $value');
                       tempSelectedHeight = (value + heightMin).toString();
                     },
                     selectionOverlay:
@@ -697,7 +697,7 @@ class ProfileUpdateBody extends StatelessWidget {
                     useMagnifier: true,
                     squeeze: 1.25,
                     onSelectedItemChanged: (value) {
-                      debugPrint('value_index>> $value');
+                      debugPrintI('value_index>> $value');
                       tempSelectedWeight = (value + weightMin).toString();
                     },
                     selectionOverlay:
@@ -763,7 +763,7 @@ class ProfileUpdateBody extends StatelessWidget {
                     useMagnifier: true,
                     squeeze: 1.25,
                     onSelectedItemChanged: (value) {
-                      debugPrint('value_index>> $value');
+                      debugPrintI('value_index>> $value');
                       //tempScreenOffSecs = value.toString();
                       //tempScreenOffSecs = (value + screenOffTimeMin).toString();
                       tempScreenOffSecs =
@@ -838,7 +838,7 @@ class ProfileUpdateBody extends StatelessWidget {
                     useMagnifier: true,
                     squeeze: 1.25,
                     onSelectedItemChanged: (value) {
-                      debugPrint('value_index>> $value');
+                      debugPrintI('value_index>> $value');
                       //tempScreenOffSecs = value.toString();
                       //tempScreenOffSecs = (value + screenOffTimeMin).toString();
                       tempUnits = temperatureUnitsList[value].toString();

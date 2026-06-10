@@ -16,6 +16,12 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
 
   int selectedPage = 0;
 
+  /// Rebuild scope for D/W/M tab bodies only (not the full scaffold).
+  static const chartTabId = 'chartTab';
+
+  void notifyChartTab() => update([chartTabId]);
+
+
 
 
   final VitalsDataRepository _vitalsDataRepository = Get.find<VitalsDataRepository>();
@@ -97,20 +103,20 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
   Future<void> initializeData() async {
     _reloadStoredStepsData();
     await setCurrentDateTitle(todayTime);
-    update();
+    notifyChartTab();
     //week
     currentWeekDateTime = await GlobalMethods.getWeekDatesListByTime(todayTime);
     await setWeekDateTitle(currentWeekDateTime);
     //month
     currentMonthDateTime = await GlobalMethods.getMonthyDatesListByTime(todayTime);
     await setMonthDateTitle(currentMonthDateTime);
-    update();
+    notifyChartTab();
   }
 
   Future<void> setCurrentDateTitle(DateTime dateTime) async {
     _reloadStoredStepsData();
     dayDateTitle = _formatDayTitle(dateTime);
-    update();
+    notifyChartTab();
     try {
       String calender = GlobalMethods.convertBandReadableCalender(dateTime);
       //List<StepsMainModel> stepsMainModelList = await _activityServiceProvider.getCurrentDaySteps(overAllStepsData, calender);
@@ -121,7 +127,7 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
         stepsMainModelList = await _vitalsDataRepository.getCurrentDaySteps(overAllStepsData, calender);
       }
 
-      debugPrint('stepsMainModelList>>  ${stepsMainModelList.length}');
+      debugPrintI('stepsMainModelList>>  ${stepsMainModelList.length}');
       if (stepsMainModelList.isNotEmpty) {
         final stepsMainModel = stepsMainModelList[0];
         final stepsDataList = stepsMainModel.dataList;
@@ -167,16 +173,16 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
           );
         }
         stepsDayDataList = dataRepList;
-        update();
+        notifyChartTab();
       } else {
           stepsDayDataList = [];
           dayTotalSteps = '0';
           dayTotalDistance = '0.0';
           dayTotalCalories = '0.0';
-    update();
+    notifyChartTab();
       }
     } catch (e) {
-      debugPrint('setStepsTitleException:: $e');
+      debugPrintI('setStepsTitleException:: $e');
     }
   }
 
@@ -211,7 +217,7 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
       String title = await GlobalMethods.getWeekTitleLabel(context, weekList);
       
         weekDateTitle = title;
-    update();
+    notifyChartTab();
       List<String> calenderList =[];
       for (var element in weekList) {
         calenderList.add(GlobalMethods.convertBandReadableCalender(element));
@@ -232,18 +238,18 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
             weekTotalSteps = totalSteps.toInt().toString();
             weekTotalDistance = totalDistance.toStringAsFixed(2);
             weekTotalCalories = totalCalories.toStringAsFixed(2);
-    update();
+    notifyChartTab();
 
         }else{
             weekStepsDataList = [];
             weekTotalSteps = '0';
             weekTotalDistance = '0.0';
             weekTotalCalories = '0.0';
-    update();
+    notifyChartTab();
         }
       }else{
         List<StepsMainModel> stepsWeekModelList = await _vitalsDataRepository.getStepsBySelectedWeek(overAllStepsData, calenderList);
-        debugPrint('stepsWeekModelList>>  ${stepsWeekModelList.length}');
+        debugPrintI('stepsWeekModelList>>  ${stepsWeekModelList.length}');
         if (stepsWeekModelList.isNotEmpty) {
           List<WeekStepsData> weekDataList = [];
           double totalSteps = 0;
@@ -268,13 +274,13 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
             weekTotalSteps = totalSteps.toInt().toString();
             weekTotalDistance = totalDistance.toStringAsFixed(2);
             weekTotalCalories = totalCalories.toStringAsFixed(2);
-    update();
+    notifyChartTab();
         }else{
             weekStepsDataList = [];
             weekTotalSteps = '0';
             weekTotalDistance = '0.0';
             weekTotalCalories = '0.0';
-    update();
+    notifyChartTab();
         }
       }
 
@@ -283,7 +289,7 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
         weekTotalSteps = '0';
         weekTotalDistance = '0.0';
         weekTotalCalories = '0.0';
-    update();
+    notifyChartTab();
     }
   }
 
@@ -307,7 +313,7 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
       String month = calMonths[monthList[0].month - 1];
         monthlyDateTitle ='$month $year';
         //monthlyDateTitle = Utils.tr(context,month) + ' ' + year;
-    update();
+    notifyChartTab();
 
       List<String> calenderList =[];
       for (var element in monthList) {
@@ -324,17 +330,17 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
             monthTotalSteps = totalSteps.toInt().toString();
             monthTotalDistance = totalDistance.toStringAsFixed(2);
             monthTotalCalories = totalCalories.toStringAsFixed(2);
-    update();
+    notifyChartTab();
         }else{
             monthStepsDataList = [];
             monthTotalSteps = '0';
             monthTotalDistance = '0.0';
             monthTotalCalories = '0.0';
-    update();
+    notifyChartTab();
         }
       }else{
         List<StepsMainModel> stepsMonthModelList = await _vitalsDataRepository.getStepsBySelectedWeek(overAllStepsData, calenderList);
-        debugPrint('stepsMonthModelList>>  ${stepsMonthModelList.length}');
+        debugPrintI('stepsMonthModelList>>  ${stepsMonthModelList.length}');
         if (stepsMonthModelList.isNotEmpty) {
           List<MonthStepsData> monthDataList =[];
           double totalSteps = 0;
@@ -362,14 +368,14 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
             monthTotalSteps = totalSteps.toInt().toString();
             monthTotalDistance = totalDistance.toStringAsFixed(2);
             monthTotalCalories = totalCalories.toStringAsFixed(2);
-    update();
+    notifyChartTab();
 
         }else{
             monthStepsDataList = [];
             monthTotalSteps = '0';
             monthTotalDistance = '0.0';
             monthTotalCalories = '0.0';
-    update();
+    notifyChartTab();
         }
       }
     }else{
@@ -377,7 +383,7 @@ class ActivitiesDetailsController extends GetxController with VitalsStorageReady
         monthTotalSteps = '0';
         monthTotalDistance = '0.0';
         monthTotalCalories = '0.0';
-    update();
+    notifyChartTab();
     }
   }
 
