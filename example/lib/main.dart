@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_band_fit_app/app/bindings/initial_binding.dart';
-import 'package:flutter_band_fit_app/core/constants/global_constants.dart';
 import 'package:flutter_band_fit_app/app/routes/app_pages.dart';
 import 'package:flutter_band_fit_app/app/routes/app_routes.dart';
 import 'package:flutter_band_fit_app/app/theme/app_theme.dart';
 import 'package:flutter_band_fit_app/app/theme/theme_controller.dart';
+import 'package:flutter_band_fit_app/core/constants/global_constants.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -22,7 +22,7 @@ class BandFitApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();
     return Obx(
-          () => GetMaterialApp(
+      () => GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: textAppTitle,
         theme: AppTheme.light,
