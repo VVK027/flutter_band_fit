@@ -14,13 +14,15 @@ class VitalMainController extends GetxController
     with GetTickerProviderStateMixin, WidgetsBindingObserver {
 
   final themeController = Get.find<ThemeController>();
-  final  _activityServiceProvider = Get.find<ActivityServiceProvider>();
+  ActivityServiceProvider get _activityServiceProvider =>
+      Get.find<ActivityServiceProvider>();
   final CheckVitalsDeviceConnectionUseCase _checkVitalsDeviceConnectionUseCase =
       Get.find<CheckVitalsDeviceConnectionUseCase>();
   final ReconnectVitalsDeviceUseCase _reconnectVitalsDeviceUseCase =
       Get.find<ReconnectVitalsDeviceUseCase>();
   final ShouldSyncVitalsUseCase _shouldSyncVitalsUseCase = Get.find<ShouldSyncVitalsUseCase>();
-  final SyncOverallVitalsUseCase _syncOverallVitalsUseCase = Get.find<SyncOverallVitalsUseCase>();
+  final SyncOverallVitalsUseCase _syncOverallVitalsUseCase =
+      Get.find<SyncOverallVitalsUseCase>();
 
   DateTime todayTime = DateTime.now();
   bool isReConnectStatus = false;
@@ -152,10 +154,8 @@ class VitalMainController extends GetxController
   }
 
   Future<void> validateTimeAndSync() async {
-    // var outputFormat = new DateFormat('yyyy-MM-dd hh:mm:ss a');
-    // String outputDate = outputFormat.format(DateTime.now());
-    // debugPrintI('syncStartedTime>> $outputDate');
-    bool doSync = await calculateSyncTimeDifference();
+    await listenReceiveEvents();
+    final doSync = await calculateSyncTimeDifference();
     debugPrintI('doSync>> $doSync ');
     _activityServiceProvider.updateSyncingView(doSync);
     if (doSync) {
@@ -340,10 +340,11 @@ class VitalMainController extends GetxController
       if (status == BandFitConstants.SC_SUCCESS) {
         _handleTemperatureTimeout();
       }
-    }else {
-      if (Get.context != null) {
-        await _activityServiceProvider.updateEventResult(eventData, Get.context!);
-      }
+    } else {
+      await _activityServiceProvider.updateEventResult(
+        eventData,
+        Get.context,
+      );
     }
   }
 

@@ -461,6 +461,7 @@ class FlutterBandFit {
     BandErrorCallback? onError,
     void Function()? onDone,
   }) {
+    _eventChannelListener?.cancel();
     _eventChannelListener = _eventChannel
         .receiveBroadcastStream(BandFitConstants.BAND_EVENT_CHANNEL)
         .listen(
