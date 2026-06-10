@@ -36,5 +36,3 @@ flutter:
         pluginClass: FlutterBandFitPlugin
       ios:
         pluginClass: FlutterBandFitPlugin
-      macos:
-        pluginClass: FlutterBandFitPlugin

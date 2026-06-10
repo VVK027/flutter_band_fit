@@ -10,6 +10,19 @@ Documentation for the `flutter_band_fit` **plugin** and the **example** referenc
 
 A **full reference implementation** (pairing, sync, vitals UI, settings, dial, firmware, health export) ships in the `example/` package — not only API stubs.
 
+## Screenshots
+
+Example app captures from a connected UTE / GloryFit band (see [`screenshots/`](../../screenshots/) at the package root).
+
+| Screen | Description |
+| ------ | ----------- |
+| ![Vitals dashboard (dark)](../../screenshots/vital_main_dark.png) | Main dashboard — steps goal, sync, heart rate, sleep, BP, SpO₂ |
+| ![Vitals dashboard (light)](../../screenshots/vital_main_light.png) | Same dashboard in light theme |
+| ![Activities detail](../../screenshots/activities_detail.png) | Daily steps chart, distance, and calories |
+| ![Heart rate detail](../../screenshots/heart_rate_detail.png) | Heart rate trend, average/min/max |
+| ![Blood pressure detail](../../screenshots/blood_pressure_detail.png) | BP readings chart and on-demand test |
+| ![SpO₂ detail](../../screenshots/spo2_detail.png) | Blood oxygen trend and live measurement |
+
 ## Plugin integration (start here)
 
 | Document | Description |
@@ -38,3 +51,7 @@ A **full reference implementation** (pairing, sync, vitals UI, settings, dial, f
 3. [Plugin API workflow reference](plugin/plugin-api-workflow.md)
 4. Run and explore `example/` (see [example/README.md](../README.md))
 5. [ARCHITECTURE.md](../ARCHITECTURE.md) when extending the demo app
+
+## License
+
+The `flutter_band_fit` plugin and example app are licensed under the [MIT License](../../LICENSE).
