@@ -17,42 +17,42 @@ class SleepDayTab extends GetView<SleepDetailsController> {
       builder: (_) => FixedSectionListView(
         key: const Key(WidgetKeys.fixedSectionListView),
         padding: sleepListBottomPadding(context),
-        sections: const [
+        sections: [
           SleepDayDateNavigator(
-            key: Key(WidgetKeys.sleepDayDateNavigator),
+            key: const Key(WidgetKeys.sleepDayDateNavigator),
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           SleepDaySummaryHeader(
-            key: Key(WidgetKeys.sleepDaySummaryHeader),
+            key: const Key(WidgetKeys.sleepDaySummaryHeader),
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           SleepDayStageBar(
-            key: Key(WidgetKeys.sleepDayStageBar),
+            key: const Key(WidgetKeys.sleepDayStageBar),
           ),
           SleepDayBeginEndRow(
-            key: Key(WidgetKeys.sleepDayBeginEndRow),
+            key: const Key(WidgetKeys.sleepDayBeginEndRow),
           ),
-          SleepDayStageDivider(
+          const SleepDayStageDivider(
             key: Key(WidgetKeys.sleepDayStageDivider),
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           SleepDayStageStatsRow(
-            key: Key(WidgetKeys.sleepDayStageStatsRow),
+            key: const Key(WidgetKeys.sleepDayStageStatsRow),
           ),
-          SizedBox(height: 21),
-          SleepDayQualityTitle(
+          const SizedBox(height: 21),
+          const SleepDayQualityTitle(
             key: Key(WidgetKeys.sleepDayQualityTitle),
           ),
-          SizedBox(height: 21),
-          SleepDayQualityNotLateSection(
+          const SizedBox(height: 21),
+          const SleepDayQualityNotLateSection(
             key: Key(WidgetKeys.sleepDayQualityNotLateSection),
           ),
-          SizedBox(height: 10),
-          SleepDayQualityLackSection(
+          const SizedBox(height: 10),
+          const SleepDayQualityLackSection(
             key: Key(WidgetKeys.sleepDayQualityLackSection),
           ),
-          SizedBox(height: 10),
-          SleepDayQualityWakeEarlySection(
+          const SizedBox(height: 10),
+          const SleepDayQualityWakeEarlySection(
             key: Key(WidgetKeys.sleepDayQualityWakeEarlySection),
           ),
         ],
