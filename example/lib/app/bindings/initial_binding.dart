@@ -8,9 +8,9 @@ class InitialBinding extends Bindings {
   @override
   void dependencies() {
     Get.put(ThemeController(), permanent: true);
-    Get.lazyPut<ActivityServiceProvider>(
-      () => ActivityServiceProvider(),
-      fenix: true,
+    Get.put<ActivityServiceProvider>(
+      ActivityServiceProvider(),
+      permanent: true,
     );
     AppDependencies.register();
   }
