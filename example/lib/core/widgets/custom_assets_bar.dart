@@ -10,8 +10,8 @@ class BarAsset {
   final Color color;
 }
 
-/// Segmented progress bar; sorts segments in [initState] / [didUpdateWidget], not in [build].
-class CustomAssetsBar extends StatefulWidget {
+/// Segmented progress bar for sleep stage proportions.
+class CustomAssetsBar extends StatelessWidget {
   const CustomAssetsBar({
     super.key,
     required this.width,
@@ -31,93 +31,66 @@ class CustomAssetsBar extends StatefulWidget {
   final OrderType order;
   final Color background;
 
-  @override
-  State<CustomAssetsBar> createState() => _CustomAssetsBarState();
-}
-
-class _CustomAssetsBarState extends State<CustomAssetsBar> {
-  late List<BarAsset> _sortedAssets;
-  late double _valuesSum;
-
-  @override
-  void initState() {
-    super.initState();
-    _recomputeSegments();
+  double _valuesSum(List<BarAsset> segments) {
+    var sum = 0.0;
+    for (final segment in segments) {
+      sum += segment.size;
+    }
+    return sum;
   }
 
-  @override
-  void didUpdateWidget(CustomAssetsBar oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.assets != widget.assets ||
-        oldWidget.order != widget.order ||
-        oldWidget.assetsLimit != widget.assetsLimit) {
-      _recomputeSegments();
-    }
-  }
-
-  void _recomputeSegments() {
-    _valuesSum = 0;
-    for (final single in widget.assets) {
-      _valuesSum += single.size;
-    }
-    _sortedAssets = List<BarAsset>.from(widget.assets);
-    switch (widget.order) {
+  List<BarAsset> _orderedAssets() {
+    final segments = List<BarAsset>.from(assets);
+    switch (order) {
       case OrderType.ascending:
-        _sortedAssets.sort((a, b) => a.size.compareTo(b.size));
+        segments.sort((a, b) => a.size.compareTo(b.size));
       case OrderType.descending:
-        _sortedAssets.sort((a, b) => b.size.compareTo(a.size));
+        segments.sort((a, b) => b.size.compareTo(a.size));
       case OrderType.none:
         break;
     }
+    return segments;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.assetsLimit < _valuesSum) {
-      debugPrintI('assetsSum < _getValuesSum() - Check your values!');
-      return const SizedBox.shrink();
-    }
-    final double rad = widget.radius > 0 ? widget.radius : (widget.height / 2);
-    return RepaintBoundary(
-      child: Container(
+    final segments = _orderedAssets();
+    final valuesSum = _valuesSum(segments);
+    if (valuesSum <= 0) {
+      final rad = radius > 0 ? radius : (height / 2);
+      return Container(
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-          color: widget.background,
+          color: background,
           borderRadius: BorderRadius.all(Radius.circular(rad)),
         ),
-        width: widget.width,
-        height: widget.height,
-        child: Row(
-          children: [
-            for (final segment in _sortedAssets)
-              _BarSegment(
-                asset: segment,
-                barWidth: widget.width,
-                assetsLimit: widget.assetsLimit,
-              ),
-          ],
-        ),
+        width: width,
+        height: height,
+      );
+    }
+    if (assetsLimit < valuesSum) {
+      debugPrintI('assetsSum > assetsLimit - Check your values!');
+      return const SizedBox.shrink();
+    }
+    final rad = radius > 0 ? radius : (height / 2);
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.all(Radius.circular(rad)),
       ),
-    );
-  }
-}
-
-class _BarSegment extends StatelessWidget {
-  const _BarSegment({
-    required this.asset,
-    required this.barWidth,
-    required this.assetsLimit,
-  });
-
-  final BarAsset asset;
-  final double barWidth;
-  final double assetsLimit;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: (asset.size * barWidth) / assetsLimit,
-      child: ColoredBox(color: asset.color),
+      width: width,
+      height: height,
+      child: Row(
+        children: [
+          for (final segment in segments)
+            SizedBox(
+              width: (segment.size * width) / assetsLimit,
+              height: height,
+              child: ColoredBox(color: segment.color),
+            ),
+        ],
+      ),
     );
   }
 }

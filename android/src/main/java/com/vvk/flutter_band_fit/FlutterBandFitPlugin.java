@@ -334,6 +334,9 @@ public class FlutterBandFitPlugin implements FlutterPlugin, MethodCallHandler, A
                         // runOnUIThread(WatchConstants.BP_RESULT, jsonObject, WatchConstants.SMART_CALLBACK, WatchConstants.SC_SUCCESS);
                         //pushEventCallBack(WatchConstants.BP_RESULT, jsonObject, WatchConstants.SC_SUCCESS);
                         pushOtherEventCallBack(WatchConstants.BP_RESULT, jsonObject, WatchConstants.SC_SUCCESS);
+                        if (status == 4) {
+                            pushOtherEventCallBack(WatchConstants.BP_TEST_FINISHED, new JSONObject(), WatchConstants.SC_SUCCESS);
+                        }
                     } catch (Exception e) {
                         //e.printStackTrace();
                         Log.e("bpChangeJSONExp::", e.getMessage());

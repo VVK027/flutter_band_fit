@@ -1,6 +1,8 @@
-import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
-import 'package:flutter_band_fit_app/core/constants/widget_keys.dart';
+import 'package:flutter_band_fit_app/common/common_imports.dart';
+import 'package:flutter_band_fit_app/core/widgets/app_ui_components.dart';
 import 'package:flutter_band_fit_app/core/widgets/fixed_section_list.dart';
+import 'package:flutter_band_fit_app/core/widgets/settings_widgets.dart';
+import 'package:flutter_band_fit_app/core/widgets/vital_detail_scaffold.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/do_not_disturb_controller.dart';
 
 class DoNotDisturbBody extends GetView<DoNotDisturbController> {

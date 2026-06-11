@@ -85,6 +85,12 @@ class _VitalMainBody extends GetView<VitalMainController> {
         GetBuilder<ActivityServiceProvider>(
           id: ActivityServiceProvider.dashboardBannersId,
           builder: (provider) {
+            if (provider.isConnectingProgress) {
+              return VitalMainConnectingBanner(
+                key: const Key(WidgetKeys.vitalMainConnectingBanner),
+                rotation: controller.syncController,
+              );
+            }
             if (provider.isSyncProgress) {
               return VitalMainSyncingBanner(
                 key: const Key(WidgetKeys.vitalMainSyncingBanner),

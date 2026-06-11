@@ -75,7 +75,7 @@ class _HeartRateChart extends StatelessWidget {
         height: 200,
         child: RepaintBoundary(
           child: SfCartesianChart(
-            key: ValueKey('hr-$pointCount-${day.millisecondsSinceEpoch}'),
+            key: ValueKey(VitalsChartStyles.chartDayKey('hr', day, pointCount)),
             plotAreaBorderWidth: 0,
             primaryXAxis: DateTimeCategoryAxis(
               majorGridLines: const MajorGridLines(width: 0),

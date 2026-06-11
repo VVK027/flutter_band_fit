@@ -206,6 +206,11 @@ class ActivityServiceProvider extends GetxController {
   bool showSyncProgress = false;
   bool get isSyncProgress => showSyncProgress;
 
+  bool showConnectingProgress = false;
+  bool get isConnectingProgress => showConnectingProgress;
+
+  bool _syncOperationInFlight = false;
+
   String lastSyncDated = '';
   String get getLastSyncDated => lastSyncDated;
 
@@ -1923,13 +1928,30 @@ class ActivityServiceProvider extends GetxController {
 
   void updateSyncingView(bool updateView) {
     showSyncProgress = updateView;
+    if (!updateView) {
+      _syncOperationInFlight = false;
+    }
+    notifyDashboardBanners();
+    notifyDashboardSteps();
+  }
+
+  void updateConnectingView(bool connecting) {
+    showConnectingProgress = connecting;
+    notifyDashboardBanners();
+  }
+
+  void cancelSyncOperation() {
+    _syncOperationInFlight = false;
+    showSyncProgress = false;
     notifyDashboardBanners();
     notifyDashboardSteps();
   }
 
   /// Hides sync UI and records last successful sync timestamp.
   Future<void> updateSyncIsDone() async {
+    _syncOperationInFlight = false;
     showSyncProgress = false;
+    showConnectingProgress = false;
     await syncPairedDeviceFromBle();
 
     final outputDate =
@@ -1946,8 +1968,15 @@ class ActivityServiceProvider extends GetxController {
 
   /// Starts the sequential BLE vitals sync (steps first; further types chain via events).
   Future<void> syncOverAllData() async {
+    if (_syncOperationInFlight) {
+      debugPrintI('sync_already_in_progress');
+      return;
+    }
+    _syncOperationInFlight = true;
+    showConnectingProgress = false;
     debugPrintI('initiated_syncing');
     showSyncProgress = true;
+    notifyDashboardBanners();
     update();
     await syncStepsData();
   }

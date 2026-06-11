@@ -298,12 +298,6 @@ const String textDialFacesShowingCache =
     'Showing previously downloaded dial faces. Connect to the internet for the latest catalog.';
 const String textRetry = 'Retry';
 const String textLoadMore = 'Load more';
-const String healthStatusNormal = 'Normal';
-const String healthStatusConsultDoctor = 'Consult your doctor';
-
-// const String secondaryReminderMsg = 'In case of continuous time without exercise, the device will vibrate for reminding';
-// const String smsReminderMsg = 'The phone needs to be connected to the device, do not turn off Bluetooth';
-// const String callReminderMsg = 'The phone needs to be connected to the device, do not turn off Bluetooth';
 
 enum Activity {
   steps,

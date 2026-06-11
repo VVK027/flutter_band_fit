@@ -17,6 +17,7 @@ class SleepDayTab extends GetView<SleepDetailsController> {
       builder: (_) => FixedSectionListView(
         key: const Key(WidgetKeys.fixedSectionListView),
         padding: sleepListBottomPadding(context),
+        // Not const: controller-driven sections must rebuild when the date changes.
         sections: [
           SleepDayDateNavigator(
             key: const Key(WidgetKeys.sleepDayDateNavigator),
@@ -27,7 +28,10 @@ class SleepDayTab extends GetView<SleepDetailsController> {
           ),
           const SizedBox(height: 4),
           SleepDayStageBar(
-            key: const Key(WidgetKeys.sleepDayStageBar),
+            key: ValueKey(
+              'sleep-day-bar-${controller.daySleepBarAssets.length}-'
+              '${controller.daySleepBarAssets.map((a) => a.size.round()).join('-')}',
+            ),
           ),
           SleepDayBeginEndRow(
             key: const Key(WidgetKeys.sleepDayBeginEndRow),
@@ -181,20 +185,7 @@ class SleepDayStageBar extends GetView<SleepDetailsController> {
                   width: constraints.maxWidth,
                   background: const Color(0xFFCFD8DC),
                   assetsLimit: 100,
-                  assets: [
-                    BarAsset(
-                      size: controller.deepPercentage.toDouble(),
-                      color: const Color(0xFF7A58C9),
-                    ),
-                    BarAsset(
-                      size: controller.lightPercentage.toDouble(),
-                      color: const Color(0xFFC7A9FE),
-                    ),
-                    BarAsset(
-                      size: controller.awakePercentage.toDouble(),
-                      color: const Color(0xFFFF9A42),
-                    ),
-                  ],
+                  assets: controller.daySleepBarAssets,
                   radius: 4,
                   order: OrderType.none,
                 );
