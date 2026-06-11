@@ -1,11 +1,4 @@
-import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
-
-/*class CommonBandModel {
-  final DateTime time;
-  final int dataPoint;
-  final Color color;
-  CommonBandModel({required this.time, required this.dataPoint, required this.color});
-}*/
+import 'package:flutter_band_fit_app/core/exports/band_exports.dart';
 
 class CommonDataResult {
   final DateTime time;
@@ -109,16 +102,6 @@ class StepsMainModel {
       dataList: stepsList,
     );
   }
-
-/*List<BandStepsModel> convertDataToList(List<dynamic> json) {
-    List<BandStepsModel> smartList = [];
-    if (json.isNotEmpty) {
-      for (var element in json) {
-        smartList.add(BandStepsModel.fromJson(element));
-      }
-    }
-    return smartList;
-  }*/
 }
 
 class SleepMainModel {

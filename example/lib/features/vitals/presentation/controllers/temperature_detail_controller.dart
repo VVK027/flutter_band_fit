@@ -1,4 +1,4 @@
-import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
+import 'package:flutter_band_fit_app/core/exports/vitals_controller_imports.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/mixins/ble_test_listener_mixin.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/mixins/vital_detail_date_mixin.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/mixins/vital_measurement_loading_mixin.dart';
@@ -89,12 +89,16 @@ class TemperatureDetailController extends GetxController
           }
         } else if (result == BandFitConstants.TEMP_RESULT) {
           if (status == BandFitConstants.SC_SUCCESS && jsonData != null) {
-            await updateTemperatureData(jsonData);
+            if (isTestRunning.value) {
+              _handleLiveTemperatureReading(jsonData);
+              await persistTemperatureReading(jsonData);
+              endTestLoading();
+            } else {
+              await persistTemperatureReading(jsonData);
+            }
           }
         } else if (result == BandFitConstants.TEMP_TEST_TIME_OUT) {
-          if (status == BandFitConstants.SC_SUCCESS) {
-            endTestLoading();
-          }
+          endTestLoading();
         }
       },
       onError: (error) =>
@@ -166,24 +170,42 @@ class TemperatureDetailController extends GetxController
     maxTemperature.value = '--';
   }
 
-  Future<void> updateTemperatureData(dynamic jsonData) async {
+  void _handleLiveTemperatureReading(dynamic jsonData) {
+    final reading = Map<String, dynamic>.from(jsonData as Map);
+    if (!isValidTemperatureReading(reading)) {
+      return;
+    }
+    final displayValue = isTempCelsius
+        ? reading['inCelsius'].toString()
+        : reading['inFahrenheit'].toString();
+    final formatted = double.tryParse(displayValue)?.toStringAsFixed(1);
+    if (formatted != null && recentTemperature.value != formatted) {
+      recentTemperature.value = formatted;
+    }
+  }
+
+  Future<void> persistTemperatureReading(dynamic jsonData) async {
     if (jsonData == null) {
-      endTestLoading();
       return;
     }
 
     final reading = Map<String, dynamic>.from(jsonData as Map);
-    _reloadStoredData();
-    if (!mapAlreadyContainsReading(temperatureData, reading)) {
-      temperatureData.add(reading);
+    if (!isValidTemperatureReading(reading)) {
+      return;
     }
+
+    _reloadStoredData();
+    if (mapAlreadyContainsReading(temperatureData, reading)) {
+      return;
+    }
+
+    temperatureData.add(reading);
     await bleProvider.updateTemperatureWithData(
       reading,
       temperatureData,
       DateTime.now(),
     );
     await refreshTodayAfterReading(loadDay);
-    endTestLoading();
   }
 
   Future<void> startTemperatureTest() async {

@@ -1,4 +1,4 @@
-import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
+import 'package:flutter_band_fit_app/core/exports/vitals_controller_imports.dart';
 import 'package:flutter_band_fit_app/features/vitals/domain/repositories/vitals_data_repository.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/mixins/vitals_storage_ready_mixin.dart';
 

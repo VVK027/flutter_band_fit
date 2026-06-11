@@ -38,13 +38,10 @@ class OxygenDetailBody extends GetView<OxygenDetailController> {
           onPressed: () => controller.onStartTest(context),
         ),
       ),
-      body: Obx(
-        () => ScopedLoadingOverlay(
-          key: const Key(WidgetKeys.scopedLoadingOverlay),
-          visible: controller.isTestRunning.value,
-          message: textMeasuring,
-          subtitle: textMeasuringVitalMsg,
-          child: SingleChildScrollView(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          SingleChildScrollView(
             padding: const EdgeInsets.only(bottom: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -93,7 +90,16 @@ class OxygenDetailBody extends GetView<OxygenDetailController> {
               ],
             ),
           ),
-        ),
+          Obx(
+            () => ScopedLoadingOverlay(
+              key: const Key(WidgetKeys.scopedLoadingOverlay),
+              visible: controller.isTestRunning.value,
+              message: textMeasuring,
+              subtitle: textMeasuringVitalMsg,
+              child: const SizedBox.shrink(),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -115,7 +121,9 @@ class _OxygenChart extends StatelessWidget {
         height: 200,
         child: RepaintBoundary(
           child: SfCartesianChart(
-            key: ValueKey('oxy-$pointCount-${day.millisecondsSinceEpoch}'),
+            key: ValueKey(
+              VitalsChartStyles.chartDayKey('oxy', day, pointCount),
+            ),
             plotAreaBorderWidth: 0,
             primaryXAxis: DateTimeCategoryAxis(
               majorGridLines: const MajorGridLines(width: 0),

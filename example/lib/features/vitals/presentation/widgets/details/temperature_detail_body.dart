@@ -38,13 +38,10 @@ class TemperatureDetailBody extends GetView<TemperatureDetailController> {
           onPressed: () => controller.onStartTest(context),
         ),
       ),
-      body: Obx(
-        () => ScopedLoadingOverlay(
-          key: const Key(WidgetKeys.scopedLoadingOverlay),
-          visible: controller.isTestRunning.value,
-          message: textMeasuring,
-          subtitle: textMeasuringVitalMsg,
-          child: SingleChildScrollView(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          SingleChildScrollView(
             padding: const EdgeInsets.only(bottom: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -136,7 +133,16 @@ class TemperatureDetailBody extends GetView<TemperatureDetailController> {
               ],
             ),
           ),
-        ),
+          Obx(
+            () => ScopedLoadingOverlay(
+              key: const Key(WidgetKeys.scopedLoadingOverlay),
+              visible: controller.isTestRunning.value,
+              message: textMeasuring,
+              subtitle: textMeasuringVitalMsg,
+              child: const SizedBox.shrink(),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -158,7 +164,9 @@ class _TemperatureChart extends StatelessWidget {
         height: 200,
         child: RepaintBoundary(
           child: SfCartesianChart(
-            key: ValueKey('temp-$pointCount-${day.millisecondsSinceEpoch}'),
+            key: ValueKey(
+              VitalsChartStyles.chartDayKey('temp', day, pointCount),
+            ),
             plotAreaBorderWidth: 0,
             primaryXAxis: DateTimeCategoryAxis(
               majorGridLines: const MajorGridLines(width: 0),

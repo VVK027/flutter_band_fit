@@ -1,4 +1,4 @@
-import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
+import 'package:flutter_band_fit_app/core/exports/vitals_controller_imports.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/mixins/ble_test_listener_mixin.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/mixins/vital_detail_date_mixin.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/mixins/vital_measurement_loading_mixin.dart';
@@ -26,6 +26,7 @@ class BloodPressureDetailController extends GetxController
 
   List<dynamic> overAllBPData = [];
   bool statusReconnected = false;
+  Map<String, dynamic>? _pendingBpReading;
 
   @override
   void onInit() {
@@ -78,20 +79,25 @@ class BloodPressureDetailController extends GetxController
             await startBPTest();
           }
         } else if (result == BandFitConstants.BP_TEST_FINISHED) {
-          if (status == BandFitConstants.SC_SUCCESS) {
-            await refreshTodayAfterReading(loadDay);
-          }
-          endTestLoading();
+          await _finalizeBpTest();
         } else if (result == BandFitConstants.BP_TEST_TIME_OUT ||
             result == BandFitConstants.BP_TEST_ERROR) {
+          _pendingBpReading = null;
           endTestLoading();
         } else if (result == BandFitConstants.BP_RESULT) {
-          if (status == BandFitConstants.SC_SUCCESS) {
-            await updateBPData(
-              jsonData['high'].toString(),
-              jsonData['low'].toString(),
-              jsonData['time']?.toString() ?? '',
-            );
+          if (status == BandFitConstants.SC_SUCCESS && jsonData != null) {
+            final dataMap = JsonUtils.asMap(jsonData as Map);
+            final high = dataMap['high']?.toString() ?? '';
+            final low = dataMap['low']?.toString() ?? '';
+            final time = dataMap['time']?.toString() ?? '';
+            if (isTestRunning.value) {
+              _handleLiveBpReading(high, low, time);
+              if (_isFinalBpResult(dataMap)) {
+                await _finalizeBpTest();
+              }
+            } else {
+              await persistBpReading(high, low, time);
+            }
           }
         }
       },
@@ -99,6 +105,44 @@ class BloodPressureDetailController extends GetxController
       onDone: () {},
     );
     bleProvider.resumeBPListeners();
+  }
+
+  /// Android reports status `4` on [BandFitConstants.BP_RESULT] when the live
+  /// test completes; iOS still relies on [BandFitConstants.BP_TEST_FINISHED].
+  bool _isFinalBpResult(Map<String, dynamic> data) {
+    return data['status']?.toString() == BandFitConstants.BP_RESULT_STATUS_COMPLETE;
+  }
+
+  void _handleLiveBpReading(String high, String low, String time) {
+    if (!isValidBpReading(high, low)) {
+      return;
+    }
+    _pendingBpReading = {
+      'high': high,
+      'low': low,
+      'time': time,
+    };
+    if (highBPValue.value != high) {
+      highBPValue.value = high;
+    }
+    if (lowBPValue.value != low) {
+      lowBPValue.value = low;
+    }
+  }
+
+  Future<void> _finalizeBpTest() async {
+    if (_pendingBpReading != null) {
+      final reading = _pendingBpReading!;
+      _pendingBpReading = null;
+      await persistBpReading(
+        reading['high']!.toString(),
+        reading['low']!.toString(),
+        reading['time']?.toString() ?? '',
+      );
+    } else {
+      await refreshTodayAfterReading(loadDay);
+    }
+    endTestLoading();
   }
 
   Future<void> loadDay(DateTime dateTime) async {
@@ -141,7 +185,11 @@ class BloodPressureDetailController extends GetxController
     }
   }
 
-  Future<void> updateBPData(String high, String low, String time) async {
+  Future<void> persistBpReading(String high, String low, String time) async {
+    if (!isValidBpReading(high, low)) {
+      return;
+    }
+
     final dateTime = DateTime.now();
     final calender = GlobalMethods.convertBandReadableCalender(dateTime);
     final timeMin = time.isNotEmpty
@@ -156,9 +204,11 @@ class BloodPressureDetailController extends GetxController
     };
 
     _reloadStoredData();
-    if (!mapAlreadyContainsReading(overAllBPData, addData)) {
-      overAllBPData.add(addData);
+    if (mapAlreadyContainsReading(overAllBPData, addData)) {
+      return;
     }
+
+    overAllBPData.add(addData);
     await bleProvider.updateBPressureData(
       high,
       low,
@@ -167,10 +217,10 @@ class BloodPressureDetailController extends GetxController
       overAllBPData,
     );
     await refreshTodayAfterReading(loadDay);
-    endTestLoading();
   }
 
   Future<void> startBPTest() async {
+    _pendingBpReading = null;
     beginTestLoading();
     try {
       await bleProvider.startBloodPressure();

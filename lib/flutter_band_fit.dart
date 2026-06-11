@@ -1,3 +1,7 @@
+/// Flutter plugin for UTE smart bands (GloryFit SDK).
+///
+/// Use [FlutterBandFit] to scan, connect, sync vitals, and configure
+/// supported wearables over BLE on Android and iOS.
 library;
 
 import 'dart:async';
