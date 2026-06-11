@@ -12,15 +12,6 @@ Flutter plugin for **UTE smart band / fitness watch** BLE connectivity on Androi
 - **Primary goal:** expose one **common Dart platform** so Flutter apps do not maintain parallel native SDK integrations on each OS.
 - **Reference implementation:** the [`example/`](example/) app (`flutter_band_fit_app`) is a complete demo — pairing, dashboard, detail charts, device settings, dial upload, and health export patterns.
 
-## Preview
-
-<img width="1000" height="667" alt="flutter_band_fit_preview" src="https://github.com/user-attachments/assets/7999a352-5b7f-4ecc-b006-2dc8d5973547" />
-
-## Live Demo
-
-https://github.com/user-attachments/assets/715b9c82-4345-4bde-9d9d-4706b03ee25d
-
-
 ## Features
 
 - Scan, pair, connect, disconnect, and reconnect BLE band devices
