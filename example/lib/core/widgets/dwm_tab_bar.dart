@@ -21,6 +21,7 @@ TabBar buildDwmTabBar(
     labelColor: theme.colorScheme.onSurface,
     unselectedLabelColor: Colors.white,
     labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-    unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+    unselectedLabelStyle:
+        const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
   );
 }

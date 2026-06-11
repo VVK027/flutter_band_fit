@@ -13,7 +13,8 @@ class HeartRateDetailController extends GetxController
   final String displayTitle;
   final String activityLabel;
 
-  final VitalsDataRepository _vitalsDataRepository = Get.find<VitalsDataRepository>();
+  final VitalsDataRepository _vitalsDataRepository =
+      Get.find<VitalsDataRepository>();
 
   late final TooltipBehavior tooltipBehavior;
 
@@ -111,7 +112,7 @@ class HeartRateDetailController extends GetxController
       );
       chartPoints.assignAll(dataRepList);
     } catch (e) {
-      debugPrint('HeartRateDetailController.loadDay>> $e');
+      debugPrintI('HeartRateDetailController.loadDay>> $e');
       _clearChart();
     }
   }

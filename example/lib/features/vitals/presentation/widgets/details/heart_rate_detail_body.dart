@@ -1,4 +1,6 @@
 import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
+import 'package:flutter_band_fit_app/core/constants/widget_keys.dart';
+import 'package:flutter_band_fit_app/core/widgets/fixed_section_list.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/heart_rate_detail_controller.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/vitals_chart_styles.dart';
 
@@ -10,20 +12,26 @@ class HeartRateDetailBody extends GetView<HeartRateDetailController> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: VitalColoredAppBar(
+        key: const Key(WidgetKeys.vitalColoredAppBar),
         title: controller.displayTitle,
         accentColor: heartRateColor,
         actions: [
           IconButton(
             icon: const Icon(Icons.calendar_today),
-            onPressed: () => controller.pickCalendarDay(context, controller.loadDay),
+            onPressed: () =>
+                controller.pickCalendarDay(context, controller.loadDay),
           ),
         ],
       ),
-      body: ListView(
-        children: [
-          DetailActivityHeader(label: controller.activityLabel),
+      body: FixedSectionListView(
+        key: const Key(WidgetKeys.fixedSectionListView),
+        sections: [
+          DetailActivityHeader(
+              key: const Key(WidgetKeys.detailActivityHeader),
+              label: controller.activityLabel),
           Obx(
             () => DetailDateNavigator(
+              key: const Key(WidgetKeys.detailDateNavigator),
               dateTitle: controller.dateTitle.value,
               isNextDisabled: controller.isNextDisable.value,
               onPrevious: () => controller.navigatePrevious(controller.loadDay),
@@ -33,11 +41,17 @@ class HeartRateDetailBody extends GetView<HeartRateDetailController> {
             ),
           ),
           const SizedBox(height: 4),
-          _HeartRateChart(controller: controller),
+          _HeartRateChart(
+              key: const Key(WidgetKeys.heartRateChart),
+              controller: controller),
           const SizedBox(height: 4),
-          const _CurrentHeartRateRow(),
+          const _CurrentHeartRateRow(
+            key: Key(WidgetKeys.currentHeartRateRow),
+          ),
           const SizedBox(height: 4),
-          const _HeartRateStatsCard(),
+          const _HeartRateStatsCard(
+            key: Key(WidgetKeys.heartRateStatsCard),
+          ),
         ],
       ),
     );
@@ -45,7 +59,7 @@ class HeartRateDetailBody extends GetView<HeartRateDetailController> {
 }
 
 class _HeartRateChart extends StatelessWidget {
-  const _HeartRateChart({required this.controller});
+  const _HeartRateChart({super.key, required this.controller});
 
   final HeartRateDetailController controller;
 
@@ -106,7 +120,7 @@ class _HeartRateChart extends StatelessWidget {
 }
 
 class _CurrentHeartRateRow extends GetView<HeartRateDetailController> {
-  const _CurrentHeartRateRow();
+  const _CurrentHeartRateRow({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +148,7 @@ class _CurrentHeartRateRow extends GetView<HeartRateDetailController> {
 }
 
 class _HeartRateStatsCard extends GetView<HeartRateDetailController> {
-  const _HeartRateStatsCard();
+  const _HeartRateStatsCard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -143,11 +157,27 @@ class _HeartRateStatsCard extends GetView<HeartRateDetailController> {
         () => Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _StatCell(label: textAverageHR, value: controller.avgHeartRate.value),
-            const _StatDivider(),
-            _StatCell(label: textMinHR, value: controller.minHeartRate.value),
-            const _StatDivider(),
-            _StatCell(label: textMaxHR, value: controller.maxHeartRate.value),
+            _StatCell(
+              key: const Key('${WidgetKeys.heartRateDetailBodyStatCell}_avg'),
+              label: textAverageHR,
+              value: controller.avgHeartRate.value,
+            ),
+            const _StatDivider(
+              key: Key(WidgetKeys.statDividerAvgMin),
+            ),
+            _StatCell(
+              key: const Key('${WidgetKeys.heartRateDetailBodyStatCell}_min'),
+              label: textMinHR,
+              value: controller.minHeartRate.value,
+            ),
+            const _StatDivider(
+              key: Key(WidgetKeys.statDividerMinMax),
+            ),
+            _StatCell(
+              key: const Key('${WidgetKeys.heartRateDetailBodyStatCell}_max'),
+              label: textMaxHR,
+              value: controller.maxHeartRate.value,
+            ),
           ],
         ),
       ),
@@ -156,7 +186,7 @@ class _HeartRateStatsCard extends GetView<HeartRateDetailController> {
 }
 
 class _StatCell extends StatelessWidget {
-  const _StatCell({required this.label, required this.value});
+  const _StatCell({super.key, required this.label, required this.value});
 
   final String label;
   final String value;
@@ -189,7 +219,7 @@ class _StatCell extends StatelessWidget {
 }
 
 class _StatDivider extends StatelessWidget {
-  const _StatDivider();
+  const _StatDivider({super.key});
 
   @override
   Widget build(BuildContext context) {

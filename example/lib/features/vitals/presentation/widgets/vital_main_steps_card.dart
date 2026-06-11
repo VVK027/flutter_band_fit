@@ -42,11 +42,13 @@ class VitalMainStepsCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _WeatherGoalRow(
+                    key: const Key(WidgetKeys.weatherRow),
                     provider: provider,
                     isGoal: false,
                     onTap: onOpenWeather,
                   ),
                   _WeatherGoalRow(
+                    key: const Key(WidgetKeys.goalRow),
                     provider: provider,
                     isGoal: true,
                     onTap: () {},
@@ -84,6 +86,7 @@ class VitalMainStepsCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _MetricTap(
+                    key: const Key(WidgetKeys.stepsMetricTap),
                     blocked: isSyncBlocked,
                     onTap: onOpenSteps,
                     child: IconTextWidget(
@@ -102,6 +105,7 @@ class VitalMainStepsCard extends StatelessWidget {
                     ),
                   ),
                   _MetricTap(
+                    key: const Key(WidgetKeys.distanceMetricTap),
                     blocked: isSyncBlocked,
                     onTap: onOpenSteps,
                     child: IconTextWidget(
@@ -118,6 +122,7 @@ class VitalMainStepsCard extends StatelessWidget {
                     ),
                   ),
                   _MetricTap(
+                    key: const Key(WidgetKeys.caloriesMetricTap),
                     blocked: isSyncBlocked,
                     onTap: onOpenSteps,
                     child: IconTextWidget(
@@ -134,14 +139,16 @@ class VitalMainStepsCard extends StatelessWidget {
                     provider.getLastSyncDated.isNotEmpty &&
                     provider.getDeviceConnected,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Icon(
                         Icons.history_rounded,
                         size: 16,
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                       const SizedBox(width: 6),
                       Expanded(
@@ -186,6 +193,7 @@ class VitalMainStepsCard extends StatelessWidget {
 
 class _WeatherGoalRow extends StatelessWidget {
   const _WeatherGoalRow({
+    super.key,
     required this.provider,
     required this.isGoal,
     required this.onTap,
@@ -215,7 +223,8 @@ class _WeatherGoalRow extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.all(2),
-            child: Image.asset('assets/fit/goal_left.png', width: 38, height: 38),
+            child:
+                Image.asset('assets/fit/goal_left.png', width: 38, height: 38),
           ),
         ],
       );
@@ -252,6 +261,7 @@ class _WeatherGoalRow extends StatelessWidget {
 
 class _MetricTap extends StatelessWidget {
   const _MetricTap({
+    super.key,
     required this.blocked,
     required this.onTap,
     required this.child,

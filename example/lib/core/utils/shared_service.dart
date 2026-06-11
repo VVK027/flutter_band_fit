@@ -11,6 +11,7 @@ class SharedService {
   T read<T>(String key) {
     return _storageBox.read(key) as T;
   }
+
   void writeIfNull(String key, dynamic value) async {
     await _storageBox.writeIfNull(key, value);
   }
@@ -19,13 +20,15 @@ class SharedService {
     await _storageBox.write(key, value);
   }
 
-  Future<void> setInitialParams(String userGender, String userAge, String dob) async {
+  Future<void> setInitialParams(
+      String userGender, String userAge, String dob) async {
     await setUserGender(userGender);
     await setUserDOB(dob);
     await setUserAge(userAge);
   }
 
-  Future<void> setInitialHeightWeight(String userHeight, String userWeight) async {
+  Future<void> setInitialHeightWeight(
+      String userHeight, String userWeight) async {
     await setUserHeight(userHeight);
     await setUserWeight(userWeight);
   }
@@ -38,73 +41,88 @@ class SharedService {
   Future<void> setTargetedSteps(String targetedSteps) async {
     await _storageBox.write(targetStepsKey, targetedSteps);
   }
-  String getTargetedSteps(){
-    return _storageBox.read(targetStepsKey)??defaultTargetedSteps;
+
+  String getTargetedSteps() {
+    return _storageBox.read(targetStepsKey) ?? defaultTargetedSteps;
   }
+
   Future<void> setUserGender(String userGender) async {
     return await _storageBox.write(genderKey, userGender);
   }
-  String getUserGender(){
-    return _storageBox.read(genderKey)??'male';
+
+  String getUserGender() {
+    return _storageBox.read(genderKey) ?? 'male';
   }
+
   Future<void> setScreenOffTime(String time) async {
-     await _storageBox.write(screenOffTimeKey, time);
+    await _storageBox.write(screenOffTimeKey, time);
   }
-  String getScreenOffTime(){
-    return _storageBox.read(screenOffTimeKey)??screenOffTimeMin.toString();
+
+  String getScreenOffTime() {
+    return _storageBox.read(screenOffTimeKey) ?? screenOffTimeMin.toString();
   }
 
   Future<void> setBMIValue(String value) async {
-     await _storageBox.write(bmiKey, value);
+    await _storageBox.write(bmiKey, value);
   }
-  String getBMIValue(){
-    return _storageBox.read(bmiKey)??'24.7';
+
+  String getBMIValue() {
+    return _storageBox.read(bmiKey) ?? '24.7';
   }
+
   Future<void> setBMIStatus(String status) async {
-     await _storageBox.write(bmiStatusKey, status);
+    await _storageBox.write(bmiStatusKey, status);
   }
-  String getBMIStatus(){
-    return _storageBox.read(bmiStatusKey)??'bmi_fit';
+
+  String getBMIStatus() {
+    return _storageBox.read(bmiStatusKey) ?? 'bmi_fit';
   }
 
   Future<void> setUserHeight(String userHeight) async {
-     await _storageBox.write(heightKey, userHeight);
+    await _storageBox.write(heightKey, userHeight);
   }
-  String getUserHeight(){
-    return _storageBox.read(heightKey)??heightMin.toString();
+
+  String getUserHeight() {
+    return _storageBox.read(heightKey) ?? heightMin.toString();
   }
+
   Future<void> setUserWeight(String userWeight) async {
-     await _storageBox.write(weightKey, userWeight);
+    await _storageBox.write(weightKey, userWeight);
   }
-  String getUserWeight(){
-    return _storageBox.read(weightKey)??weightMin.toString();
+
+  String getUserWeight() {
+    return _storageBox.read(weightKey) ?? weightMin.toString();
   }
 
   Future<void> setUserAge(String userAge) async {
-     await _storageBox.write(ageKey, userAge);
+    await _storageBox.write(ageKey, userAge);
   }
-  String? getUserAge(){
+
+  String? getUserAge() {
     return _storageBox.read(ageKey);
   }
+
   Future<void> setUserDOB(String userDOB) async {
-     await _storageBox.write(dobKey, userDOB);
+    await _storageBox.write(dobKey, userDOB);
   }
-  String? getUserDOB(){
+
+  String? getUserDOB() {
     return _storageBox.read(dobKey);
   }
 
   bool getProfileUpdate() {
-    return _storageBox.read(isProfileUpdated)?? false;
+    return _storageBox.read(isProfileUpdated) ?? false;
   }
 
-  Future<void>  setProfileUpdate(bool isUpdated) async {
+  Future<void> setProfileUpdate(bool isUpdated) async {
     return await _storageBox.write(isProfileUpdated, isUpdated);
   }
 
   // device related preferences
-  Future<void>  setSmartMConnected(bool isConnected) async {
+  Future<void> setSmartMConnected(bool isConnected) async {
     return await _storageBox.write(deviceConnectedKey, isConnected);
   }
+
   bool isSmartMConnected() {
     return _storageBox.read(deviceConnectedKey) ?? false;
   }
@@ -112,43 +130,47 @@ class SharedService {
   Future<void> setHealthConnected(bool isConnected) async {
     return await _storageBox.write(healthConnected, isConnected);
   }
+
   bool isHealthConnected() {
     return _storageBox.read(healthConnected) ?? false;
   }
 
-  Future<void>  setOxygenAvailable(bool isConnected) async {
+  Future<void> setOxygenAvailable(bool isConnected) async {
     return await _storageBox.write(oxygenConnected, isConnected);
   }
+
   bool isOxygenAvailable() {
     return _storageBox.read(oxygenConnected) ?? false;
   }
 
-  Future<void>  setHeartRate24HrEnabled(bool isEnable) async {
+  Future<void> setHeartRate24HrEnabled(bool isEnable) async {
     return await _storageBox.write(HEART_RATE_ENABLED, isEnable);
   }
+
   bool isHeartRate24HrEnabled() {
     return _storageBox.read(HEART_RATE_ENABLED) ?? false;
   }
 
-  Future<void>  setOxygen24HrEnabled(bool isEnable) async {
+  Future<void> setOxygen24HrEnabled(bool isEnable) async {
     return await _storageBox.write(OXYGEN_ENABLED, isEnable);
   }
+
   bool isOxygen24HrEnabled() {
     return _storageBox.read(OXYGEN_ENABLED) ?? false;
   }
 
-
-  Future<void>  setTemperature24HrEnabled(bool isEnable) async {
+  Future<void> setTemperature24HrEnabled(bool isEnable) async {
     return await _storageBox.write(TEMPERATURE_ENABLED, isEnable);
   }
+
   bool isTemperatureEnabled() {
     return _storageBox.read(TEMPERATURE_ENABLED) ?? false;
   }
 
-
-  Future<void>  setDNDEnabled(bool isEnable) async {
+  Future<void> setDNDEnabled(bool isEnable) async {
     return await _storageBox.write(DND_ENABLED, isEnable);
   }
+
   bool isDNDEnabled() {
     return _storageBox.read(DND_ENABLED) ?? false;
   }
@@ -157,13 +179,15 @@ class SharedService {
     // startHr:startMin:endHr:endMin
     return await _storageBox.write(DND_ENABLED_TIME, enableTime);
   }
-  String getDNDEnabledTime(){
+
+  String getDNDEnabledTime() {
     return _storageBox.read(DND_ENABLED_TIME) ?? '';
   }
 
   Future<void> setMessagesOnEnabled(bool isEnable) async {
     return await _storageBox.write(MSG_ON_ENABLED, isEnable);
   }
+
   bool isMessagesOnEnabled() {
     return _storageBox.read(MSG_ON_ENABLED) ?? false;
   }
@@ -171,46 +195,48 @@ class SharedService {
   Future<void> setMotorVibrateEnabled(bool isEnable) async {
     return await _storageBox.write(MOTOR_VIBRATE_ENABLED, isEnable);
   }
+
   bool isMotorVibrateEnabled() {
     return _storageBox.read(MOTOR_VIBRATE_ENABLED) ?? false;
   }
 
-
-
   Future<void> setDeviceName(String deviceName) async {
     return await _storageBox.write(deviceNameKey, deviceName);
   }
-  String getDeviceName(){
+
+  String getDeviceName() {
     return _storageBox.read(deviceNameKey) ?? '';
   }
 
   Future<void> setDeviceMacAddress(String deviceAddress) async {
     return await _storageBox.write(deviceMacAddressKey, deviceAddress);
   }
-  String getDeviceMacAddress(){
+
+  String getDeviceMacAddress() {
     return _storageBox.read(deviceMacAddressKey) ?? '';
   }
 
   Future<void> setDeviceVersionId(String version) async {
     return await _storageBox.write(deviceVersionId, version);
   }
-  String getDeviceVersionId()  {
+
+  String getDeviceVersionId() {
     return _storageBox.read(deviceVersionId) ?? '';
   }
 
   Future<void> setBatteryStatus(String batteryStat) async {
     return await _storageBox.write(batteryStatus, batteryStat);
   }
+
   String getBatteryStatus() {
     return _storageBox.read(batteryStatus) ?? '0';
   }
-
 
   Future<void> setLastSyncDate(String syncDate) async {
     return await _storageBox.write(deviceSyncDateKey, syncDate);
   }
 
-  String getLastSyncDate(){
+  String getLastSyncDate() {
     return _storageBox.read(deviceSyncDateKey) ?? '';
   }
 
@@ -218,7 +244,7 @@ class SharedService {
     return await _storageBox.write(deviceSyncDateTime, syncDate);
   }
 
-  String getLastSyncDateTime(){
+  String getLastSyncDateTime() {
     return _storageBox.read(deviceSyncDateTime) ?? '';
   }
 
@@ -226,7 +252,7 @@ class SharedService {
     return await _storageBox.write(deviceMacAddressId, macId);
   }
 
-  String getLastMacAddressId(){
+  String getLastMacAddressId() {
     return _storageBox.read(deviceMacAddressId) ?? '';
   }
 
@@ -234,100 +260,112 @@ class SharedService {
     return await _storageBox.write(weatherSyncDateTime, syncDate);
   }
 
-  String getWeatherSyncDateTime(){
+  String getWeatherSyncDateTime() {
     return _storageBox.read(weatherSyncDateTime) ?? '';
   }
 
-  Future<void>  setLatitude(String latitude) async {
+  Future<void> setLatitude(String latitude) async {
     return await _storageBox.write(latitudeKey, latitude);
   }
-  String? getLatitude(){
+
+  String? getLatitude() {
     return _storageBox.read(latitudeKey);
   }
 
-  Future<void>  setLongitude(String longitude) async {
-   return await _storageBox.write(longitudeKey, longitude);
+  Future<void> setLongitude(String longitude) async {
+    return await _storageBox.write(longitudeKey, longitude);
   }
-  String? getLongitude(){
+
+  String? getLongitude() {
     return _storageBox.read(longitudeKey);
   }
 
-  Future<void>  setDeviceCityName(String cityName) async {
-     await _storageBox.write(cityNameKey, cityName);
+  Future<void> setDeviceCityName(String cityName) async {
+    await _storageBox.write(cityNameKey, cityName);
   }
-  String? getDeviceCityName(){
+
+  String? getDeviceCityName() {
     return _storageBox.read(cityNameKey);
   }
 
   Future<void> setJsonWeatherData(String weatherData) async {
     return await _storageBox.write(DEVICE_WEATHER_JSON_PUSH, weatherData);
   }
-  String? getJsonWeatherData(){
+
+  String? getJsonWeatherData() {
     return _storageBox.read(DEVICE_WEATHER_JSON_PUSH);
   }
 
   Future<void> setWeatherResponseData(String weatherData) async {
     return await _storageBox.write(WEATHER_RESPONSE_DATA, weatherData);
   }
-  String? getWeatherResponseData(){
+
+  String? getWeatherResponseData() {
     return _storageBox.read(WEATHER_RESPONSE_DATA);
   }
 
   // overall data after sync
 
-  Future<void>setOverAllSteps(String stepsData) async {
+  Future<void> setOverAllSteps(String stepsData) async {
     return await _storageBox.write(stepsDataKey, stepsData);
   }
-  String getOverAllSteps(){
+
+  String getOverAllSteps() {
     return _storageBox.read(stepsDataKey) ?? '';
   }
 
   Future<void> setOverAllSleep(String sleepData) async {
     return await _storageBox.write(sleepDataKey, sleepData);
   }
-  String getOverAllSleep(){
+
+  String getOverAllSleep() {
     return _storageBox.read(sleepDataKey) ?? '';
   }
 
   Future<void> setOverAllHeartRate(String hrData) async {
     return await _storageBox.write(hrDataKey, hrData);
   }
-  String getOverAllHeartRate(){
+
+  String getOverAllHeartRate() {
     return _storageBox.read(hrDataKey) ?? '';
   }
 
-  Future<void>  setOverAllBP(String bpData) async {
+  Future<void> setOverAllBP(String bpData) async {
     return await _storageBox.write(bpDataKey, bpData);
   }
-  String getOverAllBP(){
+
+  String getOverAllBP() {
     return _storageBox.read(bpDataKey) ?? '';
   }
 
   Future<void> setOverAllTemperature(String tempData) async {
     return await _storageBox.write(tempDataKey, tempData);
   }
-  String getOverAllTemperature(){
+
+  String getOverAllTemperature() {
     return _storageBox.read(tempDataKey) ?? '';
   }
 
-
-  Future<void>  setOverAllOxygenData(String oxyData) async {
+  Future<void> setOverAllOxygenData(String oxyData) async {
     return await _storageBox.write(oxygenDataKey, oxyData);
   }
-  String getOverAllOxygenData(){
+
+  String getOverAllOxygenData() {
     return _storageBox.read(oxygenDataKey) ?? '';
   }
 
-  Future<void>  setTempCelsius(bool isCelsius) async {
+  Future<void> setTempCelsius(bool isCelsius) async {
     return await _storageBox.write(DEVICE_TEMP_UNITS, isCelsius);
   }
+
   bool getIsTempCelsius() {
     return _storageBox.read(DEVICE_TEMP_UNITS) ?? true;
   }
 
-  Future<void>  setRaiseWakeUp(bool isWakeUp) async {
+  Future<void> setRaiseWakeUp(bool isWakeUp) async {
     return await _storageBox.write(DEVICE_HAND_WAKE_UP, isWakeUp);
   }
+
   bool getRaiseWakeUp() {
     return _storageBox.read(DEVICE_HAND_WAKE_UP) ?? true;
   }
@@ -346,5 +384,4 @@ class SharedService {
     );
     return all[cacheKey]?.toString() ?? '';
   }
-
 }

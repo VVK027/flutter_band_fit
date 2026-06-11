@@ -11,16 +11,21 @@ class AddDevice extends GetView<AddDeviceController> {
   Widget build(BuildContext context) {
     return Obx(
       () => LoadingOverlay(
+        key: const Key(WidgetKeys.loadingOverlay),
         visible: controller.isConnecting.value,
         message: textConnectingDevice,
         subtitle: textConnectingDeviceMsg,
         child: Scaffold(
           appBar: AddDeviceAppBar(
-            onRefresh: controller.isConnecting.value ? null : controller.refreshScan,
+            key: const Key(WidgetKeys.addDeviceAppBar),
+            onRefresh:
+                controller.isConnecting.value ? null : controller.refreshScan,
           ),
           bottomNavigationBar: const SafeArea(
             top: false,
-            child: AddDeviceHealthBar(),
+            child: AddDeviceHealthBar(
+              key: Key(WidgetKeys.addDeviceHealthBar),
+            ),
           ),
           body: const SafeArea(
             child: SingleChildScrollView(
@@ -28,11 +33,15 @@ class AddDevice extends GetView<AddDeviceController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _AddDeviceHeader(),
+                  _AddDeviceHeader(
+                    key: Key(WidgetKeys.addDeviceHeader),
+                  ),
                   SizedBox(height: 8.0),
                   Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: AddDeviceScanList(),
+                    child: AddDeviceScanList(
+                      key: Key(WidgetKeys.addDeviceScanList),
+                    ),
                   ),
                 ],
               ),
@@ -45,7 +54,7 @@ class AddDevice extends GetView<AddDeviceController> {
 }
 
 class _AddDeviceHeader extends StatelessWidget {
-  const _AddDeviceHeader();
+  const _AddDeviceHeader({super.key});
 
   @override
   Widget build(BuildContext context) {

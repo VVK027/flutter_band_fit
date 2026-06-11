@@ -95,7 +95,7 @@ class BloodPressureDetailController extends GetxController
           }
         }
       },
-      onError: (error) => debugPrint('receiveBPListenersError>> $error'),
+      onError: (error) => debugPrintI('receiveBPListenersError>> $error'),
       onDone: () {},
     );
     bleProvider.resumeBPListeners();
@@ -134,7 +134,7 @@ class BloodPressureDetailController extends GetxController
       highBPValue.value = highPressure;
       lowBPValue.value = lowPressure;
     } catch (e) {
-      debugPrint('BloodPressureDetailController.loadDay>> $e');
+      debugPrintI('BloodPressureDetailController.loadDay>> $e');
       bpDataList.clear();
       highBPValue.value = '--';
       lowBPValue.value = '--';

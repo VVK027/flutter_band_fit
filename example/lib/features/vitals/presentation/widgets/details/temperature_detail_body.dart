@@ -1,4 +1,6 @@
 import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
+import 'package:flutter_band_fit_app/core/constants/widget_keys.dart';
+import 'package:flutter_band_fit_app/core/widgets/scoped_loading_overlay.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/temperature_detail_controller.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/vitals_chart_styles.dart';
 
@@ -8,41 +10,51 @@ class TemperatureDetailBody extends GetView<TemperatureDetailController> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Obx(
-      () => LoadingOverlay(
-        visible: controller.isTestRunning.value,
-        message: textMeasuring,
-        subtitle: textMeasuringVitalMsg,
-        child: Scaffold(
-          backgroundColor: theme.scaffoldBackgroundColor,
-          appBar: VitalColoredAppBar(
-            title: controller.displayTitle,
-            accentColor: temperatureColor,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.calendar_today),
-                onPressed: controller.isTestRunning.value
-                    ? null
-                    : () => controller.pickCalendarDay(
-                          context,
-                          controller.loadDay,
-                        ),
-              ),
-            ],
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: VitalColoredAppBar(
+        key: const Key(WidgetKeys.vitalColoredAppBar),
+        title: controller.displayTitle,
+        accentColor: temperatureColor,
+        actions: [
+          Obx(
+            () => IconButton(
+              icon: const Icon(Icons.calendar_today),
+              onPressed: controller.isTestRunning.value
+                  ? null
+                  : () => controller.pickCalendarDay(
+                        context,
+                        controller.loadDay,
+                      ),
+            ),
           ),
-          bottomNavigationBar: VitalStartButtonBar(
-            accentColor: temperatureColor,
-            enabled: !controller.isTestRunning.value,
-            onPressed: () => controller.onStartTest(context),
-          ),
-          body: SingleChildScrollView(
+        ],
+      ),
+      bottomNavigationBar: Obx(
+        () => VitalStartButtonBar(
+          key: const Key(WidgetKeys.vitalStartButtonBar),
+          accentColor: temperatureColor,
+          enabled: !controller.isTestRunning.value,
+          onPressed: () => controller.onStartTest(context),
+        ),
+      ),
+      body: Obx(
+        () => ScopedLoadingOverlay(
+          key: const Key(WidgetKeys.scopedLoadingOverlay),
+          visible: controller.isTestRunning.value,
+          message: textMeasuring,
+          subtitle: textMeasuringVitalMsg,
+          child: SingleChildScrollView(
             padding: const EdgeInsets.only(bottom: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                DetailActivityHeader(label: controller.activityLabel),
+                DetailActivityHeader(
+                    key: const Key(WidgetKeys.detailActivityHeader),
+                    label: controller.activityLabel),
                 Obx(
                   () => DetailDateNavigator(
+                    key: const Key(WidgetKeys.detailDateNavigator),
                     dateTitle: controller.dateTitle.value,
                     isNextDisabled: controller.isNextDisable.value,
                     onPrevious: () =>
@@ -52,9 +64,12 @@ class TemperatureDetailBody extends GetView<TemperatureDetailController> {
                         : () => controller.navigateNext(controller.loadDay),
                   ),
                 ),
-                _TemperatureChart(controller: controller),
+                _TemperatureChart(
+                    key: const Key(WidgetKeys.temperatureChart),
+                    controller: controller),
                 Obx(
                   () => VitalStatCard(
+                    key: const Key(WidgetKeys.vitalStatCard),
                     items: [
                       VitalStatItem(
                         label: textMinTemperature,
@@ -94,7 +109,8 @@ class TemperatureDetailBody extends GetView<TemperatureDetailController> {
                 ),
                 const SizedBox(height: 12),
                 Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Padding(
                     padding: const EdgeInsets.all(12),
                     child: Text(
@@ -105,7 +121,8 @@ class TemperatureDetailBody extends GetView<TemperatureDetailController> {
                   ),
                 ),
                 Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   child: Padding(
                     padding: const EdgeInsets.all(12),
                     child: Text(
@@ -126,7 +143,7 @@ class TemperatureDetailBody extends GetView<TemperatureDetailController> {
 }
 
 class _TemperatureChart extends StatelessWidget {
-  const _TemperatureChart({required this.controller});
+  const _TemperatureChart({super.key, required this.controller});
 
   final TemperatureDetailController controller;
 

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_band_fit_app/core/constants/widget_keys.dart';
+import 'package:flutter_band_fit_app/core/widgets/fixed_section_list.dart';
 import 'package:flutter_band_fit_app/app/theme/app_colors.dart';
 import 'package:flutter_band_fit_app/core/widgets/app_ui_components.dart';
 import 'package:flutter_band_fit_app/core/widgets/settings_widgets.dart';
@@ -7,7 +9,8 @@ import 'package:flutter_band_fit_app/core/widgets/dwm_tab_bar.dart';
 import 'package:flutter_band_fit_app/core/widgets/theme_toggle_button.dart';
 
 /// Accent app bar used on vitals detail screens (HR, BP, SpO2, etc.).
-class VitalColoredAppBar extends StatelessWidget implements PreferredSizeWidget {
+class VitalColoredAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
   const VitalColoredAppBar({
     super.key,
     required this.title,
@@ -64,7 +67,9 @@ class VitalColoredAppBar extends StatelessWidget implements PreferredSizeWidget 
         ...?actions,
         IconTheme(
           data: IconThemeData(color: onBar),
-          child: const ThemeToggleButton(),
+          child: const ThemeToggleButton(
+            key: Key(WidgetKeys.themeToggleButton),
+          ),
         ),
       ],
     );
@@ -100,7 +105,10 @@ class SettingsPageScaffold extends StatelessWidget {
     final accent = accentColor ?? AppColors.primaryTeal;
     final onBar = VitalColoredAppBar.contrastOn(accent);
     final fab = floatingActionButton ??
-        (onSave != null ? SettingsSaveFab(onPressed: onSave!) : null);
+        (onSave != null
+            ? SettingsSaveFab(
+                key: const Key(WidgetKeys.settingsSaveFab), onPressed: onSave!)
+            : null);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -139,7 +147,9 @@ class SettingsPageScaffold extends StatelessWidget {
         actions: [
           IconTheme(
             data: IconThemeData(color: onBar),
-            child: const ThemeToggleButton(),
+            child: const ThemeToggleButton(
+              key: Key(WidgetKeys.themeToggleButton),
+            ),
           ),
         ],
       ),
@@ -170,6 +180,7 @@ class AccentTabDetailScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return VitalTabDetailScaffold(
+      key: const Key(WidgetKeys.vitalTabDetailScaffold),
       title: title,
       accentColor: accentColor ?? AppColors.primaryTeal,
       tabs: tabs,
@@ -188,7 +199,8 @@ class DetailActivityHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DetailInfoBanner(text: label);
+    return DetailInfoBanner(
+        key: const Key(WidgetKeys.detailInfoBanner), text: label);
   }
 }
 
@@ -215,10 +227,14 @@ class VitalDetailBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        DetailActivityHeader(label: activityLabel),
+    return FixedSectionListView(
+      key: const Key(WidgetKeys.fixedSectionListView),
+      sections: [
+        DetailActivityHeader(
+            key: const Key(WidgetKeys.detailActivityHeader),
+            label: activityLabel),
         DetailDateNavigator(
+          key: const Key(WidgetKeys.detailDateNavigator),
           dateTitle: dateTitle,
           isNextDisabled: isNextDisabled,
           onPrevious: onPreviousDay,
@@ -269,7 +285,8 @@ class VitalTabDetailScaffold extends StatelessWidget {
           automaticallyImplyLeading: false,
           centerTitle: centerTitle,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new_rounded, color: onBar, size: 20),
+            icon:
+                Icon(Icons.arrow_back_ios_new_rounded, color: onBar, size: 20),
             onPressed: onBack ?? () => Navigator.of(context).pop(),
           ),
           title: Text(
@@ -299,7 +316,9 @@ class VitalTabDetailScaffold extends StatelessWidget {
           actions: [
             IconTheme(
               data: IconThemeData(color: onBar),
-              child: const ThemeToggleButton(),
+              child: const ThemeToggleButton(
+                key: Key(WidgetKeys.themeToggleButton),
+              ),
             ),
           ],
           bottom: buildDwmTabBar(

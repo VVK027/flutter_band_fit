@@ -13,10 +13,12 @@ class DialFaceDetailsBody extends GetView<DialFaceDetailsController> {
   Widget build(BuildContext context) {
     return Obx(
       () => LoadingOverlay(
+        key: const Key(WidgetKeys.loadingOverlay),
         visible: controller.isInitializing.value,
         message: textDialFaces,
         subtitle: textDialFacesMsg,
         child: AccentTabDetailScaffold(
+          key: const Key(WidgetKeys.accentTabDetailScaffold),
           title: textDialFaces,
           accentColor: Theme.of(context).colorScheme.primary,
           onBack: GlobalMethods.navigatePopBack,
@@ -31,6 +33,7 @@ class DialFaceDetailsBody extends GetView<DialFaceDetailsController> {
             ),
             Obx(
               () => _OnlineDialTab(
+                key: const Key(WidgetKeys.onlineDialTab),
                 items: controller.onlineDials.toList(),
                 isLoading: controller.isLoadingOnline.value,
                 hasLoadedOnce: controller.hasLoadedOnlineOnce.value,
@@ -90,13 +93,21 @@ class DialFaceDetailsBody extends GetView<DialFaceDetailsController> {
                 const Divider(height: 1),
                 Padding(
                   padding: const EdgeInsets.all(16),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: CachedNetworkImage(
-                      imageUrl: item.preview,
+                  child: CachedNetworkImage(
+                    imageUrl: item.preview,
+                    width: 220,
+                    height: 220,
+                    fit: BoxFit.contain,
+                    imageBuilder: (context, imageProvider) => Container(
                       width: 220,
                       height: 220,
-                      fit: BoxFit.contain,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        image: DecorationImage(
+                          image: imageProvider,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -127,7 +138,9 @@ class DialFaceDetailsBody extends GetView<DialFaceDetailsController> {
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: _SyncButtonContent(provider: provider),
+                      child: _SyncButtonContent(
+                          key: const Key(WidgetKeys.syncButtonContent),
+                          provider: provider),
                     ),
                   ),
                 ),
@@ -142,6 +155,7 @@ class DialFaceDetailsBody extends GetView<DialFaceDetailsController> {
 
 class _OnlineDialTab extends StatelessWidget {
   const _OnlineDialTab({
+    super.key,
     required this.items,
     required this.isLoading,
     required this.hasLoadedOnce,
@@ -166,7 +180,9 @@ class _OnlineDialTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!hasLoadedOnce || (isLoading && items.isEmpty)) {
-      return const _DialLoadingState();
+      return const _DialLoadingState(
+        key: Key(WidgetKeys.dialLoadingState),
+      );
     }
 
     final emptyMessage = errorMessage ?? textNoOnlineDialFaces;
@@ -218,7 +234,7 @@ class _OnlineDialTab extends StatelessWidget {
 }
 
 class _DialLoadingState extends StatelessWidget {
-  const _DialLoadingState();
+  const _DialLoadingState({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -250,7 +266,7 @@ class _DialLoadingState extends StatelessWidget {
 }
 
 class _SyncButtonContent extends StatelessWidget {
-  const _SyncButtonContent({required this.provider});
+  const _SyncButtonContent({super.key, required this.provider});
 
   final ActivityServiceProvider provider;
 
@@ -277,7 +293,8 @@ class _SyncButtonContent extends StatelessWidget {
               ),
             )
           else
-            const Icon(Icons.check_circle_outline, color: Colors.white, size: 28),
+            const Icon(Icons.check_circle_outline,
+                color: Colors.white, size: 28),
           const SizedBox(width: 12),
           Flexible(
             child: Text(
@@ -388,48 +405,48 @@ class _DialTile extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: CachedNetworkImage(
-                  imageUrl: item.preview,
-                  fit: BoxFit.cover,
-                  placeholder: (_, __) => ColoredBox(
-                    color: theme.colorScheme.surfaceContainerHighest
-                        .withValues(alpha: 0.35),
-                    child: const Center(
-                      child: SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ),
-                  ),
-                  errorWidget: (_, __, ___) => ColoredBox(
-                    color: theme.colorScheme.surfaceContainerHighest
-                        .withValues(alpha: 0.35),
-                    child: Icon(
-                      Icons.watch_outlined,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: CachedNetworkImage(
+                imageUrl: item.preview,
+                fit: BoxFit.cover,
+                placeholder: (_, __) => ColoredBox(
+                  color: theme.colorScheme.surfaceContainerHighest
+                      .withValues(alpha: 0.35),
+                  child: const Center(
+                    child: SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(strokeWidth: 2),
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(6, 6, 6, 8),
-                child: Text(
-                  item.title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
+                errorWidget: (_, __, ___) => ColoredBox(
+                  color: theme.colorScheme.surfaceContainerHighest
+                      .withValues(alpha: 0.35),
+                  child: Icon(
+                    Icons.watch_outlined,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(6, 6, 6, 8),
+              child: Text(
+                item.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
         ),
+      ),
     );
   }
 }

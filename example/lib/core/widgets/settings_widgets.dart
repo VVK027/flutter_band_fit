@@ -171,11 +171,13 @@ class SettingsSwitchTile extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: (iconColor ?? theme.colorScheme.primary).withValues(alpha: 0.12),
+          color:
+              (iconColor ?? theme.colorScheme.primary).withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(12),
         ),
         alignment: Alignment.center,
-        child: Icon(icon, size: 22, color: iconColor ?? theme.colorScheme.primary),
+        child:
+            Icon(icon, size: 22, color: iconColor ?? theme.colorScheme.primary),
       );
     }
 

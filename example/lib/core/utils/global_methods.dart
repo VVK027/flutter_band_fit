@@ -11,8 +11,8 @@ import 'package:flutter_band_fit_app/features/profile/presentation/views/profile
 import 'package:flutter_band_fit_app/features/vitals/presentation/views/details/activities_details.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/views/details/weather_in_details.dart';
 import 'package:intl/intl.dart';
-class GlobalMethods {
 
+class GlobalMethods {
   static void navigateTo(dynamic page) {
     if (page is DeviceSettings) {
       Get.toNamed<void>(AppRoutes.deviceSettings);
@@ -25,7 +25,7 @@ class GlobalMethods {
     Get.to<dynamic>(page);
   }
 
-  static void navigatePopBack(){
+  static void navigatePopBack() {
     Get.back<void>();
   }
 
@@ -33,6 +33,7 @@ class GlobalMethods {
     final provider = Get.find<ActivityServiceProvider>();
     await Get.to<void>(
       () => ProfileUpdate(
+        key: const Key(WidgetKeys.profileUpdate),
         userFullName: 'User',
         gender: provider.getUserGender,
         height: provider.getUserHeight,
@@ -49,6 +50,7 @@ class GlobalMethods {
   static void openHealthBind() {
     Get.to<void>(
       () => AppleGoogleBind(
+        key: const Key(WidgetKeys.appleGoogleBind),
         deviceTypeName: Platform.isIOS ? appleHealthKey : googleFitKey,
       ),
     );
@@ -98,12 +100,12 @@ class GlobalMethods {
 
   //Related to GFit
   static List<DateTime> calReqDataDateTimeList(String lastSyncDate) {
-    debugPrint('lastSyncDate>>> $lastSyncDate');
+    debugPrintI('lastSyncDate>>> $lastSyncDate');
     // lastSyncDate = '20220224';
     List<DateTime> reqDataDT = [];
     DateTime currDT = DateTime.now();
     var myLastSyncDT = DateTime.parse(lastSyncDate);
-    debugPrint('lastSyncGap>>> ${currDT.difference(myLastSyncDT).inDays}');
+    debugPrintI('lastSyncGap>>> ${currDT.difference(myLastSyncDT).inDays}');
     int myLastSuncGap = currDT.difference(myLastSyncDT).inDays;
     // if (myLastSuncGap > 3) {
     //   myLastSuncGap = 3;
@@ -135,10 +137,11 @@ class GlobalMethods {
   }
 
   static String getBPConditions(int systolic, int diastolic) {
-    debugPrint('_mySys>>> $systolic');
-    debugPrint('_myDia>>> $diastolic');
+    debugPrintI('_mySys>>> $systolic');
+    debugPrintI('_myDia>>> $diastolic');
     String myBPCondition = '';
-    if ((systolic < 110 || systolic > 140) || (diastolic < 70 || diastolic > 90)) {
+    if ((systolic < 110 || systolic > 140) ||
+        (diastolic < 70 || diastolic > 90)) {
       myBPCondition = healthStatusConsultDoctor;
     } else {
       myBPCondition = healthStatusNormal;
@@ -147,9 +150,9 @@ class GlobalMethods {
   }
 
   static String getHeartRateConditions(int todayTotalNoBpm) {
-    debugPrint('todayTotalNoBpm>>> $todayTotalNoBpm');
+    debugPrintI('todayTotalNoBpm>>> $todayTotalNoBpm');
     String myHRCondition = '';
-    if((todayTotalNoBpm < 60 || todayTotalNoBpm > 85)) {
+    if ((todayTotalNoBpm < 60 || todayTotalNoBpm > 85)) {
       myHRCondition = healthStatusConsultDoctor;
     } else {
       myHRCondition = healthStatusNormal;
@@ -158,9 +161,9 @@ class GlobalMethods {
   }
 
   static String getSleepingConditions(int sleepingHr) {
-    debugPrint('sleepingHr>>> $sleepingHr');
+    debugPrintI('sleepingHr>>> $sleepingHr');
     String myCondition = '';
-    if((sleepingHr < 4)) {
+    if ((sleepingHr < 4)) {
       myCondition = healthStatusConsultDoctor;
     } else {
       myCondition = healthStatusNormal;
@@ -169,9 +172,9 @@ class GlobalMethods {
   }
 
   static String getSpo2Conditions(int spo2Value) {
-    debugPrint('spo2Value>>> $spo2Value');
+    debugPrintI('spo2Value>>> $spo2Value');
     String myCondition = '';
-    if((spo2Value < 88)) {
+    if ((spo2Value < 88)) {
       myCondition = healthStatusConsultDoctor;
     } else {
       myCondition = healthStatusNormal;
@@ -180,9 +183,9 @@ class GlobalMethods {
   }
 
   static String getTempConditions(int myBodyTemp) {
-    debugPrint('myBodyTemp>>> $myBodyTemp');
+    debugPrintI('myBodyTemp>>> $myBodyTemp');
     String myHRCondition = '';
-    if((myBodyTemp < 36 || myBodyTemp > 38)) {
+    if ((myBodyTemp < 36 || myBodyTemp > 38)) {
       myHRCondition = healthStatusConsultDoctor;
     } else {
       myHRCondition = healthStatusNormal;
@@ -191,7 +194,7 @@ class GlobalMethods {
   }
 
   static MaterialColor getConditionColor(String status) {
-    debugPrint('status>>> $status');
+    debugPrintI('status>>> $status');
     if (status.trim() == healthStatusConsultDoctor) {
       return Colors.red;
     } else if (status.trim() == healthStatusNormal) {
@@ -202,15 +205,15 @@ class GlobalMethods {
 
   // For getting next month
   static DateTime getOneMonthForwardGFit(DateTime dateTime) {
-    return DateTime(dateTime.year, dateTime.month+1, dateTime.day);
+    return DateTime(dateTime.year, dateTime.month + 1, dateTime.day);
   }
 
   static int calculateStepDuration(DateTime from, DateTime to) {
-    from = DateTime(from.year, from.month, from.day,from.hour,from.minute,from.second);
-    to = DateTime(to.year, to.month, to.day,to.hour,to.minute,to.second);
+    from = DateTime(
+        from.year, from.month, from.day, from.hour, from.minute, from.second);
+    to = DateTime(to.year, to.month, to.day, to.hour, to.minute, to.second);
     return (to.difference(from).inSeconds);
   }
-
 
   /*static List<int> getWeakDayList(int number) {
     List<int> weatherForcastingDaysList=[];
@@ -226,12 +229,10 @@ class GlobalMethods {
       int age = DateTime.now().year - dateOfBirth.year;
       return age;
     } catch (error) {
-      debugPrint("age error $error");
+      debugPrintI("age error $error");
       return 18;
     }
   }
-
-
 
   static Color getColor(dynamic status) {
     if (status.toString().toLowerCase().trim() == 'bmi_under_weight') {
@@ -246,9 +247,10 @@ class GlobalMethods {
     return Colors.green;
   }
 
-  static Future<String> selectGoalSteps(BuildContext context, String tempSelectedSteps) async {
-    debugPrint('inside goals');
-    debugPrint('tempSelectedSteps>> $tempSelectedSteps');
+  static Future<String> selectGoalSteps(
+      BuildContext context, String tempSelectedSteps) async {
+    debugPrintI('inside goals');
+    debugPrintI('tempSelectedSteps>> $tempSelectedSteps');
     // goalTextTitle
     String? selectedSteps = await showThemedPickerBottomSheet<String>(
       context: context,
@@ -258,6 +260,7 @@ class GlobalMethods {
         return Column(
           children: <Widget>[
             PickerSheetHeader(
+              key: const Key(WidgetKeys.pickerSheetHeader),
               onCancel: GlobalMethods.navigatePopBack,
               onDone: () => Navigator.of(sheetContext).pop(tempSelectedSteps),
             ),
@@ -282,7 +285,8 @@ class GlobalMethods {
                   onSelectedItemChanged: (value) {
                     tempSelectedSteps = totalGoalsList[value].toString();
                   },
-                  selectionOverlay: const CupertinoPickerDefaultSelectionOverlay(),
+                  selectionOverlay:
+                      const CupertinoPickerDefaultSelectionOverlay(),
                   backgroundColor: themedPickerBackground(sheetContext),
                   itemExtent: 28,
                   scrollController: FixedExtentScrollController(
@@ -313,7 +317,8 @@ class GlobalMethods {
 
   // Find last date of the week which contains provided date.
   static DateTime findLastDateOfTheWeek(DateTime dateTime) {
-    return dateTime.add(Duration(days: DateTime.daysPerWeek - dateTime.weekday));
+    return dateTime
+        .add(Duration(days: DateTime.daysPerWeek - dateTime.weekday));
   }
 
   // Find the first date of the month which contains the provided date.
@@ -343,31 +348,36 @@ class GlobalMethods {
     return lastDayOfMonth;
   }
 
-  static Future<List<DateTime>> findNextSevenWeekDatesListByTime(DateTime currentDateTime) async {
+  static Future<List<DateTime>> findNextSevenWeekDatesListByTime(
+      DateTime currentDateTime) async {
     List<DateTime> sevenWeekDays = [];
     //sevenWeekDays.add(DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day));
     int i = 0;
     while (i < 7) {
-      sevenWeekDays.add(DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day).add(Duration(days: i)));
+      sevenWeekDays.add(DateTime(
+              currentDateTime.year, currentDateTime.month, currentDateTime.day)
+          .add(Duration(days: i)));
       i++;
     }
-    debugPrint('$sevenWeekDays');
+    debugPrintI('$sevenWeekDays');
     return sevenWeekDays;
   }
 
-  static Future<List<DateTime>> getWeekDatesListByTime(DateTime dateTime) async {
-    //  debugPrint('inside>> $dateTime');
+  static Future<List<DateTime>> getWeekDatesListByTime(
+      DateTime dateTime) async {
+    //  debugPrintI('inside>> $dateTime');
     // pass the current date time or past week time
     DateTime firstDate = findFirstDateOfTheWeek(dateTime);
-    // debugPrint('firstDate>> $firstDate');
+    // debugPrintI('firstDate>> $firstDate');
     DateTime lastDate = findLastDateOfTheWeek(dateTime);
-    //  debugPrint('lastDate>> $lastDate');
+    //  debugPrintI('lastDate>> $lastDate');
     List<DateTime> weekDays = [];
     if (firstDate.day > lastDate.day) {
       //27 > 3
       int i = 0;
       while (i < 7) {
-        weekDays.add(DateTime(firstDate.year, firstDate.month, firstDate.day + i));
+        weekDays
+            .add(DateTime(firstDate.year, firstDate.month, firstDate.day + i));
         i++;
       }
     } else {
@@ -376,20 +386,21 @@ class GlobalMethods {
       }
     }
 
-    debugPrint('$weekDays');
+    debugPrintI('$weekDays');
     return weekDays;
   }
 
-  static Future<List<DateTime>> getMonthyDatesListByTime(DateTime dateTime) async {
+  static Future<List<DateTime>> getMonthyDatesListByTime(
+      DateTime dateTime) async {
     // below code is used for the current month
 
     // pass the current date time or past week time
-    // debugPrint('inside>> $dateTime');
+    // debugPrintI('inside>> $dateTime');
     // pass the current date time or past week time
     DateTime firstDate = findFirstDateOfTheMonth(dateTime);
-    // debugPrint('firstDate>> $firstDate');
+    // debugPrintI('firstDate>> $firstDate');
     DateTime lastDate = findLastDateOfTheMonth(dateTime);
-    // debugPrint('lastDate>> $lastDate');
+    // debugPrintI('lastDate>> $lastDate');
 
     List<DateTime> monthDays = [];
 
@@ -408,8 +419,8 @@ class GlobalMethods {
     // or
     //String date = dateToday.toString().substring(0,10);
 
-    debugPrint('first date : >> ${firstDate.day}');
-    debugPrint('last date : >> ${lastDate.day}');
+    debugPrintI('first date : >> ${firstDate.day}');
+    debugPrintI('last date : >> ${lastDate.day}');
 
     List<String> weekDays = [];
 
@@ -421,7 +432,7 @@ class GlobalMethods {
           .trim());
     }
 
-    debugPrint('$weekDays');
+    debugPrintI('$weekDays');
 
     List<String> weekDays12 = [];
 
@@ -437,7 +448,7 @@ class GlobalMethods {
           .trim());
     }
 
-    debugPrint('$weekDays12');
+    debugPrintI('$weekDays12');
 
     List<String> weekDays23 = [];
 
@@ -453,7 +464,7 @@ class GlobalMethods {
           .trim());
     }
 
-    debugPrint('$weekDays23');
+    debugPrintI('$weekDays23');
 
     return weekDays;
   }*/
@@ -461,28 +472,32 @@ class GlobalMethods {
   /// Find first date of previous week using a date in current week.
   /// [dateTime] A date in current week.
   DateTime findFirstDateOfPreviousWeek(DateTime dateTime) {
-    final DateTime sameWeekDayOfLastWeek = dateTime.subtract(const Duration(days: 7));
+    final DateTime sameWeekDayOfLastWeek =
+        dateTime.subtract(const Duration(days: 7));
     return findFirstDateOfTheWeek(sameWeekDayOfLastWeek);
   }
 
   /// Find last date of previous week using a date in current week.
   /// [dateTime] A date in current week.
   DateTime findLastDateOfPreviousWeek(DateTime dateTime) {
-    final DateTime sameWeekDayOfLastWeek = dateTime.subtract(const Duration(days: 7));
+    final DateTime sameWeekDayOfLastWeek =
+        dateTime.subtract(const Duration(days: 7));
     return findLastDateOfTheWeek(sameWeekDayOfLastWeek);
   }
 
   /// Find first date of next week using a date in current week.
   /// [dateTime] A date in current week.
   DateTime findFirstDateOfNextWeek(DateTime dateTime) {
-    final DateTime sameWeekDayOfNextWeek = dateTime.add(const Duration(days: 7));
+    final DateTime sameWeekDayOfNextWeek =
+        dateTime.add(const Duration(days: 7));
     return findFirstDateOfTheWeek(sameWeekDayOfNextWeek);
   }
 
   /// Find last date of next week using a date in current week.
   /// [dateTime] A date in current week.
   DateTime findLastDateOfNextWeek(DateTime dateTime) {
-    final DateTime sameWeekDayOfNextWeek = dateTime.add(const Duration(days: 7));
+    final DateTime sameWeekDayOfNextWeek =
+        dateTime.add(const Duration(days: 7));
     return findLastDateOfTheWeek(sameWeekDayOfNextWeek);
   }
 
@@ -528,11 +543,12 @@ class GlobalMethods {
       final lastDay = weekList.last.day.toString();
       final firstMonth = weekList.first.month;
       final lastMonth = weekList.last.month;
-      final prevMonth = firstMonth == lastMonth ? '' : calMonths[firstMonth - 1];
+      final prevMonth =
+          firstMonth == lastMonth ? '' : calMonths[firstMonth - 1];
       final nextMonth = calMonths[lastMonth - 1];
       return '$firstDay $prevMonth ~ $lastDay $nextMonth'.trim();
     } catch (e) {
-      debugPrint('formatWeekTitleLabelExp: $e');
+      debugPrintI('formatWeekTitleLabelExp: $e');
       return '';
     }
   }
@@ -542,7 +558,8 @@ class GlobalMethods {
     return f.format(number);
   }
 
-  static void showAlertDialog(BuildContext context, String title, String message) {
+  static void showAlertDialog(
+      BuildContext context, String title, String message) {
     showDialog<void>(
         context: context,
         builder: (BuildContext context) {
@@ -598,7 +615,8 @@ class GlobalMethods {
     );
   }
 
-  static Future<DateTime> selectCalenderDate(BuildContext context, DateTime tempPickedDate) async {
+  static Future<DateTime> selectCalenderDate(
+      BuildContext context, DateTime tempPickedDate) async {
     DateTime? pickedDate = await showModalBottomSheet<DateTime>(
       context: context,
       builder: (context) {
@@ -661,7 +679,8 @@ class GlobalMethods {
     return '${hour.toString().padLeft(2, "0")}:${min.toString().padLeft(2, "0")}';
   }
 
-  static Future<String> getWeekTitleLabel(BuildContext context, List<DateTime> weekList) async {
+  static Future<String> getWeekTitleLabel(
+      BuildContext context, List<DateTime> weekList) async {
     return _formatWeekTitleLabel(weekList);
   }
 
@@ -702,12 +721,12 @@ class GlobalMethods {
     }
     return savedDir.path;
   }*/
-
 }
 
 void openStepsDetail() {
   GlobalMethods.navigateTo(
     ActivitiesDetails(
+      key: const Key(WidgetKeys.activitiesDetails),
       displayTitle: Activity.steps.name,
       activityLabel: Activity.steps.textLabel,
       stepsView: true,
@@ -728,5 +747,6 @@ void openWeatherDetails() {
     );
     return;
   }
-  GlobalMethods.navigateTo(WeatherInDetails(weatherModelData: model));
+  GlobalMethods.navigateTo(WeatherInDetails(
+      key: const Key(WidgetKeys.weatherInDetails), weatherModelData: model));
 }

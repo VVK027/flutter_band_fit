@@ -1,4 +1,3 @@
-import 'package:flutter_band_fit_app/app/routes/app_routes.dart';
 import 'package:flutter_band_fit_app/common/common_imports.dart';
 import 'package:flutter_band_fit_app/core/utils/shared_service.dart';
 import 'package:flutter_band_fit_app/core/services/activity_service_provider.dart';
@@ -9,9 +8,12 @@ import 'package:flutter_band_fit_app/features/device/domain/usecases/reconnect_s
 class DeviceSettingsController extends GetxController {
   ActivityServiceProvider get provider => Get.find<ActivityServiceProvider>();
 
-  final DevicePresentationRepository _deviceRepository = Get.find<DevicePresentationRepository>();
-  final CheckDeviceConnectionUseCase _checkDeviceConnectionUseCase = Get.find<CheckDeviceConnectionUseCase>();
-  final ReconnectSavedDeviceUseCase _reconnectSavedDeviceUseCase = Get.find<ReconnectSavedDeviceUseCase>();
+  final DevicePresentationRepository _deviceRepository =
+      Get.find<DevicePresentationRepository>();
+  final CheckDeviceConnectionUseCase _checkDeviceConnectionUseCase =
+      Get.find<CheckDeviceConnectionUseCase>();
+  final ReconnectSavedDeviceUseCase _reconnectSavedDeviceUseCase =
+      Get.find<ReconnectSavedDeviceUseCase>();
 
   @override
   void onInit() {
@@ -29,7 +31,7 @@ class DeviceSettingsController extends GetxController {
     }
 
     final isConnected = await _checkDeviceConnectionUseCase();
-    debugPrint('fetchDeviceData>>isConnected>> $isConnected');
+    debugPrintI('fetchDeviceData>>isConnected>> $isConnected');
     if (isConnected || _deviceRepository.getDeviceConnected()) {
       if (Platform.isAndroid) {
         await Future<void>.delayed(const Duration(milliseconds: 300));
@@ -47,7 +49,7 @@ class DeviceSettingsController extends GetxController {
       reconnectText,
       () async {
         final statusReconnect = await _reconnectSavedDeviceUseCase(context);
-        debugPrint('statusReconnect>>$statusReconnect');
+        debugPrintI('statusReconnect>>$statusReconnect');
         if (!statusReconnect && context.mounted) {
           GlobalMethods.showAlertDialog(
             context,
@@ -60,16 +62,11 @@ class DeviceSettingsController extends GetxController {
   }
 
   void goDashboardPage() {
-    if (!_deviceRepository.getHealthConnected() &&
-        !_deviceRepository.getDeviceConnected()) {
-      Get.offAllNamed<void>(AppRoutes.vitals);
-    } else {
-      GlobalMethods.navigatePopBack();
-    }
+    GlobalMethods.navigatePopBack();
   }
 
   Future<void> refreshPage([bool isDisconnected = false]) async {
-    debugPrint('refreshPage ${_deviceRepository.getDeviceConnected()}');
+    debugPrintI('refreshPage ${_deviceRepository.getDeviceConnected()}');
     if (isDisconnected) {
       GlobalMethods.navigatePopBack();
     }

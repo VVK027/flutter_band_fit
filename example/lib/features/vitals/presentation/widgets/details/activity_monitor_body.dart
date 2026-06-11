@@ -1,4 +1,6 @@
 import 'package:flutter_band_fit_app/core/exports/band_exports.dart';
+import 'package:flutter_band_fit_app/core/constants/widget_keys.dart';
+import 'package:flutter_band_fit_app/core/widgets/fixed_section_list.dart';
 import 'package:flutter_band_fit_app/core/widgets/settings_widgets.dart';
 import 'package:flutter_band_fit_app/core/widgets/app_ui_components.dart';
 import 'package:flutter_band_fit_app/core/widgets/vital_detail_scaffold.dart';
@@ -10,15 +12,20 @@ class ActivityMonitorBody extends GetView<ActivityMonitorController> {
   @override
   Widget build(BuildContext context) {
     return SettingsPageScaffold(
+      key: const Key(WidgetKeys.settingsPageScaffold),
       title: textMonitoringOptions,
       onBack: GlobalMethods.navigatePopBack,
       onSave: controller.saveAndClose,
-      body: ListView(
+      body: FixedSectionListView(
+        key: const Key(WidgetKeys.fixedSectionListView),
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 88),
-        children: [
-          const DetailInfoBanner(text: textConfigureMonitoring),
+        sections: [
+          const DetailInfoBanner(
+              key: Key(WidgetKeys.detailInfoBanner),
+              text: textConfigureMonitoring),
           const SizedBox(height: 12),
           SettingsSectionCard(
+            key: const Key(WidgetKeys.settingsSectionCard),
             children: [
               SettingsSwitchTile(
                 iconAsset: 'assets/fit/heart.png',

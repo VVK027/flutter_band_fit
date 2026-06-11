@@ -95,7 +95,7 @@ class OxygenDetailController extends GetxController
           }
         }
       },
-      onError: (error) => debugPrint('receiveOxyListenersError>> $error'),
+      onError: (error) => debugPrintI('receiveOxyListenersError>> $error'),
       onDone: () {},
     );
     bleProvider.resumeBPListeners();
@@ -147,7 +147,7 @@ class OxygenDetailController extends GetxController
         final dataPoint = double.parse(element.value);
         if (dataPoint > largestValue) largestValue = dataPoint;
         if (dataPoint < smallestValue) smallestValue = dataPoint;
-       // sumOfDataPoints += dataPoint;
+        // sumOfDataPoints += dataPoint;
         dataRepList.add(
           CommonDataResult(
             time: pointTime,
@@ -163,7 +163,7 @@ class OxygenDetailController extends GetxController
       minOxygenValue.value = smallestValue.toInt().toString();
       chartPoints.assignAll(dataRepList);
     } catch (e) {
-      debugPrint('OxygenDetailController.loadDay>> $e');
+      debugPrintI('OxygenDetailController.loadDay>> $e');
       _clearChart();
     }
   }

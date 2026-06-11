@@ -30,6 +30,33 @@ https://github.com/user-attachments/assets/715b9c82-4345-4bde-9d9d-4706b03ee25d
 - Online watch dial transfer and progress events
 - Event streams for connection state, sync progress, and live tests (e.g. blood pressure)
 
+## Screenshots
+
+Example app ([`example/`](example/)) with a connected UTE / GloryFit band:
+
+![Vitals dashboard — steps, sync, heart rate, sleep, BP, and SpO₂](screenshots/vital_main_dark.png)
+
+| Activities | Heart rate |
+| ---------- | ---------- |
+| ![Daily steps, distance, and calories](screenshots/activities_detail.png) | ![Heart rate trend and daily stats](screenshots/heart_rate_detail.png) |
+
+| Blood pressure | SpO₂ |
+| -------------- | ---- |
+| ![BP readings and on-demand test](screenshots/blood_pressure_detail.png) | ![Blood oxygen trend and measurement](screenshots/spo2_detail.png) |
+
+Light theme dashboard:
+
+![Vitals dashboard (light theme)](screenshots/vital_main_light.png)
+
+## Preview
+
+<img width="1000" height="667" alt="flutter_band_fit_preview" src="https://github.com/user-attachments/assets/7999a352-5b7f-4ecc-b006-2dc8d5973547" />
+
+## Live Demo
+
+https://github.com/user-attachments/assets/715b9c82-4345-4bde-9d9d-4706b03ee25d
+
+
 ## BLE connection workflow
 
 Typical integration order (aligned with the native UTE / GloryFit BLE flow):
@@ -145,18 +172,8 @@ example/                # Full reference application
 example/docs/           # Integration and architecture docs
 ```
 
-## Publishing to pub.dev
-
-Before your first publish:
-
-1. Set `homepage`, `repository`, and `issue_tracker` in `pubspec.yaml` (already pointed at this repo).
-2. Replace `LICENSE` placeholder with your chosen license (pub.dev requires a valid SPDX license).
-3. Run `dart format lib`, `flutter analyze lib`, and `flutter test`.
-4. Update [CHANGELOG.md](CHANGELOG.md) for each release.
-5. `dart pub publish --dry-run` from the package root, then `dart pub publish`.
-
-Third-party SDK binaries (`ute_sdk.aar`, iOS framework) are bundled with the plugin — confirm redistribution rights for your product.
-
 ## License
 
-See [LICENSE](LICENSE). Native UTE (= GloryFit) SDK binaries are third-party; verify vendor terms for commercial distribution.
+This project is licensed under the [MIT License](LICENSE).
+
+Native UTE (= GloryFit) SDK binaries (`ute_sdk.aar`, `UTESmartBandApi.framework`) are third-party; verify vendor terms for commercial distribution.

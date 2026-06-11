@@ -6,7 +6,8 @@ import 'package:flutter_band_fit_app/features/profile/domain/usecases/get_profil
 import 'package:get/get.dart';
 
 class ProfileUpdateController extends GetxController {
-  ActivityServiceProvider get activityProvider => Get.find<ActivityServiceProvider>();
+  ActivityServiceProvider get activityProvider =>
+      Get.find<ActivityServiceProvider>();
 
   ProfileUpdateController({
     required this.userFullName,
@@ -47,7 +48,8 @@ class ProfileUpdateController extends GetxController {
   List<String> defaultHeightList = [];
   List<String> defaultWeightList = [];
 
-  final GetProfileSettingsUseCase _getProfileSettingsUseCase = Get.find<GetProfileSettingsUseCase>();
+  final GetProfileSettingsUseCase _getProfileSettingsUseCase =
+      Get.find<GetProfileSettingsUseCase>();
   final CalculateBmiUseCase _calculateBmiUseCase = CalculateBmiUseCase();
 
   @override
@@ -55,15 +57,20 @@ class ProfileUpdateController extends GetxController {
     final profileSettings = _getProfileSettingsUseCase();
 
     selectedSteps = profileSettings.targetedSteps;
-    selectedDate = (dob.isNotEmpty) ? DateTime.parse(dob).toLocal() : DateTime.now();
+    selectedDate =
+        (dob.isNotEmpty) ? DateTime.parse(dob).toLocal() : DateTime.now();
     selectedGender = gender;
     selectedScreenOffSecs = profileSettings.screenOffTime;
     selectedTemperatureUnits =
         profileSettings.isCelsius ? tempInCelsius : tempInFahrenheit;
     tempTempUnits = selectedTemperatureUnits;
     selectedRaiseWakeUp = profileSettings.raiseHandWakeUp;
-    selectedHeight = int.parse(height.toString()) == 0 ? heightMin.toString() : height.toString();
-    selectedWeight = int.parse(weight.toString()) == 0 ? weightMin.toString() : weight.toString();
+    selectedHeight = int.parse(height.toString()) == 0
+        ? heightMin.toString()
+        : height.toString();
+    selectedWeight = int.parse(weight.toString()) == 0
+        ? weightMin.toString()
+        : weight.toString();
     initializeHeight();
     initializeWeight();
     super.onInit();

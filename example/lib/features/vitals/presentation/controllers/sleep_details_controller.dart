@@ -1,18 +1,29 @@
 import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
 import 'package:flutter_band_fit_app/features/vitals/domain/repositories/vitals_data_repository.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/mixins/vitals_storage_ready_mixin.dart';
-class SleepDetailsController extends GetxController with VitalsStorageReadyMixin {
-  SleepDetailsController({required this.displayTitle, required this.activityLabel});
+
+class SleepDetailsController extends GetxController
+    with VitalsStorageReadyMixin {
+  SleepDetailsController(
+      {required this.displayTitle, required this.activityLabel});
 
   final String displayTitle;
   final String activityLabel;
 
   BuildContext get context => Get.context!;
 
-
   int selectedPage = 0;
 
-  final VitalsDataRepository _vitalsDataRepository = Get.find<VitalsDataRepository>();
+  /// Rebuild scope for D/W/M tab bodies only (not the full scaffold).
+  static const chartTabId = 'chartTab';
+
+  void notifyChartTab() => update([chartTabId]);
+
+  final VitalsDataRepository _vitalsDataRepository =
+      Get.find<VitalsDataRepository>();
+  final ActivityServiceProvider _activityServiceProvider =
+      Get.find<ActivityServiceProvider>();
+  Worker? _sleepRevisionWorker;
   List<dynamic> overAllSleepData = [];
 
   //current day
@@ -48,7 +59,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
   bool monthNextDisable = true;
   List<MonthlySleepData> monthSleepDataList = [];
   String monthTotalSleepHours = '0', monthTotalSleepMin = '0';
-  String monthTotalDeepHours = '0',  monthTotalDeepMin = '0';
+  String monthTotalDeepHours = '0', monthTotalDeepMin = '0';
   String monthTotalLightHours = '0', monthTotalLightMin = '0';
   String monthTotalAwakeHours = '0', monthTotalAwakeMin = '0';
 
@@ -64,6 +75,9 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
     monthlyDateTitle = _formatMonthTitle(todayTime);
     super.onInit();
     listenForLocalVitalsDataReady(initializeData);
+    _sleepRevisionWorker = ever(_activityServiceProvider.sleepDataRevision, (_) {
+      unawaited(_reloadSleepViews());
+    });
   }
 
   @override
@@ -74,8 +88,18 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
 
   @override
   void onClose() {
+    _sleepRevisionWorker?.dispose();
+    _sleepRevisionWorker = null;
     disposeVitalsStorageReadyListener();
     super.onClose();
+  }
+
+  Future<void> _reloadSleepViews() async {
+    _reloadStoredSleepData();
+    await setCurrentDateTitle(currentDateTime);
+    await setWeekDateTitle(currentWeekDateTime);
+    await setMonthDateTitle(currentMonthDateTime);
+    notifyChartTab();
   }
 
   String _formatMonthTitle(DateTime dateTime) {
@@ -97,34 +121,37 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
 
   Future<void> initializeData() async {
     _reloadStoredSleepData();
-    update();
+    notifyChartTab();
     await setCurrentDateTitle(todayTime);
     //week
     currentWeekDateTime = await GlobalMethods.getWeekDatesListByTime(todayTime);
     await setWeekDateTitle(currentWeekDateTime);
     //month
-    currentMonthDateTime = await GlobalMethods.getMonthyDatesListByTime(todayTime);
+    currentMonthDateTime =
+        await GlobalMethods.getMonthyDatesListByTime(todayTime);
     await setMonthDateTitle(currentMonthDateTime);
-    update();
+    notifyChartTab();
   }
 
   Future<void> setCurrentDateTitle(DateTime dateTime) async {
     _reloadStoredSleepData();
     dayDateTitle = _formatDayTitle(dateTime);
-    update();
+    notifyChartTab();
     try {
       String calender = GlobalMethods.convertBandReadableCalender(dateTime);
       List<SleepMainModel> sleepMainModelList = [];
       if (Platform.isIOS) {
-        sleepMainModelList = await _vitalsDataRepository.getSelectedDaySleepData(overAllSleepData, calender);
-      }else{
-        sleepMainModelList = await _vitalsDataRepository.getCurrentDaySleepData(overAllSleepData, calender);
+        sleepMainModelList = await _vitalsDataRepository
+            .getSelectedDaySleepData(overAllSleepData, calender);
+      } else {
+        sleepMainModelList = await _vitalsDataRepository.getCurrentDaySleepData(
+            overAllSleepData, calender);
       }
 
-      debugPrint('sleepMainModelList>>  ${sleepMainModelList.length}');
+      debugPrintI('sleepMainModelList>>  ${sleepMainModelList.length}');
       if (sleepMainModelList.isNotEmpty) {
         SleepMainModel sleepMainModel = sleepMainModelList[0];
-        debugPrint('sleepMainModel.calender>>  ${sleepMainModel.calender}');
+        debugPrintI('sleepMainModel.calender>>  ${sleepMainModel.calender}');
         List<String> total = sleepMainModel.total.split(':');
         List<String> light = sleepMainModel.light.split(':');
         List<String> awake = sleepMainModel.awake.split(':');
@@ -134,7 +161,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
         List<String> endTime = sleepMainModel.endTime.split(':');
 
         // List<SmartSleepModel> sleepDataList = sleepMainModel.dataList;
-        // print("sleepDataList>> ${sleepDataList.length} == ${sleepDataList}");
+        // debugPrintI("sleepDataList>> ${sleepDataList.length} == ${sleepDataList}");
 
         int totalNumber = int.tryParse(sleepMainModel.totalNum)!;
         int deepNumber = int.tryParse(sleepMainModel.deepNum)!;
@@ -143,23 +170,23 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
 
         //if (sleepDataList.isNotEmpty) {
 
-          //sleepDayDataList = sleepList;
-          dayTotalHours = total[0];
-          dayTotalMin = total[1];
-          dayDeepHours = deep[0];
-          dayDeepMin = deep[1];
-          dayLightHours = light[0];
-          dayLightMin = light[1];
-          dayAwakeHours = awake[0];
-          dayAwakeMin = awake[1];
-          dayBeginHours = beginTime[0];
-          dayBeginMin = beginTime[1];
-          dayEndHours = endTime[0];
-          dayEndMin = endTime[1];
-          deepPercentage = getCalculatePercentage(deepNumber, totalNumber);
-          lightPercentage = getCalculatePercentage(lightNumber, totalNumber);
-          awakePercentage = getCalculatePercentage(awakeNumber, totalNumber);
-    update();
+        //sleepDayDataList = sleepList;
+        dayTotalHours = total[0];
+        dayTotalMin = total[1];
+        dayDeepHours = deep[0];
+        dayDeepMin = deep[1];
+        dayLightHours = light[0];
+        dayLightMin = light[1];
+        dayAwakeHours = awake[0];
+        dayAwakeMin = awake[1];
+        dayBeginHours = beginTime[0];
+        dayBeginMin = beginTime[1];
+        dayEndHours = endTime[0];
+        dayEndMin = endTime[1];
+        deepPercentage = getCalculatePercentage(deepNumber, totalNumber);
+        lightPercentage = getCalculatePercentage(lightNumber, totalNumber);
+        awakePercentage = getCalculatePercentage(awakeNumber, totalNumber);
+        notifyChartTab();
         // } else {
         //     //sleepDayDataList = [];
         //     dayTotalHours = '0';
@@ -180,27 +207,26 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
         //   });
         // }
       } else {
-        
-          //sleepDayDataList = [];
-          dayTotalHours = '0';
-          dayTotalMin = '0';
-          dayDeepHours = '0';
-          dayDeepMin = '0';
-          dayLightHours = '0';
-          dayLightMin = '0';
-          dayAwakeHours = '0';
-          dayAwakeMin = '0';
-          dayBeginHours = '--';
-          dayBeginMin = '--';
-          dayEndHours = '--';
-          dayEndMin = '--';
-          deepPercentage =0;
-          lightPercentage =0;
-          awakePercentage =0;
-    update();
+        //sleepDayDataList = [];
+        dayTotalHours = '0';
+        dayTotalMin = '0';
+        dayDeepHours = '0';
+        dayDeepMin = '0';
+        dayLightHours = '0';
+        dayLightMin = '0';
+        dayAwakeHours = '0';
+        dayAwakeMin = '0';
+        dayBeginHours = '--';
+        dayBeginMin = '--';
+        dayEndHours = '--';
+        dayEndMin = '--';
+        deepPercentage = 0;
+        lightPercentage = 0;
+        awakePercentage = 0;
+        notifyChartTab();
       }
     } catch (e) {
-      debugPrint('setSleepTitleException:: $e');
+      debugPrintI('setSleepTitleException:: $e');
     }
   }
 
@@ -226,9 +252,9 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
         weekDateTitle = firstDay + ' ~ ' + lastDay + ' ' + Utils.tr(context,month);
       });*/
       String title = await GlobalMethods.getWeekTitleLabel(context, weekList);
-      
-        weekDateTitle = title;
-    update();
+
+      weekDateTitle = title;
+      notifyChartTab();
       List<String> calenderList = [];
       for (var element in weekList) {
         calenderList.add(GlobalMethods.convertBandReadableCalender(element));
@@ -236,55 +262,56 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
       if (Platform.isIOS) {
         if (Get.context == null) return;
         List<dynamic> sleepDataList = [];
-        if(context.mounted) {
-          sleepDataList = await _vitalsDataRepository.getSleepDataSelectedRange(false, overAllSleepData, calenderList, context);
+        if (context.mounted) {
+          sleepDataList = await _vitalsDataRepository.getSleepDataSelectedRange(
+              false, overAllSleepData, calenderList, context);
         }
-        final weekDataSleepList = List<WeeklySleepData>.from(sleepDataList[0] as List);
+        final weekDataSleepList =
+            List<WeeklySleepData>.from(sleepDataList[0] as List);
         final totalHours = sleepDataList[1] as int;
         final totalDeep = sleepDataList[2] as int;
         final totalAwake = sleepDataList[3] as int;
         final totalLight = sleepDataList[3] as int;
 
         if (weekDataSleepList.isNotEmpty) {
+          List<String> total =
+              GlobalMethods.getTimeByIntegerMin(totalHours).split(':');
+          List<String> deep =
+              GlobalMethods.getTimeByIntegerMin(totalDeep).split(':');
+          List<String> light =
+              GlobalMethods.getTimeByIntegerMin(totalLight).split(':');
+          List<String> awake =
+              GlobalMethods.getTimeByIntegerMin(totalAwake).split(':');
 
-          List<String> total = GlobalMethods.getTimeByIntegerMin(totalHours).split(':');
-          List<String> deep = GlobalMethods.getTimeByIntegerMin(totalDeep).split(':');
-          List<String> light = GlobalMethods.getTimeByIntegerMin(totalLight).split(':');
-          List<String> awake = GlobalMethods.getTimeByIntegerMin(totalAwake).split(':');
+          weekSleepDataList = weekDataSleepList;
+          weekTotalSleepHours = total[0];
+          weekTotalSleepMin = total[1];
 
-            weekSleepDataList = weekDataSleepList;
-            weekTotalSleepHours = total[0];
-            weekTotalSleepMin = total[1];
+          weekTotalDeepHours = deep[0];
+          weekTotalDeepMin = deep[1];
 
-            weekTotalDeepHours = deep[0];
-            weekTotalDeepMin = deep[1];
+          weekTotalLightHours = light[0];
+          weekTotalLightMin = light[1];
 
-            weekTotalLightHours = light[0];
-            weekTotalLightMin = light[1];
-
-            weekTotalAwakeHours = awake[0];
-            weekTotalAwakeMin = awake[1];
-    update();
-
+          weekTotalAwakeHours = awake[0];
+          weekTotalAwakeMin = awake[1];
+          notifyChartTab();
+        } else {
+          weekSleepDataList = [];
+          weekTotalSleepHours = '0';
+          weekTotalSleepMin = '0';
+          weekTotalDeepHours = '0';
+          weekTotalDeepMin = '0';
+          weekTotalLightHours = '0';
+          weekTotalLightMin = '0';
+          weekTotalAwakeHours = '0';
+          weekTotalAwakeMin = '0';
+          notifyChartTab();
         }
-        else{
-
-            weekSleepDataList = [];
-            weekTotalSleepHours = '0';
-            weekTotalSleepMin = '0';
-            weekTotalDeepHours = '0';
-            weekTotalDeepMin = '0';
-            weekTotalLightHours = '0';
-            weekTotalLightMin = '0';
-            weekTotalAwakeHours = '0';
-            weekTotalAwakeMin = '0';
-    update();
-
-        }
-
-      }else{
-        List<SleepMainModel> sleepWeekModelList = await _vitalsDataRepository.getSleepBySelectedWeek(overAllSleepData, calenderList);
-        debugPrint('sleepWeekModelList>>  ${sleepWeekModelList.length}');
+      } else {
+        List<SleepMainModel> sleepWeekModelList = await _vitalsDataRepository
+            .getSleepBySelectedWeek(overAllSleepData, calenderList);
+        debugPrintI('sleepWeekModelList>>  ${sleepWeekModelList.length}');
         if (sleepWeekModelList.isNotEmpty) {
           List<WeeklySleepData> weekDataList = [];
 
@@ -298,15 +325,17 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
             List<String> beginTime = element.beginTime.split(':');
             List<String> endTime = element.endTime.split(':');
             String week = calWeeks[dateTime.weekday - 1];
-            //debugPrint( 'startTimeNum >> ${element.beginTimeNum} --endTimeNum>> ${element.endTimeNum}');
+            //debugPrintI( 'startTimeNum >> ${element.beginTimeNum} --endTimeNum>> ${element.endTimeNum}');
             totalHours = totalHours + int.tryParse(element.totalNum)!;
             totalDeep = totalDeep + int.tryParse(element.deepNum)!;
             totalLight = totalLight + int.tryParse(element.lightNum)!;
             totalAwake = totalAwake + int.tryParse(element.awakeNum)!;
             weekDataList.add(WeeklySleepData(
               weekName: week,
-              startTime: DateTime(dateTime.year, dateTime.month, dateTime.day, int.tryParse(beginTime[0])!, int.tryParse(beginTime[1])!),
-              endTime: DateTime(dateTime.year, dateTime.month, dateTime.day, int.tryParse(endTime[0])!, int.tryParse(endTime[1])!),
+              startTime: DateTime(dateTime.year, dateTime.month, dateTime.day,
+                  int.tryParse(beginTime[0])!, int.tryParse(beginTime[1])!),
+              endTime: DateTime(dateTime.year, dateTime.month, dateTime.day,
+                  int.tryParse(endTime[0])!, int.tryParse(endTime[1])!),
               startTimeNum: int.tryParse(element.beginTimeNum)!,
               endTimeNum: int.tryParse(element.endTimeNum)!,
               //color: inCompletedColor,
@@ -314,55 +343,61 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
             ));
           }
 
-          List<String> total = GlobalMethods.getTimeByIntegerMin(totalHours).split(':');
-          List<String> deep = GlobalMethods.getTimeByIntegerMin(totalDeep).split(':');
-          List<String> light = GlobalMethods.getTimeByIntegerMin(totalLight).split(':');
-          List<String> awake = GlobalMethods.getTimeByIntegerMin(totalAwake).split(':');
+          List<String> total =
+              GlobalMethods.getTimeByIntegerMin(totalHours).split(':');
+          List<String> deep =
+              GlobalMethods.getTimeByIntegerMin(totalDeep).split(':');
+          List<String> light =
+              GlobalMethods.getTimeByIntegerMin(totalLight).split(':');
+          List<String> awake =
+              GlobalMethods.getTimeByIntegerMin(totalAwake).split(':');
 
-            weekSleepDataList = weekDataList;
-            weekTotalSleepHours = total[0];
-            weekTotalSleepMin = total[1];
+          weekSleepDataList = weekDataList;
+          weekTotalSleepHours = total[0];
+          weekTotalSleepMin = total[1];
 
-            weekTotalDeepHours = deep[0];
-            weekTotalDeepMin = deep[1];
+          weekTotalDeepHours = deep[0];
+          weekTotalDeepMin = deep[1];
 
-            weekTotalLightHours = light[0];
-            weekTotalLightMin = light[1];
+          weekTotalLightHours = light[0];
+          weekTotalLightMin = light[1];
 
-            weekTotalAwakeHours = awake[0];
-            weekTotalAwakeMin = awake[1];
-    update();
+          weekTotalAwakeHours = awake[0];
+          weekTotalAwakeMin = awake[1];
+          notifyChartTab();
         } else {
-            weekSleepDataList = [];
-            weekTotalSleepHours = '0';
-            weekTotalSleepMin = '0';
-            weekTotalDeepHours = '0';
-            weekTotalDeepMin = '0';
-            weekTotalLightHours = '0';
-            weekTotalLightMin = '0';
-            weekTotalAwakeHours = '0';
-            weekTotalAwakeMin = '0';
-    update();
+          weekSleepDataList = [];
+          weekTotalSleepHours = '0';
+          weekTotalSleepMin = '0';
+          weekTotalDeepHours = '0';
+          weekTotalDeepMin = '0';
+          weekTotalLightHours = '0';
+          weekTotalLightMin = '0';
+          weekTotalAwakeHours = '0';
+          weekTotalAwakeMin = '0';
+          notifyChartTab();
         }
       }
     } else {
-        weekSleepDataList = [];
-        weekTotalSleepHours = '0';
-        weekTotalSleepMin = '0';
-        weekTotalDeepHours = '0';
-        weekTotalDeepMin = '0';
-        weekTotalLightHours = '0';
-        weekTotalLightMin = '0';
-        weekTotalAwakeHours = '0';
-        weekTotalAwakeMin = '0';
-    update();
+      weekSleepDataList = [];
+      weekTotalSleepHours = '0';
+      weekTotalSleepMin = '0';
+      weekTotalDeepHours = '0';
+      weekTotalDeepMin = '0';
+      weekTotalLightHours = '0';
+      weekTotalLightMin = '0';
+      weekTotalAwakeHours = '0';
+      weekTotalAwakeMin = '0';
+      notifyChartTab();
     }
   }
 
-  bool checkNextWeekAvailable(DateTime todayTime, List<DateTime> currentWeekDateTime) {
+  bool checkNextWeekAvailable(
+      DateTime todayTime, List<DateTime> currentWeekDateTime) {
     bool tempFlag = false;
     for (DateTime date in currentWeekDateTime) {
-      if (date.toString().substring(0, 10).trim() == todayTime.toString().substring(0, 10).trim()) {
+      if (date.toString().substring(0, 10).trim() ==
+          todayTime.toString().substring(0, 10).trim()) {
         tempFlag = true;
         break;
       }
@@ -376,60 +411,66 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
       String year = monthList[0].year.toString();
       //String lastDay = monthList[monthList.length - 1].day.toString();
       String month = calMonths[monthList[0].month - 1];
-        monthlyDateTitle =   '$month $year';
-    update();
+      monthlyDateTitle = '$month $year';
+      notifyChartTab();
 
       List<String> calenderList = [];
       for (var element in monthList) {
         calenderList.add(GlobalMethods.convertBandReadableCalender(element));
       }
       if (Platform.isIOS) {
-        List<dynamic> sleepDataList = await _vitalsDataRepository.getSleepDataSelectedRange(true, overAllSleepData, calenderList, context);
+        List<dynamic> sleepDataList =
+            await _vitalsDataRepository.getSleepDataSelectedRange(
+                true, overAllSleepData, calenderList, context);
 
-        final monthDataList = List<MonthlySleepData>.from(sleepDataList[0] as List);
+        final monthDataList =
+            List<MonthlySleepData>.from(sleepDataList[0] as List);
         final totalHours = sleepDataList[1] as int;
         final totalDeep = sleepDataList[2] as int;
         final totalAwake = sleepDataList[3] as int;
         final totalLight = sleepDataList[3] as int;
 
         if (monthDataList.isNotEmpty) {
-          List<String> total = GlobalMethods.getTimeByIntegerMin(totalHours).split(':');
-          List<String> deep = GlobalMethods.getTimeByIntegerMin(totalDeep).split(':');
-          List<String> light = GlobalMethods.getTimeByIntegerMin(totalLight).split(':');
-          List<String> awake = GlobalMethods.getTimeByIntegerMin(totalAwake).split(':');
+          List<String> total =
+              GlobalMethods.getTimeByIntegerMin(totalHours).split(':');
+          List<String> deep =
+              GlobalMethods.getTimeByIntegerMin(totalDeep).split(':');
+          List<String> light =
+              GlobalMethods.getTimeByIntegerMin(totalLight).split(':');
+          List<String> awake =
+              GlobalMethods.getTimeByIntegerMin(totalAwake).split(':');
 
-            monthSleepDataList = monthDataList;
-            monthTotalSleepHours = total[0];
-            monthTotalSleepMin = total[1];
+          monthSleepDataList = monthDataList;
+          monthTotalSleepHours = total[0];
+          monthTotalSleepMin = total[1];
 
-            monthTotalDeepHours = deep[0];
-            monthTotalDeepMin = deep[1];
+          monthTotalDeepHours = deep[0];
+          monthTotalDeepMin = deep[1];
 
-            monthTotalLightHours = light[0];
-            monthTotalLightMin = light[1];
+          monthTotalLightHours = light[0];
+          monthTotalLightMin = light[1];
 
-            monthTotalAwakeHours = awake[0];
-            monthTotalAwakeMin = awake[1];
-    update();
+          monthTotalAwakeHours = awake[0];
+          monthTotalAwakeMin = awake[1];
+          notifyChartTab();
+        } else {
+          monthSleepDataList = [];
+          monthTotalSleepHours = '0';
+          monthTotalSleepMin = '0';
+          monthTotalDeepHours = '0';
+          monthTotalDeepMin = '0';
+          monthTotalLightHours = '0';
+          monthTotalLightMin = '0';
+          monthTotalAwakeHours = '0';
+          monthTotalAwakeMin = '0';
+          notifyChartTab();
         }
-        else{
-            monthSleepDataList = [];
-            monthTotalSleepHours = '0';
-            monthTotalSleepMin = '0';
-            monthTotalDeepHours = '0';
-            monthTotalDeepMin = '0';
-            monthTotalLightHours = '0';
-            monthTotalLightMin = '0';
-            monthTotalAwakeHours = '0';
-            monthTotalAwakeMin = '0';
-    update();
-        }
-      }else{
-        List<SleepMainModel> sleepMonthModelList = await _vitalsDataRepository.getSleepBySelectedWeek(overAllSleepData, calenderList);
-        debugPrint('sleepMonthModelList>>  ${sleepMonthModelList.length}');
+      } else {
+        List<SleepMainModel> sleepMonthModelList = await _vitalsDataRepository
+            .getSleepBySelectedWeek(overAllSleepData, calenderList);
+        debugPrintI('sleepMonthModelList>>  ${sleepMonthModelList.length}');
 
         if (sleepMonthModelList.isNotEmpty) {
-
           List<MonthlySleepData> monthDataList = [];
 
           int totalHours = 0;
@@ -438,73 +479,78 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
           int totalDeep = 0;
 
           for (var element in sleepMonthModelList) {
-
             DateTime dateTime = DateTime.tryParse(element.calender)!;
             List<String> beginTime = element.beginTime.split(':');
             List<String> endTime = element.endTime.split(':');
             //String week = tempCalenderWeek[dateTime.weekday - 1];
-            //debugPrint( 'startTimeNum >> ${element.beginTimeNum} --endTimeNum>> ${element.endTimeNum}');
+            //debugPrintI( 'startTimeNum >> ${element.beginTimeNum} --endTimeNum>> ${element.endTimeNum}');
             totalHours = totalHours + int.tryParse(element.totalNum)!;
             totalDeep = totalDeep + int.tryParse(element.deepNum)!;
             totalLight = totalLight + int.tryParse(element.lightNum)!;
             totalAwake = totalAwake + int.tryParse(element.awakeNum)!;
             monthDataList.add(MonthlySleepData(
               dayNumber: dateTime.day,
-              startTime: DateTime(dateTime.year, dateTime.month, dateTime.day, int.tryParse(beginTime[0])!, int.tryParse(beginTime[1])!),
-              endTime: DateTime(dateTime.year, dateTime.month, dateTime.day, int.tryParse(endTime[0])!, int.tryParse(endTime[1])!),
+              startTime: DateTime(dateTime.year, dateTime.month, dateTime.day,
+                  int.tryParse(beginTime[0])!, int.tryParse(beginTime[1])!),
+              endTime: DateTime(dateTime.year, dateTime.month, dateTime.day,
+                  int.tryParse(endTime[0])!, int.tryParse(endTime[1])!),
               startTimeNum: int.tryParse(element.beginTimeNum)!,
               endTimeNum: int.tryParse(element.endTimeNum)!,
               color: sleepLightColor,
             ));
           }
 
-          List<String> total = GlobalMethods.getTimeByIntegerMin(totalHours).split(':');
-          List<String> deep = GlobalMethods.getTimeByIntegerMin(totalDeep).split(':');
-          List<String> light = GlobalMethods.getTimeByIntegerMin(totalLight).split(':');
-          List<String> awake = GlobalMethods.getTimeByIntegerMin(totalAwake).split(':');
+          List<String> total =
+              GlobalMethods.getTimeByIntegerMin(totalHours).split(':');
+          List<String> deep =
+              GlobalMethods.getTimeByIntegerMin(totalDeep).split(':');
+          List<String> light =
+              GlobalMethods.getTimeByIntegerMin(totalLight).split(':');
+          List<String> awake =
+              GlobalMethods.getTimeByIntegerMin(totalAwake).split(':');
 
-            monthSleepDataList = monthDataList;
-            monthTotalSleepHours = total[0];
-            monthTotalSleepMin = total[1];
+          monthSleepDataList = monthDataList;
+          monthTotalSleepHours = total[0];
+          monthTotalSleepMin = total[1];
 
-            monthTotalDeepHours = deep[0];
-            monthTotalDeepMin = deep[1];
+          monthTotalDeepHours = deep[0];
+          monthTotalDeepMin = deep[1];
 
-            monthTotalLightHours = light[0];
-            monthTotalLightMin = light[1];
+          monthTotalLightHours = light[0];
+          monthTotalLightMin = light[1];
 
-            monthTotalAwakeHours = awake[0];
-            monthTotalAwakeMin = awake[1];
-    update();
-
-        }else{
-            monthSleepDataList = [];
-            monthTotalSleepHours = '0';
-            monthTotalSleepMin = '0';
-            monthTotalDeepHours = '0';
-            monthTotalDeepMin = '0';
-            monthTotalLightHours = '0';
-            monthTotalLightMin = '0';
-            monthTotalAwakeHours = '0';
-            monthTotalAwakeMin = '0';
-    update();
+          monthTotalAwakeHours = awake[0];
+          monthTotalAwakeMin = awake[1];
+          notifyChartTab();
+        } else {
+          monthSleepDataList = [];
+          monthTotalSleepHours = '0';
+          monthTotalSleepMin = '0';
+          monthTotalDeepHours = '0';
+          monthTotalDeepMin = '0';
+          monthTotalLightHours = '0';
+          monthTotalLightMin = '0';
+          monthTotalAwakeHours = '0';
+          monthTotalAwakeMin = '0';
+          notifyChartTab();
         }
       }
     } else {
-        monthSleepDataList = [];
-        monthTotalSleepHours = '0';
-        monthTotalSleepMin = '0';
-        monthTotalDeepHours = '0';
-        monthTotalDeepMin = '0';
-        monthTotalLightHours = '0';
-        monthTotalLightMin = '0';
-        monthTotalAwakeHours = '0';
-        monthTotalAwakeMin = '0';
-    update();
+      monthSleepDataList = [];
+      monthTotalSleepHours = '0';
+      monthTotalSleepMin = '0';
+      monthTotalDeepHours = '0';
+      monthTotalDeepMin = '0';
+      monthTotalLightHours = '0';
+      monthTotalLightMin = '0';
+      monthTotalAwakeHours = '0';
+      monthTotalAwakeMin = '0';
+      notifyChartTab();
     }
   }
 
-  bool checkNextMonthAvailable(DateTime todayTime, List<DateTime> currentMonthDateTime) {
+  bool checkNextMonthAvailable(
+      DateTime todayTime, List<DateTime> currentMonthDateTime) {
     bool tempFlag = false;
     for (DateTime date in currentMonthDateTime) {
       if (date.toString().substring(0, 10).trim() ==
@@ -528,11 +574,9 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
               height: 20.0,
             ),
             Center(
-              child: Text(textSleepQualityAnalysis,//'Sleep Quality Analysis',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18
-                ),
+              child: Text(
+                textSleepQualityAnalysis, //'Sleep Quality Analysis',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ),
             SizedBox(
@@ -540,13 +584,11 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
             ),
             Padding(
               padding: EdgeInsets.only(left: 8.0),
-              child: Text(textSleepNotLate,
+              child: Text(
+                textSleepNotLate,
                 // 'Sleep too late',
                 // 'Don’t sleep too late',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
             Padding(
@@ -554,9 +596,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
               child: Text(
                 sleepToLateString,
                 textAlign: TextAlign.justify,
-                style: TextStyle(
-                    fontSize: 14
-                ),
+                style: TextStyle(fontSize: 14),
               ),
             ),
             SizedBox(
@@ -564,11 +604,9 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
             ),
             Padding(
               padding: EdgeInsets.only(left: 8.0),
-              child: Text(textSleepLake,//'lack of sleep',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16
-                ),
+              child: Text(
+                textSleepLake, //'lack of sleep',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
             Padding(
@@ -576,9 +614,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
               child: Text(
                 sleepLackString,
                 textAlign: TextAlign.justify,
-                style: TextStyle(
-                    fontSize: 14
-                ),
+                style: TextStyle(fontSize: 14),
               ),
             ),
             SizedBox(
@@ -586,11 +622,9 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
             ),
             Padding(
               padding: EdgeInsets.only(left: 8.0),
-              child: Text(textSleepWakeEarly,//'Wake up early',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16
-                ),
+              child: Text(
+                textSleepWakeEarly, //'Wake up early',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
             Padding(
@@ -598,9 +632,7 @@ class SleepDetailsController extends GetxController with VitalsStorageReadyMixin
               child: Text(
                 sleepEarlyWakeUpString,
                 textAlign: TextAlign.justify,
-                style: TextStyle(
-                    fontSize: 14
-                ),
+                style: TextStyle(fontSize: 14),
               ),
             ),
             SizedBox(

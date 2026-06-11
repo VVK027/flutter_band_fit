@@ -125,8 +125,8 @@ class DialFaceDetailsController extends GetxController {
           }
         }
       },
-      onError: (error) => debugPrint('dialListenersError: $error'),
-      onDone: () => debugPrint('dialListenersOnDone'),
+      onError: (error) => debugPrintI('dialListenersError: $error'),
+      onDone: () => debugPrintI('dialListenersOnDone'),
     );
   }
 
@@ -140,7 +140,8 @@ class DialFaceDetailsController extends GetxController {
       deviceMacAddress = mac;
     }
     deviceDpi = jsonData['dpi']?.toString() ?? deviceDpi;
-    deviceMaxCapacity = jsonData['maxCapacity']?.toString() ?? deviceMaxCapacity;
+    deviceMaxCapacity =
+        jsonData['maxCapacity']?.toString() ?? deviceMaxCapacity;
     deviceShape = jsonData['shape']?.toString() ?? deviceShape;
     deviceCompatible = jsonData['compatible']?.toString() ?? deviceCompatible;
     update();
@@ -196,7 +197,7 @@ class DialFaceDetailsController extends GetxController {
       request.fields.addAll({
         'content':
             '{"compatible":"$deviceCompatible","shape":"$deviceShape","limit":"$_onlinePageKey,18","maxCapacity":"$deviceMaxCapacity",'
-            '"appkey":"$dialFaceYcAppKey","language":"en","sort":"1","type":"0","btname":"$deviceBleName","dpi":"$deviceDpi","mac":"$deviceMacAddress"}',
+                '"appkey":"$dialFaceYcAppKey","language":"en","sort":"1","type":"0","btname":"$deviceBleName","dpi":"$deviceDpi","mac":"$deviceMacAddress"}',
       });
       final response = await request.send().timeout(
         const Duration(seconds: 25),
@@ -216,7 +217,7 @@ class DialFaceDetailsController extends GetxController {
       final responseData = json.decode(responseStr) as Map<String, dynamic>;
       final flag = responseData['flag'];
       if (flag is! num || flag <= 0) {
-        debugPrint(
+        debugPrintI(
           'loadOnlineDials: API flag=$flag msg=${responseData['msg']} '
           'btname=$deviceBleName mac=$deviceMacAddress dpi=$deviceDpi '
           'compatible=$deviceCompatible shape=$deviceShape',
@@ -242,7 +243,7 @@ class DialFaceDetailsController extends GetxController {
         await _persistOnlineDials(onlineDials.toList());
       }
     } catch (e) {
-      debugPrint('loadOnlineDials: $e');
+      debugPrintI('loadOnlineDials: $e');
       if (isDialFaceNetworkError(e)) {
         onlineLoadError.value = textDialFacesNeedInternet;
       } else {
@@ -283,7 +284,7 @@ class DialFaceDetailsController extends GetxController {
         await provider.prepareSendOnlineDialData();
       }
     } catch (e) {
-      debugPrint('downloadAndSyncDial: $e');
+      debugPrintI('downloadAndSyncDial: $e');
       provider.updateDialSyncUI(false, false, false);
     }
   }
@@ -309,7 +310,7 @@ class DialFaceDetailsController extends GetxController {
         await file.delete();
       }
     } catch (e) {
-      debugPrint('_deleteDownloadedFile: $e');
+      debugPrintI('_deleteDownloadedFile: $e');
     }
   }
 

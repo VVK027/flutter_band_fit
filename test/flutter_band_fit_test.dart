@@ -24,7 +24,8 @@ void main() {
   });
 
   group('FlutterBandFit method channel', () {
-    test('initializeDeviceConnection returns trimmed platform string', () async {
+    test('initializeDeviceConnection returns trimmed platform string',
+        () async {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(methodChannel, (call) async {
         if (call.method == BandFitConstants.DEVICE_INITIALIZE) {

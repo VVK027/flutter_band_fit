@@ -17,3 +17,4 @@ part 'src/models/band_oxygen_model.dart';
 part 'src/models/band_steps_model.dart';
 part 'src/models/band_steps_data_model.dart';
 part 'src/models/band_dial_model.dart';
+part 'src/util/debug_print_i.dart';

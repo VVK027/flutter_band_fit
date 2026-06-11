@@ -25,13 +25,16 @@ class VitalMainVitalList extends StatelessWidget {
       children: [
         RepaintBoundary(
           child: _VitalTile(
+            key: const Key('${WidgetKeys.vitalTile}_heart_rate'),
             onTap: () => GlobalMethods.navigateTo(
               HeartRateDetail(
+                key: const Key(WidgetKeys.heartRateDetail),
                 displayTitle: Activity.heartRate.name,
                 activityLabel: Activity.heartRate.textLabel,
               ),
             ),
             child: VitalDataWidget(
+              key: const Key('${WidgetKeys.vitalDataWidget}_heart_rate'),
               imagePath: 'assets/fit/heart.png',
               title: textHeartRate,
               value: provider.getHRValue,
@@ -44,13 +47,16 @@ class VitalMainVitalList extends StatelessWidget {
         ),
         RepaintBoundary(
           child: _VitalTile(
+            key: const Key('${WidgetKeys.vitalTile}_sleep'),
             onTap: () => GlobalMethods.navigateTo(
               SleepDetails(
+                key: const Key(WidgetKeys.sleepDetails),
                 displayTitle: Activity.sleepDuration.name,
                 activityLabel: Activity.sleepDuration.textLabel,
               ),
             ),
             child: VitalDataWidget(
+              key: const Key('${WidgetKeys.vitalDataWidget}_sleep'),
               imagePath: 'assets/fit/sleep.png',
               title: textSleepDuration,
               value: provider.getSleepHrs,
@@ -63,12 +69,14 @@ class VitalMainVitalList extends StatelessWidget {
         ),
         RepaintBoundary(
           child: _VitalTile(
+            key: const Key('${WidgetKeys.vitalTile}_blood_pressure'),
             onTap: () {
               if (isSyncBlocked()) {
                 onSyncBlockedTap(context);
               } else {
                 GlobalMethods.navigateTo(
                   BloodPressureDetails(
+                    key: const Key(WidgetKeys.bloodPressureDetails),
                     displayTitle: Activity.bp.name,
                     activityLabel: Activity.bp.textLabel,
                   ),
@@ -76,6 +84,7 @@ class VitalMainVitalList extends StatelessWidget {
               }
             },
             child: VitalDataWidget(
+              key: const Key('${WidgetKeys.vitalDataWidget}_blood_pressure'),
               imagePath: 'assets/fit/blood_pressure.png',
               title: textBP,
               value: provider.getBloodPressure,
@@ -88,12 +97,14 @@ class VitalMainVitalList extends StatelessWidget {
         ),
         RepaintBoundary(
           child: _VitalTile(
+            key: const Key('${WidgetKeys.vitalTile}_oxygen'),
             onTap: () {
               if (isSyncBlocked()) {
                 onSyncBlockedTap(context);
               } else {
                 GlobalMethods.navigateTo(
                   OxygenDetail(
+                    key: const Key(WidgetKeys.oxygenDetail),
                     displayTitle: Activity.oxygen.name,
                     activityLabel: Activity.oxygen.textLabel,
                   ),
@@ -101,6 +112,7 @@ class VitalMainVitalList extends StatelessWidget {
               }
             },
             child: VitalDataWidget(
+              key: const Key('${WidgetKeys.vitalDataWidget}_oxygen'),
               imagePath: 'assets/fit/oxygen.png',
               title: textSpo2,
               value: provider.getOxygenValue,
@@ -113,12 +125,14 @@ class VitalMainVitalList extends StatelessWidget {
         ),
         RepaintBoundary(
           child: _VitalTile(
+            key: const Key('${WidgetKeys.vitalTile}_temperature'),
             onTap: () {
               if (isSyncBlocked()) {
                 onSyncBlockedTap(context);
               } else {
                 GlobalMethods.navigateTo(
                   TemperatureDetails(
+                    key: const Key(WidgetKeys.temperatureDetails),
                     displayTitle: Activity.temperature.name,
                     activityLabel: Activity.temperature.textLabel,
                   ),
@@ -126,6 +140,7 @@ class VitalMainVitalList extends StatelessWidget {
               }
             },
             child: VitalDataWidget(
+              key: const Key('${WidgetKeys.vitalDataWidget}_temperature'),
               imagePath: 'assets/fit/temperature.png',
               title: textTemperature,
               value: provider.getTemperature,
@@ -142,7 +157,7 @@ class VitalMainVitalList extends StatelessWidget {
 }
 
 class _VitalTile extends StatelessWidget {
-  const _VitalTile({required this.onTap, required this.child});
+  const _VitalTile({super.key, required this.onTap, required this.child});
 
   final VoidCallback onTap;
   final Widget child;

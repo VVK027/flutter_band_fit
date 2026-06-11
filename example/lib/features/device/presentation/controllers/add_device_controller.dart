@@ -4,13 +4,13 @@ import 'package:flutter_band_fit_app/features/device/domain/repositories/device_
 import 'package:flutter_band_fit_app/features/device/domain/usecases/check_device_connection_usecase.dart';
 import 'package:flutter_band_fit_app/features/device/domain/usecases/scan_devices_usecase.dart';
 import 'package:flutter_band_fit_app/features/health/presentation/views/apple_google_bind.dart';
+import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/vital_main_controller.dart';
 
 class AddDeviceController extends GetxController {
-  static const String _doctyDeviceNamePrefix = 'Docty-M';
-  static const String _smartBandDisplayName = 'SmartBand 9';
-
-  final DevicePresentationRepository _deviceRepository = Get.find<DevicePresentationRepository>();
-  final CheckDeviceConnectionUseCase _checkDeviceConnectionUseCase = Get.find<CheckDeviceConnectionUseCase>();
+  final DevicePresentationRepository _deviceRepository =
+      Get.find<DevicePresentationRepository>();
+  final CheckDeviceConnectionUseCase _checkDeviceConnectionUseCase =
+      Get.find<CheckDeviceConnectionUseCase>();
   final ScanDevicesUseCase _scanDevicesUseCase = Get.find<ScanDevicesUseCase>();
 
   final smartDevicesList = <BandDeviceModel>[].obs;
@@ -30,6 +30,16 @@ class AddDeviceController extends GetxController {
   void onInit() {
     super.onInit();
     initialize();
+  }
+
+  @override
+  void onClose() {
+    // Do not cancel the BLE event stream here. VitalMain may already have
+    // re-subscribed; canceling would drop in-flight sync callbacks.
+    if (Get.isRegistered<VitalMainController>()) {
+      unawaited(Get.find<VitalMainController>().listenReceiveEvents());
+    }
+    super.onClose();
   }
 
   Future<void> initialize() async {
@@ -56,14 +66,14 @@ class AddDeviceController extends GetxController {
 
     showProgress.value = true;
     final initResult = await _deviceRepository.initializeDeviceConnection();
-    debugPrint('initResult $initResult');
+    debugPrintI('initResult $initResult');
 
     final ctx = Get.context;
     if (ctx == null) return;
 
     final result = initResult.toString();
     if (result == BandFitConstants.BLE_NOT_SUPPORTED) {
-      if(ctx.mounted) {
+      if (ctx.mounted) {
         GlobalMethods.showAlertDialog(
           ctx,
           textBluetoothRequired,
@@ -72,7 +82,7 @@ class AddDeviceController extends GetxController {
       }
     } else if (result == BandFitConstants.BLE_NOT_ENABLED ||
         result == BandFitConstants.SC_CANCELED) {
-      if(ctx.mounted) {
+      if (ctx.mounted) {
         GlobalMethods.showAlertDialog(ctx, textBluetooth, bleNotConnected);
       }
     } else if (result == BandFitConstants.SC_INIT) {
@@ -85,7 +95,7 @@ class AddDeviceController extends GetxController {
     _deviceRepository.receiveEventsFrom(
       onDataUpdate: (data) async {
         final eventData = JsonUtils.asMap(jsonDecode(data as String));
-        debugPrint('addDeviceListener>> $data');
+        debugPrintI('addDeviceListener>> $data');
         final result = eventData['result'].toString();
         final status = eventData['status'].toString();
 
@@ -110,7 +120,10 @@ class AddDeviceController extends GetxController {
             final deviceList = <BandDeviceModel>[];
             final responseData = eventData['data'] as List<dynamic>;
             for (final item in responseData) {
-              deviceList.add(_deviceFromScanResult(item));
+              deviceList.add(
+                BandDeviceModel.fromJson(
+                    Map<String, dynamic>.from(item as Map)),
+              );
             }
             if (deviceList.isNotEmpty) {
               arrConDisConButton.assignAll(
@@ -141,7 +154,8 @@ class AddDeviceController extends GetxController {
           if (status == BandFitConstants.SC_SUCCESS) {
             final alreadyConnected = await _checkDeviceConnectionUseCase();
             if (!alreadyConnected) {
-              final address = await _deviceRepository.getConnectedLastDeviceAddress();
+              final address =
+                  await _deviceRepository.getConnectedLastDeviceAddress();
               final ctx = Get.context;
               if (ctx == null) return;
               if (selectedDevice.address.isNotEmpty) {
@@ -160,7 +174,8 @@ class AddDeviceController extends GetxController {
               }
             }
           }
-        } else if (result == BandFitConstants.SYNC_TEMPERATURE_24_HOUR_AUTOMATIC) {
+        } else if (result ==
+            BandFitConstants.SYNC_TEMPERATURE_24_HOUR_AUTOMATIC) {
           final jsonData = eventData['data'];
           if (status == BandFitConstants.SC_SUCCESS) {
             final tempStatus = jsonData['status'].toString();
@@ -197,15 +212,16 @@ class AddDeviceController extends GetxController {
           }
         }
       },
-      onError: (error) => debugPrint('receiveEventsFromError::>> $error'),
+      onError: (error) => debugPrintI('receiveEventsFromError::>> $error'),
       onDone: () {},
     );
   }
 
   Future<bool> checkDeviceConnectReset() async {
-    debugPrint('getLastMacAddressId>> ${_deviceRepository.getLastMacAddressId()}');
+    debugPrintI(
+        'getLastMacAddressId>> ${_deviceRepository.getLastMacAddressId()}');
     final address = await _deviceRepository.getConnectedLastDeviceAddress();
-    debugPrint('address>> $address');
+    debugPrintI('address>> $address');
     return false;
   }
 
@@ -233,12 +249,12 @@ class AddDeviceController extends GetxController {
       await _deviceRepository.fetchDeviceVersion();
       await _deviceRepository.fetchBatteryStatus();
       await _deviceRepository.updateDeviceBandLanguage();
-    GlobalMethods.navigatePopBack();
-    if (selectedIndex < arrConDisConButton.length) {
-      arrConDisConButton[selectedIndex] = textDisconnect;
-      arrConDisConButton.refresh();
-    }
-    goDashboardPage();
+      GlobalMethods.navigatePopBack();
+      if (selectedIndex < arrConDisConButton.length) {
+        arrConDisConButton[selectedIndex] = textDisconnect;
+        arrConDisConButton.refresh();
+      }
+      goDashboardPage();
     } finally {
       _stopConnecting();
     }
@@ -247,11 +263,10 @@ class AddDeviceController extends GetxController {
   Future<void> fetchBluDevicesList() async {
     final resultDeviceList = await _scanDevicesUseCase();
     if (resultDeviceList.isNotEmpty) {
-      final devices = resultDeviceList.map(_applyDisplayName).toList();
       arrConDisConButton.assignAll(
-        List.filled(devices.length, textConnect),
+        List.filled(resultDeviceList.length, textConnect),
       );
-      smartDevicesList.assignAll(devices);
+      smartDevicesList.assignAll(resultDeviceList);
       showProgress.value = false;
     } else {
       smartDevicesList.clear();
@@ -265,7 +280,8 @@ class AddDeviceController extends GetxController {
     await fetchBluDevicesList();
   }
 
-  Future<void> connectDisconnectDevice(int index, BandDeviceModel device) async {
+  Future<void> connectDisconnectDevice(
+      int index, BandDeviceModel device) async {
     selectedIndex = index;
     selectedDevice = device;
 
@@ -312,22 +328,5 @@ class AddDeviceController extends GetxController {
       return arrConDisConButton[index];
     }
     return textConnect;
-  }
-
-  /// Maps vendor BLE names (e.g. Docty-M variants) to the display name shown in UI.
-  BandDeviceModel _deviceFromScanResult(dynamic raw) {
-    final data = Map<String, dynamic>.from(raw as Map);
-    return _applyDisplayName(BandDeviceModel.fromJson(data));
-  }
-
-  BandDeviceModel _applyDisplayName(BandDeviceModel device) {
-    if (device.name.contains(_doctyDeviceNamePrefix)) {
-      return BandDeviceModel(
-        name: _smartBandDisplayName,
-        address: device.address,
-        identifier: device.identifier,
-      );
-    }
-    return device;
   }
 }

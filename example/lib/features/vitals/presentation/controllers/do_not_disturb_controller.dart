@@ -5,8 +5,10 @@ import 'package:flutter_band_fit_app/features/vitals/domain/usecases/reconnect_v
 
 class DoNotDisturbController extends GetxController {
   final ActivityServiceProvider provider = Get.find<ActivityServiceProvider>();
-  final CheckVitalsDeviceConnectionUseCase _checkDeviceConnectionUseCase = Get.find<CheckVitalsDeviceConnectionUseCase>();
-  final ReconnectVitalsDeviceUseCase _reconnectVitalsDeviceUseCase = Get.find<ReconnectVitalsDeviceUseCase>();
+  final CheckVitalsDeviceConnectionUseCase _checkDeviceConnectionUseCase =
+      Get.find<CheckVitalsDeviceConnectionUseCase>();
+  final ReconnectVitalsDeviceUseCase _reconnectVitalsDeviceUseCase =
+      Get.find<ReconnectVitalsDeviceUseCase>();
 
   final dndEnabled = false.obs;
   final enableMessageOn = false.obs;
