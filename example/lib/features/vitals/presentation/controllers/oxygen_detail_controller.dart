@@ -1,4 +1,4 @@
-import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
+import 'package:flutter_band_fit_app/core/exports/vitals_controller_imports.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/mixins/ble_test_listener_mixin.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/mixins/vital_detail_date_mixin.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/mixins/vital_measurement_loading_mixin.dart';
@@ -31,6 +31,7 @@ class OxygenDetailController extends GetxController
 
   bool statusReconnected = false;
   Map<String, dynamic> oxyJsonData = <String, dynamic>{};
+  Map<String, dynamic>? _pendingOxygenReading;
 
   @override
   void onInit() {
@@ -84,14 +85,19 @@ class OxygenDetailController extends GetxController
             await startOxygenTest();
           }
         } else if (result == BandFitConstants.OXYGEN_TEST_FINISHED) {
-          endTestLoading();
+          await _finalizeOxygenTest();
         } else if (result == BandFitConstants.OXYGEN_TEST_TIME_OUT ||
             result == BandFitConstants.OXYGEN_TEST_ERROR) {
+          _pendingOxygenReading = null;
           endTestLoading();
         } else if (result == BandFitConstants.OXYGEN_RESULT) {
           if (status == BandFitConstants.SC_SUCCESS) {
             oxyJsonData = Map<String, dynamic>.from(jsonData as Map);
-            await updateOxygenData(oxyJsonData);
+            if (isTestRunning.value) {
+              _handleLiveOxygenReading(oxyJsonData);
+            } else {
+              await persistOxygenReading(oxyJsonData);
+            }
           }
         }
       },
@@ -101,9 +107,36 @@ class OxygenDetailController extends GetxController
     bleProvider.resumeBPListeners();
   }
 
-  Future<void> updateOxygenData(dynamic addData) async {
-    if (addData is! Map || addData.isEmpty) {
-      endTestLoading();
+  void _handleLiveOxygenReading(Map<String, dynamic> reading) {
+    final value = reading['value']?.toString() ?? '';
+    if (!isValidSpO2Value(value)) {
+      return;
+    }
+    _pendingOxygenReading = reading;
+    if (currentOxygen.value != value) {
+      currentOxygen.value = value;
+    }
+  }
+
+  Future<void> _finalizeOxygenTest() async {
+    final reading = _pendingOxygenReading ??
+        (isValidSpO2Value(oxyJsonData['value']?.toString() ?? '')
+            ? oxyJsonData
+            : null);
+    _pendingOxygenReading = null;
+    if (reading != null) {
+      await persistOxygenReading(reading);
+    }
+    endTestLoading();
+  }
+
+  Future<void> persistOxygenReading(Map<String, dynamic> addData) async {
+    if (addData.isEmpty) {
+      return;
+    }
+
+    final value = addData['value']?.toString() ?? '';
+    if (!isValidSpO2Value(value)) {
       return;
     }
 
@@ -111,13 +144,13 @@ class OxygenDetailController extends GetxController
     _reloadStoredData();
     oxygenData ??= <dynamic>[];
 
-    if (!mapAlreadyContainsReading(JsonUtils.asList(oxygenData), reading)) {
-      oxygenData.add(reading);
+    if (mapAlreadyContainsReading(JsonUtils.asList(oxygenData), reading)) {
+      return;
     }
 
+    oxygenData.add(reading);
     await bleProvider.updateOxygenSyncSDKData(oxygenData);
     await refreshTodayAfterReading(loadDay);
-    endTestLoading();
   }
 
   Future<void> loadDay(DateTime dateTime) async {
@@ -137,7 +170,6 @@ class OxygenDetailController extends GetxController
       }
 
       final dataRepList = <CommonDataResult>[];
-      //var sumOfDataPoints = 0.0;
       var largestValue = double.parse(smartOxygenList[0].value);
       var smallestValue = largestValue;
       final currentValue = smartOxygenList.last.value;
@@ -147,7 +179,6 @@ class OxygenDetailController extends GetxController
         final dataPoint = double.parse(element.value);
         if (dataPoint > largestValue) largestValue = dataPoint;
         if (dataPoint < smallestValue) smallestValue = dataPoint;
-        // sumOfDataPoints += dataPoint;
         dataRepList.add(
           CommonDataResult(
             time: pointTime,
@@ -157,7 +188,6 @@ class OxygenDetailController extends GetxController
         );
       }
 
-      //final average = sumOfDataPoints / smartOxygenList.length;
       currentOxygen.value = currentValue;
       maxOxygenValue.value = largestValue.toInt().toString();
       minOxygenValue.value = smallestValue.toInt().toString();
@@ -176,6 +206,7 @@ class OxygenDetailController extends GetxController
   }
 
   Future<void> startOxygenTest() async {
+    _pendingOxygenReading = null;
     beginTestLoading();
     try {
       await bleProvider.startOxygenTest();

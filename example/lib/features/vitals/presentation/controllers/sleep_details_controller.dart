@@ -1,4 +1,5 @@
-import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
+import 'package:flutter_band_fit_app/core/exports/vitals_controller_imports.dart';
+import 'package:flutter_band_fit_app/core/widgets/custom_assets_bar.dart';
 import 'package:flutter_band_fit_app/features/vitals/domain/repositories/vitals_data_repository.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/mixins/vitals_storage_ready_mixin.dart';
 
@@ -42,6 +43,11 @@ class SleepDetailsController extends GetxController
   int deepPercentage = 0;
   int lightPercentage = 0;
   int awakePercentage = 0;
+  List<BarAsset> daySleepBarAssets = [];
+
+  static const Color _deepSleepBarColor = Color(0xFF7A58C9);
+  static const Color _lightSleepBarColor = Color(0xFFC7A9FE);
+  static const Color _awakeSleepBarColor = Color(0xFFFF9A42);
 
   // current week
   List<DateTime> currentWeekDateTime = [];
@@ -136,7 +142,6 @@ class SleepDetailsController extends GetxController
   Future<void> setCurrentDateTitle(DateTime dateTime) async {
     _reloadStoredSleepData();
     dayDateTitle = _formatDayTitle(dateTime);
-    notifyChartTab();
     try {
       String calender = GlobalMethods.convertBandReadableCalender(dateTime);
       List<SleepMainModel> sleepMainModelList = [];
@@ -163,14 +168,6 @@ class SleepDetailsController extends GetxController
         // List<SmartSleepModel> sleepDataList = sleepMainModel.dataList;
         // debugPrintI("sleepDataList>> ${sleepDataList.length} == ${sleepDataList}");
 
-        int totalNumber = int.tryParse(sleepMainModel.totalNum)!;
-        int deepNumber = int.tryParse(sleepMainModel.deepNum)!;
-        int awakeNumber = int.tryParse(sleepMainModel.awakeNum)!;
-        int lightNumber = int.tryParse(sleepMainModel.lightNum)!;
-
-        //if (sleepDataList.isNotEmpty) {
-
-        //sleepDayDataList = sleepList;
         dayTotalHours = total[0];
         dayTotalMin = total[1];
         dayDeepHours = deep[0];
@@ -183,9 +180,7 @@ class SleepDetailsController extends GetxController
         dayBeginMin = beginTime[1];
         dayEndHours = endTime[0];
         dayEndMin = endTime[1];
-        deepPercentage = getCalculatePercentage(deepNumber, totalNumber);
-        lightPercentage = getCalculatePercentage(lightNumber, totalNumber);
-        awakePercentage = getCalculatePercentage(awakeNumber, totalNumber);
+        _applySleepDayBarAssets(sleepMainModel);
         notifyChartTab();
         // } else {
         //     //sleepDayDataList = [];
@@ -223,6 +218,7 @@ class SleepDetailsController extends GetxController
         deepPercentage = 0;
         lightPercentage = 0;
         awakePercentage = 0;
+        daySleepBarAssets = [];
         notifyChartTab();
       }
     } catch (e) {
@@ -231,7 +227,135 @@ class SleepDetailsController extends GetxController
   }
 
   int getCalculatePercentage(int obtained, int total) {
+    if (total <= 0) {
+      return 0;
+    }
     return obtained * 100 ~/ total;
+  }
+
+  int _minutesFromDuration(String duration) {
+    final parts = duration.split(':');
+    if (parts.length < 2) {
+      return 0;
+    }
+    final hours = int.tryParse(parts[0]) ?? 0;
+    final minutes = int.tryParse(parts[1]) ?? 0;
+    return (hours * 60) + minutes;
+  }
+
+  void _applySleepStagePercentages(SleepMainModel sleepMainModel) {
+    var totalNumber = int.tryParse(sleepMainModel.totalNum) ?? 0;
+    var deepNumber = int.tryParse(sleepMainModel.deepNum) ?? 0;
+    var lightNumber = int.tryParse(sleepMainModel.lightNum) ?? 0;
+    var awakeNumber = int.tryParse(sleepMainModel.awakeNum) ?? 0;
+
+    if (totalNumber <= 0) {
+      totalNumber = _minutesFromDuration(sleepMainModel.total);
+      deepNumber = _minutesFromDuration(sleepMainModel.deep);
+      lightNumber = _minutesFromDuration(sleepMainModel.light);
+      awakeNumber = _minutesFromDuration(sleepMainModel.awake);
+    }
+
+    if (totalNumber <= 0) {
+      deepPercentage = 0;
+      lightPercentage = 0;
+      awakePercentage = 0;
+      return;
+    }
+
+    deepPercentage = getCalculatePercentage(deepNumber, totalNumber);
+    lightPercentage = getCalculatePercentage(lightNumber, totalNumber);
+    awakePercentage = getCalculatePercentage(awakeNumber, totalNumber);
+  }
+
+  Color _sleepStateColor(String state) {
+    switch (state) {
+      case '0':
+        return _deepSleepBarColor;
+      case '1':
+        return _lightSleepBarColor;
+      case '2':
+        return _awakeSleepBarColor;
+      default:
+        return _lightSleepBarColor;
+    }
+  }
+
+  void _applySleepDayBarAssets(SleepMainModel sleepMainModel) {
+    _applySleepStagePercentages(sleepMainModel);
+
+    if (sleepMainModel.dataList.isNotEmpty) {
+      final timelineAssets = _timelineBarAssets(sleepMainModel);
+      if (timelineAssets.isNotEmpty) {
+        daySleepBarAssets = timelineAssets;
+        return;
+      }
+    }
+
+    daySleepBarAssets = [
+      BarAsset(
+        size: deepPercentage.toDouble(),
+        color: _deepSleepBarColor,
+      ),
+      BarAsset(
+        size: lightPercentage.toDouble(),
+        color: _lightSleepBarColor,
+      ),
+      BarAsset(
+        size: awakePercentage.toDouble(),
+        color: _awakeSleepBarColor,
+      ),
+    ].where((asset) => asset.size > 0).toList();
+  }
+
+  List<BarAsset> _timelineBarAssets(SleepMainModel model) {
+    final beginNum = int.tryParse(model.beginTimeNum) ?? 0;
+    final endNum = int.tryParse(model.endTimeNum) ?? 0;
+    var totalSpan = endNum > beginNum ? endNum - beginNum : 0;
+
+    if (totalSpan <= 0) {
+      totalSpan = int.tryParse(model.totalNum) ?? 0;
+      if (totalSpan <= 0) {
+        totalSpan = _minutesFromDuration(model.total);
+      }
+    }
+
+    if (totalSpan <= 0) {
+      return [];
+    }
+
+    final assets = <BarAsset>[];
+    for (final segment in model.dataList) {
+      final start = int.tryParse(segment.startTimeNum) ?? 0;
+      final end = int.tryParse(segment.endTimeNum) ?? 0;
+      final duration = end > start ? end - start : 0;
+      if (duration <= 0) {
+        continue;
+      }
+      assets.add(
+        BarAsset(
+          size: (duration * 100) / totalSpan,
+          color: _sleepStateColor(segment.state),
+        ),
+      );
+    }
+
+    final totalSize =
+        assets.fold<double>(0, (sum, asset) => sum + asset.size);
+    if (totalSize <= 0) {
+      return [];
+    }
+    if ((totalSize - 100).abs() > 0.01) {
+      return assets
+          .map(
+            (asset) => BarAsset(
+              size: (asset.size * 100) / totalSize,
+              color: asset.color,
+            ),
+          )
+          .toList();
+    }
+    return assets;
   }
 
   bool checkNextDayAvailable(DateTime todayTime, DateTime currentDayDateTime) {

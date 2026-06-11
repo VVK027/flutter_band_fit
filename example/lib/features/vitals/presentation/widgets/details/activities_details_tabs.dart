@@ -2,6 +2,7 @@ import 'package:flutter_band_fit_app/core/exports/vitals_imports.dart';
 import 'package:flutter_band_fit_app/core/constants/widget_keys.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/controllers/activities_details_controller.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/details/activities_chart_shared.dart';
+import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/vitals_chart_styles.dart';
 import 'package:flutter_band_fit_app/features/vitals/presentation/widgets/details/activities_detail_ui.dart';
 import 'package:intl/intl.dart';
 
@@ -61,8 +62,11 @@ class ActivitiesDayTab extends GetView<ActivitiesDetailsController> {
                 child: SfCartesianChart(
                   plotAreaBorderWidth: 0,
                   key: ValueKey(
-                    'steps-day-${controller.stepsDayDataList.length}-'
-                    '${controller.currentDateTime.millisecondsSinceEpoch}',
+                    VitalsChartStyles.chartDayKey(
+                      'steps-day',
+                      controller.currentDateTime,
+                      controller.stepsDayDataList.length,
+                    ),
                   ),
                   onSelectionChanged: (selectionArgs) {
                     debugPrint('selectionArgs>> $selectionArgs');
@@ -347,10 +351,7 @@ class ActivitiesWeekTab extends GetView<ActivitiesDetailsController> {
               height: 200,
               child: RepaintBoundary(
                 child: SfCartesianChart(
-                  key: ValueKey(
-                    'steps-week-${controller.weekStepsDataList.length}-'
-                    '${controller.weekTotalSteps}',
-                  ),
+                  key: ValueKey('steps-week-${controller.weekDateTitle}'),
                   plotAreaBorderWidth: 0,
                   primaryXAxis: CategoryAxis(
                     majorGridLines: const MajorGridLines(width: 0),
@@ -464,10 +465,7 @@ class ActivitiesMonthTab extends GetView<ActivitiesDetailsController> {
               height: 180,
               child: RepaintBoundary(
                 child: SfCartesianChart(
-                  key: ValueKey(
-                    'steps-month-${controller.monthStepsDataList.length}-'
-                    '${controller.monthTotalSteps}',
-                  ),
+                  key: ValueKey('steps-month-${controller.monthlyDateTitle}'),
                   plotAreaBorderWidth: 0,
                   onSelectionChanged: (selectionArgs) {
                     debugPrint('selectionArgs>> $selectionArgs');

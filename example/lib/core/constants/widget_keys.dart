@@ -95,6 +95,8 @@ abstract final class WidgetKeys {
   static const String vitalMainAddDeviceBanner = 'vital_main_add_device_banner';
   static const String vitalMainBody = 'vital_main_body';
   static const String vitalMainStepsCard = 'vital_main_steps_card';
+  static const String vitalMainConnectingBanner =
+      'vital_main_connecting_banner';
   static const String vitalMainSyncingBanner = 'vital_main_syncing_banner';
   static const String vitalMainVitalList = 'vital_main_vital_list';
   static const String vitalSectionHeader = 'vital_section_header';

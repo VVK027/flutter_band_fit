@@ -41,6 +41,8 @@ class VitalMainController extends GetxController
 
   int countStepsTimeOut =0, countSleepTimeOut =0, countTemperatureTimeOut =0;
   int syncFailureTimeOut = 0;
+  bool _isUpdatingDeviceConnection = false;
+  bool _isValidatingSync = false;
 
   @override
   void onInit() {
@@ -96,11 +98,11 @@ class VitalMainController extends GetxController
         .firstWhere((loaded) => loaded);
   }
   Future<void> checkConnectionValidate() async {
-    bool isDeviceConnected = await _checkVitalsDeviceConnectionUseCase();
-    debugPrintI('isDeviceConnected>> $isDeviceConnected');
+    final bleConnected = await _checkVitalsDeviceConnectionUseCase();
+    debugPrintI('isDeviceConnected>> $bleConnected');
     if (Get.context == null) return;
 
-    if (isDeviceConnected) {
+    if (bleConnected) {
       await _activityServiceProvider.syncPairedDeviceFromBle();
       isLoadingProgress.value = false;
       update();
@@ -111,13 +113,10 @@ class VitalMainController extends GetxController
     isLoadingProgress.value = false;
     update();
 
-    final savedMac = sharedService.getDeviceMacAddress();
-    final savedConnected = sharedService.isSmartMConnected();
-    final hasPersistedDevice = savedConnected && savedMac.trim().isNotEmpty;
+    final savedMac = sharedService.getDeviceMacAddress().trim();
+    final hasPersistedDevice = savedMac.isNotEmpty;
 
-    if (hasPersistedDevice &&
-        (!_activityServiceProvider.getDeviceConnected ||
-            _activityServiceProvider.getDeviceMacAddress.isEmpty)) {
+    if (hasPersistedDevice) {
       await _activityServiceProvider.updateUserDeviceConnection(
         false,
         true,
@@ -126,15 +125,9 @@ class VitalMainController extends GetxController
       );
     }
 
-    if (_activityServiceProvider.getDeviceConnected &&
-        _activityServiceProvider.getDeviceMacAddress.isNotEmpty) {
-      if (_activityServiceProvider.isSyncProgress) {
-        _activityServiceProvider.updateSyncingView(false);
-      } else if (!notifiedDisconnected) {
-        retryConnection(Get.context!);
-      }
-    } else if (!hasPersistedDevice) {
-      _activityServiceProvider.updateSyncingView(false);
+    if (!hasPersistedDevice) {
+      _activityServiceProvider.cancelSyncOperation();
+      _activityServiceProvider.updateConnectingView(false);
       await _activityServiceProvider.updateUserDeviceConnection(
         false,
         false,
@@ -148,18 +141,52 @@ class VitalMainController extends GetxController
           noDeviceFoundMessage,
         );
       }
-    } else if (!notifiedDisconnected) {
-      retryConnection(Get.context!);
+      return;
+    }
+
+    if (!notifiedDisconnected) {
+      final reconnected = await _attemptSilentReconnectOnLaunch();
+      if (!reconnected) {
+        retryConnection(Get.context!);
+      }
+    }
+  }
+
+  Future<bool> _attemptSilentReconnectOnLaunch() async {
+    _activityServiceProvider.updateConnectingView(true);
+    var reconnected = false;
+    try {
+      reconnected = await _activityServiceProvider
+          .attemptAutoReconnectAfterUnexpectedDisconnect();
+      if (reconnected) {
+        isReConnectStatus = true;
+        reConnectMacAddress = _activityServiceProvider.getDeviceMacAddress;
+        update();
+      }
+      return reconnected;
+    } finally {
+      if (!reconnected) {
+        _activityServiceProvider.updateConnectingView(false);
+      }
     }
   }
 
   Future<void> validateTimeAndSync() async {
-    await listenReceiveEvents();
-    final doSync = await calculateSyncTimeDifference();
-    debugPrintI('doSync>> $doSync ');
-    _activityServiceProvider.updateSyncingView(doSync);
-    if (doSync) {
-      await performOverAllSyncOperation();
+    if (_isValidatingSync) {
+      return;
+    }
+    _isValidatingSync = true;
+    try {
+      final doSync = await calculateSyncTimeDifference();
+      debugPrintI('doSync>> $doSync ');
+      if (doSync) {
+        await performOverAllSyncOperation();
+      } else {
+        _activityServiceProvider.updateSyncingView(false);
+        _activityServiceProvider.updateConnectingView(false);
+      }
+    } finally {
+      _isValidatingSync = false;
     }
   }
 
@@ -248,31 +275,19 @@ class VitalMainController extends GetxController
       debugPrintI("receiveEventsFromMainScreen>> Device Connected");
       _activityServiceProvider.clearAutoReconnectGuard();
       notifiedDisconnected = false;
+      syncFailureTimeOut = 0;
+      deviceConnectedBleWriteStatus = false;
       if (status == BandFitConstants.SC_SUCCESS) {
-        //await Future.delayed(const Duration(milliseconds: 500));
-        //await _activityServiceProvider.updateUserParamsWatch(false);
-        // syncFailureTimeOut == 0 > Successfully Got Connected with profile update.
-        debugPrintI('syncFailureTimeOut>>$syncFailureTimeOut');
         if(Platform.isIOS){
           await _activityServiceProvider.updateUserParamsWatch(false);
         }
       }
     } else if (result == BandFitConstants.SYNC_TIME_OK) {
-      //debugPrintI("addDeviceListener>> SYNC_TIME_OK");
       if (status == BandFitConstants.SC_SUCCESS) {
         await Future<void>.delayed(const Duration(milliseconds: 500));
         await _activityServiceProvider.updateUserParamsWatch(false);
-
         isDeviceConnected = true;
-        debugPrintI('syncFailureTimeOut>>$syncFailureTimeOut');
-        if(Platform.isAndroid){
-          if (syncFailureTimeOut > 1) {
-            // something went wrong
-    isReConnectStatus = true;
-    update();
-            await updateDeviceConnection();
-          }
-        }
+        syncFailureTimeOut = 0;
       }
     }
     else if (result == BandFitConstants.UPDATE_DEVICE_PARAMS) {
@@ -282,29 +297,31 @@ class VitalMainController extends GetxController
     } else if (result == BandFitConstants.SYNC_BLE_WRITE_SUCCESS) {
       if (status == BandFitConstants.SC_SUCCESS) {
         deviceConnectedBleWriteStatus = true;
-        if (syncFailureTimeOut > 0) {
-          syncFailureTimeOut--;
-        }
+        syncFailureTimeOut = 0;
         update();
       }
     } else if (result == BandFitConstants.SYNC_BLE_WRITE_FAIL) {
-      if (status == BandFitConstants.SC_SUCCESS) {
+      // Native code 149 = WRITE_COMMAND_TO_BLE_FAIL: device busy, SDK retries.
+      // Ignore during active sync or reconnect setup to avoid false timeout dialogs.
+      if (status == BandFitConstants.SC_SUCCESS &&
+          !_activityServiceProvider.isSyncProgress &&
+          !_isUpdatingDeviceConnection) {
         syncFailureTimeOut++;
-        update();
         debugPrintI('syncFailureTimeOut>> $syncFailureTimeOut');
-        if (syncFailureTimeOut == 3) {
-          if (deviceConnectedBleWriteStatus) {
-            GlobalMethods.showAlertDialogWithFunction(Get.context!,syncFailed, syncFailedMsg, retryText, () async {
-              // Navigator.of(context).pop();
-              GlobalMethods.navigatePopBack();
-              validateTimeAndSync();
-            });
-          }
-        }else if(syncFailureTimeOut == 1){
-          if(deviceConnectedBleWriteStatus){
-            if (isDeviceConnected) {
-              await updateDeviceConnection();
-            }
+        if (syncFailureTimeOut >= 5 && deviceConnectedBleWriteStatus) {
+          syncFailureTimeOut = 0;
+          final ctx = Get.context;
+          if (ctx != null) {
+            GlobalMethods.showAlertDialogWithFunction(
+              ctx,
+              syncFailed,
+              syncFailedMsg,
+              retryText,
+              () async {
+                GlobalMethods.navigatePopBack();
+                validateTimeAndSync();
+              },
+            );
           }
         }
       }
@@ -315,9 +332,8 @@ class VitalMainController extends GetxController
         debugPrintI('deviceConnectedStatus>> $bleConnected');
         debugPrintI('isReConnectStatus>> $isReConnectStatus');
         debugPrintI('_activityServiceProvider.isSyncProgress>> ${_activityServiceProvider.isSyncProgress}');
-        if (_activityServiceProvider.isSyncProgress) {
-          _activityServiceProvider.updateSyncingView(false);
-        }
+        _activityServiceProvider.cancelSyncOperation();
+        _activityServiceProvider.updateConnectingView(false);
         if (!bleConnected) {
           unawaited(_handleUnexpectedDisconnect());
         }
@@ -349,23 +365,35 @@ class VitalMainController extends GetxController
   }
 
   Future<void> updateDeviceConnection() async {
-    await _activityServiceProvider.updateUserDeviceConnection(false, true, 'SP', 'SP');
-    if (Platform.isAndroid) {
-      await Future<void>.delayed(const Duration(milliseconds: 300));
+    if (_isUpdatingDeviceConnection) {
+      return;
     }
-    await _activityServiceProvider.fetchDeviceVersion();
-    await _activityServiceProvider.fetchBatteryStatus();
-    await _activityServiceProvider.updateDeviceBandLanguage();
-    debugPrintI('isReConnectStatus>> $isReConnectStatus');
-    if(isReConnectStatus){
-      debugPrintI('nav_pop>>440');
-      GlobalMethods.navigatePopBack();
-    isReConnectStatus = false;
-    update();
+    _isUpdatingDeviceConnection = true;
+    try {
+      await _activityServiceProvider.updateUserDeviceConnection(
+        false,
+        true,
+        'SP',
+        'SP',
+      );
+      if (Platform.isAndroid) {
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+      }
+      await _activityServiceProvider.fetchDeviceVersion();
+      await _activityServiceProvider.fetchBatteryStatus();
+      await _activityServiceProvider.updateDeviceBandLanguage();
+      debugPrintI('isReConnectStatus>> $isReConnectStatus');
+      if (isReConnectStatus) {
+        debugPrintI('nav_pop>>440');
+        GlobalMethods.navigatePopBack();
+        isReConnectStatus = false;
+        update();
+      }
+      refreshPage();
+      await validateTimeAndSync();
+    } finally {
+      _isUpdatingDeviceConnection = false;
     }
-    // Utils.showToastMessage(context, deviceConnected);
-    refreshPage();
-    validateTimeAndSync();
   }
 
   void refreshPage() => update();
@@ -378,6 +406,7 @@ class VitalMainController extends GetxController
       return;
     }
 
+    _activityServiceProvider.updateConnectingView(true);
     final reconnected =
         await _activityServiceProvider.attemptAutoReconnectAfterUnexpectedDisconnect();
     if (reconnected) {
@@ -386,6 +415,7 @@ class VitalMainController extends GetxController
       update();
       return;
     }
+    _activityServiceProvider.updateConnectingView(false);
 
     if (isReConnectStatus) {
       final address = await _activityServiceProvider.getConnectedLastDeviceAddress();
@@ -427,33 +457,38 @@ class VitalMainController extends GetxController
   }
 
   void retryConnection(BuildContext context) {
-    GlobalMethods.showAlertDialogWithFunction(Get.context!, deviceDisconnected, deviceDisconnectedMsg, reconnectText, () async {
-      debugPrintI("pressed_ok");
-      final ctx = Get.context;
-      if (ctx == null) return;
-      bool statusReconnect = await _reconnectVitalsDeviceUseCase(ctx);
-      //await Future.delayed(const Duration(milliseconds: 500));
-      debugPrintI("statusReconnect>> $statusReconnect");
-      if (statusReconnect) {
-    isReConnectStatus = true;
-          reConnectMacAddress = _activityServiceProvider.getDeviceMacAddress;
-    update();
-        // GlobalMethods.navigatePopBack();
-      } else {
-        final lastInitStatus =
-            await _activityServiceProvider.connectWithLastDeviceAddress();
-        debugPrintI('last_connected_status>> $lastInitStatus');
-        if (lastInitStatus) {
-          isReConnectStatus = true;
-          reConnectMacAddress = _activityServiceProvider.getDeviceMacAddress;
-          update();
-        }
-      }
-
-      /*if (!statusReconnect) {
+    GlobalMethods.showAlertDialogWithFunction(
+      Get.context!,
+      deviceDisconnected,
+      deviceDisconnectedMsg,
+      reconnectText,
+      () async {
+        debugPrintI('pressed_ok');
         GlobalMethods.navigatePopBack();
-      }*/
-    });
+        final ctx = Get.context;
+        if (ctx == null) return;
+
+        _activityServiceProvider.updateConnectingView(true);
+        try {
+          var statusReconnect = await _reconnectVitalsDeviceUseCase(ctx);
+          debugPrintI('statusReconnect>> $statusReconnect');
+          if (!statusReconnect) {
+            statusReconnect =
+                await _activityServiceProvider.connectWithLastDeviceAddress();
+            debugPrintI('last_connected_status>> $statusReconnect');
+          }
+          if (statusReconnect) {
+            isReConnectStatus = true;
+            reConnectMacAddress = _activityServiceProvider.getDeviceMacAddress;
+            update();
+          } else {
+            _activityServiceProvider.updateConnectingView(false);
+          }
+        } catch (_) {
+          _activityServiceProvider.updateConnectingView(false);
+        }
+      },
+    );
   }
 
   Future<void> performOverAllSyncOperation() async {
@@ -609,7 +644,7 @@ class VitalMainController extends GetxController
     final ctx = Get.context;
     if (ctx == null) return;
     if (counter > 1 || !deviceConnectedBleWriteStatus) return;
-    _activityServiceProvider.updateSyncingView(false);
+    _activityServiceProvider.cancelSyncOperation();
     GlobalMethods.showAlertDialogWithFunction(
       ctx,
       syncFailed,

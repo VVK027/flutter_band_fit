@@ -26,6 +26,35 @@ class VitalMainAddDeviceBanner extends StatelessWidget {
   }
 }
 
+class VitalMainConnectingBanner extends StatelessWidget {
+  const VitalMainConnectingBanner({
+    super.key,
+    required this.rotation,
+  });
+
+  final Animation<double> rotation;
+
+  @override
+  Widget build(BuildContext context) {
+    return RepaintBoundary(
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: ListTile(
+          leading: RotationTransition(
+            turns: rotation,
+            child: const Padding(
+              padding: EdgeInsets.all(4),
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
+          title: const Text(textConnectingDevice),
+          subtitle: const Text(textConnectingDeviceMsg),
+        ),
+      ),
+    );
+  }
+}
+
 class VitalMainSyncingBanner extends StatelessWidget {
   const VitalMainSyncingBanner({
     super.key,

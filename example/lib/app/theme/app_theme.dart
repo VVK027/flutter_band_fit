@@ -112,6 +112,3 @@ class AppTheme {
     );
   }
 }
-
-/// Back-compat alias used by legacy imports.
-typedef Themes = AppTheme;
