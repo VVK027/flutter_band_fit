@@ -42,7 +42,8 @@ Example app captures from a connected UTE / GloryFit band (see [`screenshots/`](
 
 ## Changelog
 
-- [CHANGELOG.md](../../CHANGELOG.md) — plugin version history
+- [CHANGELOG.md](../../CHANGELOG.md) — plugin version history (current release: **0.0.4**)
+- [pub.dev package](https://pub.dev/packages/flutter_band_fit)
 
 ## Recommended reading order
 

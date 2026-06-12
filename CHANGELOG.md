@@ -1,3 +1,12 @@
+## 0.0.4
+
+- Added dartdoc comments across `FlutterBandFit`, model classes, and `BandFitConstants` for improved API discoverability on pub.dev.
+- Expanded unit tests for models, constants, and method-channel request/response handling.
+- Added `debug_print_i` helper for opt-in plugin debug logging.
+- README: GloryFit SDK context, example-app screenshots, BLE workflow diagram, and pub.dev install instructions.
+- Example app: UI optimization and refactoring, auto-reconnect after unexpected GATT disconnects, activity sync fixes, and widget test keys.
+- Removed the example macOS runner (Android and iOS remain supported).
+
 ## 0.0.3
 
 - Documentation restructure for pub.dev: UTE/GloryFit SDK context, BLE workflow diagram, full implementation guide.

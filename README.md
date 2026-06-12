@@ -25,7 +25,9 @@ Flutter plugin for **UTE smart band / fitness watch** BLE connectivity on Androi
 
 Example app ([`example/`](example/)) with a connected UTE / GloryFit band:
 
-![Vitals dashboard — steps, sync, heart rate, sleep, BP, and SpO₂](screenshots/vital_main_dark.png)
+| Vitals Dashboard (Light)                                                 | Vitals Dashboard (Dark)                                     |
+|--------------------------------------------------------------------------|-------------------------------------------------------------|
+| ![Vitals dashboard (light theme)](screenshots/vital_main_light.png) | ![Vitals dashboard — dark](screenshots/vital_main_dark.png) |
 
 | Activities | Heart rate |
 | ---------- | ---------- |
@@ -35,9 +37,6 @@ Example app ([`example/`](example/)) with a connected UTE / GloryFit band:
 | -------------- | ---- |
 | ![BP readings and on-demand test](screenshots/blood_pressure_detail.png) | ![Blood oxygen trend and measurement](screenshots/spo2_detail.png) |
 
-Light theme dashboard:
-
-![Vitals dashboard (light theme)](screenshots/vital_main_light.png)
 
 ## Preview
 
@@ -100,9 +99,11 @@ band.dispose();
 
 ## Installation
 
+Add from [pub.dev](https://pub.dev/packages/flutter_band_fit):
+
 ```yaml
 dependencies:
-  flutter_band_fit: ^0.0.3   # after publishing; use path/git until then
+  flutter_band_fit: ^0.0.4
 ```
 
 For local development:
@@ -167,4 +168,4 @@ example/docs/           # Integration and architecture docs
 
 This project is licensed under the [MIT License](LICENSE).
 
-Native UTE (= GloryFit) SDK binaries (`ute_sdk.aar`, `UTESmartBandApi.framework`) are third-party; verify vendor terms for commercial distribution.
+Native UTE SDK (= GloryFit) SDK binaries (`ute_sdk.aar`, `UTESmartBandApi.framework`) are third-party.
