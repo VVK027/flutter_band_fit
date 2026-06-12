@@ -155,7 +155,8 @@ class SleepDetailsController extends GetxController
 
       debugPrintI('sleepMainModelList>>  ${sleepMainModelList.length}');
       if (sleepMainModelList.isNotEmpty) {
-        SleepMainModel sleepMainModel = sleepMainModelList[0];
+        SleepMainModel sleepMainModel =
+            _selectSleepDayModel(sleepMainModelList);
         debugPrintI('sleepMainModel.calender>>  ${sleepMainModel.calender}');
         List<String> total = sleepMainModel.total.split(':');
         List<String> light = sleepMainModel.light.split(':');
@@ -281,37 +282,121 @@ class SleepDetailsController extends GetxController
     }
   }
 
+  int _sleepModelCompletenessScore(SleepMainModel model) {
+    final totalMinutes = int.tryParse(model.totalNum) ?? 0;
+    final fallbackTotal = totalMinutes > 0
+        ? totalMinutes
+        : _minutesFromDuration(model.total);
+    return (model.dataList.length * 1000) + fallbackTotal;
+  }
+
+  SleepMainModel _selectSleepDayModel(List<SleepMainModel> models) {
+    if (models.length == 1) {
+      return models.first;
+    }
+    return models.reduce(
+      (best, current) => _sleepModelCompletenessScore(current) >
+              _sleepModelCompletenessScore(best)
+          ? current
+          : best,
+    );
+  }
+
+  static const double _sleepBarLimit = 100;
+
   void _applySleepDayBarAssets(SleepMainModel sleepMainModel) {
     _applySleepStagePercentages(sleepMainModel);
 
     if (sleepMainModel.dataList.isNotEmpty) {
-      final timelineAssets = _timelineBarAssets(sleepMainModel);
-      if (timelineAssets.isNotEmpty) {
+      final timelineAssets = _normalizeBarAssets(
+        _timelineBarAssets(sleepMainModel),
+        limit: _sleepBarLimit,
+      );
+      if (_hasRenderableBarAssets(timelineAssets, limit: _sleepBarLimit)) {
         daySleepBarAssets = timelineAssets;
         return;
       }
     }
 
-    daySleepBarAssets = [
-      BarAsset(
-        size: deepPercentage.toDouble(),
-        color: _deepSleepBarColor,
-      ),
-      BarAsset(
-        size: lightPercentage.toDouble(),
-        color: _lightSleepBarColor,
-      ),
-      BarAsset(
-        size: awakePercentage.toDouble(),
-        color: _awakeSleepBarColor,
-      ),
-    ].where((asset) => asset.size > 0).toList();
+    daySleepBarAssets = _normalizeBarAssets(
+      [
+        BarAsset(
+          size: deepPercentage.toDouble(),
+          color: _deepSleepBarColor,
+        ),
+        BarAsset(
+          size: lightPercentage.toDouble(),
+          color: _lightSleepBarColor,
+        ),
+        BarAsset(
+          size: awakePercentage.toDouble(),
+          color: _awakeSleepBarColor,
+        ),
+      ].where((asset) => asset.size > 0).toList(),
+      limit: _sleepBarLimit,
+    );
+  }
+
+  bool _hasRenderableBarAssets(
+    List<BarAsset> assets, {
+    required double limit,
+  }) {
+    if (assets.isEmpty) {
+      return false;
+    }
+    final totalSize = assets.fold<double>(0, (sum, asset) => sum + asset.size);
+    return totalSize > 0 && totalSize <= limit;
+  }
+
+  List<BarAsset> _normalizeBarAssets(
+    List<BarAsset> assets, {
+    required double limit,
+  }) {
+    if (assets.isEmpty) {
+      return const [];
+    }
+    final totalSize = assets.fold<double>(0, (sum, asset) => sum + asset.size);
+    if (totalSize <= 0) {
+      return const [];
+    }
+    if (totalSize <= limit) {
+      return assets;
+    }
+    return assets
+        .map(
+          (asset) => BarAsset(
+            size: (asset.size * limit) / totalSize,
+            color: asset.color,
+          ),
+        )
+        .toList();
+  }
+
+  int _segmentDurationMinutes(int start, int end) {
+    if (end > start) {
+      return end - start;
+    }
+    if (end < start) {
+      // Segment crosses midnight (e.g. 23:30 -> 01:00).
+      return (1440 - start) + end;
+    }
+    return 0;
+  }
+
+  int _sleepWindowMinutes(int beginNum, int endNum) {
+    if (endNum > beginNum) {
+      return endNum - beginNum;
+    }
+    if (endNum < beginNum) {
+      return (1440 - beginNum) + endNum;
+    }
+    return 0;
   }
 
   List<BarAsset> _timelineBarAssets(SleepMainModel model) {
     final beginNum = int.tryParse(model.beginTimeNum) ?? 0;
     final endNum = int.tryParse(model.endTimeNum) ?? 0;
-    var totalSpan = endNum > beginNum ? endNum - beginNum : 0;
+    var totalSpan = _sleepWindowMinutes(beginNum, endNum);
 
     if (totalSpan <= 0) {
       totalSpan = int.tryParse(model.totalNum) ?? 0;
@@ -328,33 +413,18 @@ class SleepDetailsController extends GetxController
     for (final segment in model.dataList) {
       final start = int.tryParse(segment.startTimeNum) ?? 0;
       final end = int.tryParse(segment.endTimeNum) ?? 0;
-      final duration = end > start ? end - start : 0;
+      final duration = _segmentDurationMinutes(start, end);
       if (duration <= 0) {
         continue;
       }
       assets.add(
         BarAsset(
-          size: (duration * 100) / totalSpan,
+          size: (duration * _sleepBarLimit) / totalSpan,
           color: _sleepStateColor(segment.state),
         ),
       );
     }
 
-    final totalSize =
-        assets.fold<double>(0, (sum, asset) => sum + asset.size);
-    if (totalSize <= 0) {
-      return [];
-    }
-    if ((totalSize - 100).abs() > 0.01) {
-      return assets
-          .map(
-            (asset) => BarAsset(
-              size: (asset.size * 100) / totalSize,
-              color: asset.color,
-            ),
-          )
-          .toList();
-    }
     return assets;
   }
 

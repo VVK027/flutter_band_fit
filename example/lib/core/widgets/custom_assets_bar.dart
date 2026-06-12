@@ -68,9 +68,12 @@ class CustomAssetsBar extends StatelessWidget {
         height: height,
       );
     }
-    if (assetsLimit < valuesSum) {
-      debugPrintI('assetsSum > assetsLimit - Check your values!');
-      return const SizedBox.shrink();
+    final renderLimit = valuesSum > assetsLimit ? valuesSum : assetsLimit;
+    if (valuesSum > assetsLimit) {
+      debugPrintI(
+        'assetsSum > assetsLimit - normalizing bar segments '
+        '($valuesSum > $assetsLimit)',
+      );
     }
     final rad = radius > 0 ? radius : (height / 2);
     return Container(
@@ -85,7 +88,7 @@ class CustomAssetsBar extends StatelessWidget {
         children: [
           for (final segment in segments)
             SizedBox(
-              width: (segment.size * width) / assetsLimit,
+              width: (segment.size * width) / renderLimit,
               height: height,
               child: ColoredBox(color: segment.color),
             ),
