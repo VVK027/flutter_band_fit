@@ -1,0 +1,62 @@
+PODS:
+  - device_info_plus (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+  - flutter_band_fit (0.0.1):
+    - Flutter
+  - health (13.3.1):
+    - Flutter
+  - iOSDFULibrary (4.15.3):
+    - ZIPFoundation (= 0.9.19)
+  - iOSOTARTK (1.1.1)
+  - permission_handler_apple (9.4.8):
+    - Flutter
+  - sqflite_darwin (0.0.4):
+    - Flutter
+    - FlutterMacOS
+  - ZIPFoundation (0.9.19)
+
+DEPENDENCIES:
+  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
+  - Flutter (from `Flutter`)
+  - flutter_band_fit (from `.symlinks/plugins/flutter_band_fit/ios`)
+  - health (from `.symlinks/plugins/health/ios`)
+  - iOSDFULibrary
+  - iOSOTARTK
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
+
+SPEC REPOS:
+  trunk:
+    - iOSDFULibrary
+    - iOSOTARTK
+    - ZIPFoundation
+
+EXTERNAL SOURCES:
+  device_info_plus:
+    :path: ".symlinks/plugins/device_info_plus/ios"
+  Flutter:
+    :path: Flutter
+  flutter_band_fit:
+    :path: ".symlinks/plugins/flutter_band_fit/ios"
+  health:
+    :path: ".symlinks/plugins/health/ios"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
+  sqflite_darwin:
+    :path: ".symlinks/plugins/sqflite_darwin/darwin"
+
+SPEC CHECKSUMS:
+  device_info_plus: 21fcca2080fbcd348be798aa36c3e5ed849eefbe
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_band_fit: e9b23f36bbd08442fc4446cbe836d0f519ab41e7
+  health: 4decf5d74e8f54c58a8c07a385fc72f629a831d9
+  iOSDFULibrary: 198c36ebe5a31bf2ca04ee8fb40837176a423e85
+  iOSOTARTK: 72fe7a5d3a331f0ee57cad8a52671cd8dbcbbf98
+  permission_handler_apple: 92d754bbaa7361d436db2d6c3c1c2a0fdcec462e
+  sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
+  ZIPFoundation: b8c29ea7ae353b309bc810586181fd073cb3312c
+
+PODFILE CHECKSUM: a7d99c0301bf1d5d6f2c06008c75281dc9c7d0a8
+
+COCOAPODS: 1.16.2
